@@ -45,8 +45,8 @@
             display: flex;
             align-items: center;
             background-color: rgba(30, 41, 59, 0.9);
-            width: 800px;
-            height: 60px;
+            width: 1300px;
+            height: 80px;
             border-radius: 0.75rem;
         }
 
@@ -97,7 +97,7 @@
         }
 
         .ticker-header-text {
-            font-size: 12px;
+            font-size: 24px;
             opacity: 0.85;
             color: #fde047;
             line-height: 1.2;
@@ -108,7 +108,7 @@
         }
 
         .ticker-main-text {
-            font-size: 28px;
+            font-size: 45px;
             font-weight: 500;
             color: #ffffff;
             line-height: 1.2;
@@ -176,12 +176,11 @@
             bgColor: '#0f172a',
             bgOpacity: 90,
             autoEmoji: true,
-            selectedMode: 'ALL' // 配信モードの初期値
+            selectedMode: 'ALL'
         };
 
         let currentConfig = { ...DEFAULT_CONFIG };
 
-        // URLパラメータから ?mode=xxx を優先取得し、なければ localStorage から取得
         function loadConfig() {
             const urlParams = new URLSearchParams(window.location.search);
             const paramMode = urlParams.get('mode');
@@ -213,7 +212,7 @@
         const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
 
         function hexToRgba(hex, opacityPercent) {
-            const num = parseInt((hex || '#1e293b').replace('#', ''), 16);
+            const num = parseInt((hex || '#0f172a').replace('#', ''), 16);
             const r = (num >> 16) & 255;
             const g = (num >> 8) & 255;
             const b = num & 255;
@@ -242,13 +241,13 @@
             container.style.width = `${currentConfig.width}px`;
             container.style.height = `${currentConfig.height}px`;
 
-            // 設定変更時に即座にフィルタリングを再適用
+            // 設定変更時にデータを再処理してフィルタリングを即座に反映
             if (allRecords.length > 0) {
                 processRecords(allRecords);
             }
         }
 
-        // 設定の変更をリアルタイム検知
+        // localStorageの変更（設定パネルでの変更）を500msごとに監視してリアルタイム反映
         let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
         setInterval(() => {
             const currentStr = localStorage.getItem('obs_ticker_config') || '';
@@ -445,7 +444,7 @@
             });
         }
 
-        // 配信モードおよび曜日による正確なフィルタリング処理
+        // 配信モードおよび曜日に基づく厳密なフィルタリング処理
         function processRecords(rawRecordsInput) {
             const todayJa = weekDaysJa[new Date().getDay()];
             const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
@@ -453,7 +452,7 @@
             activeRecords = rawRecordsInput.filter(record => {
                 if (record.isStopped) return false;
 
-                // 配信モードの正確なカラム名（または部分一致）を探索して判定
+                // 配信モードのカラム名（配信モード）または類似カラムを自動探索
                 let modeVal = (record['配信モード'] || '').trim();
                 if (!modeVal) {
                     for (let key in record) {
@@ -467,7 +466,7 @@
                     }
                 }
 
-                // 選択された配信モードと一致するかチェック（ALL以外の場合）
+                // 選択された配信モードと不一致なら除外（ALL以外）
                 if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
                     return false;
                 }
@@ -516,7 +515,7 @@
             loadConfig();
             fetchDataAndPlay();
 
-            // 3分ごとに定期同期
+            // 3分ごとにバックグラウンドで最新データを同期
             setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
     </script>
