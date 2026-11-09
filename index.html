@@ -190,7 +190,7 @@
 
                         <div>
                             <label class="block text-slate-400 mb-1">デフォルト アイコン (絵文字等)</label>
-                            <input type="text" id="cfg_iconInput" value="📢" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
+                            <input type="text" id="cfg_iconInput" value="" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
                         </div>
                         <div>
                             <label class="block text-slate-400 mb-1">アイコン領域幅 (px)</label>
@@ -294,7 +294,7 @@
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
-            iconInput: 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png',
+            iconInput: 'https://raw.githubusercontent.com/AfterEffects-OK/Portalsite/refs/heads/main/KagisenKun-icon.png',
             iconWidth: 70,
             iconBgColor: '#3b82f6',
             headerTextColor: '#93c5fd',
@@ -619,13 +619,11 @@
         }
 
         function fetchFromGAS() {
-            // キャッシュ対策としてタイムスタンプをクエリパラメータに付与
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
                 .then(response => response.text())
                 .then(csvText => {
                     if (csvText && csvText.trim().length > 0) {
-                        // 内容に変化があった場合のみテキストエリア等を更新
                         if (csvTextArea.value !== csvText) {
                             csvTextArea.value = csvText;
                             loadCSV(csvText);
