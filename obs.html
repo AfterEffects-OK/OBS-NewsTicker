@@ -168,6 +168,75 @@
         let scrollTimer = null;
         const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
 
+        // デフォルト設定値
+        let currentConfig = {
+            width: 800,
+            height: 60,
+            duration: 10,
+            fontFamily: "'Noto Sans JP', sans-serif",
+            transition: 'csv',
+            headerFontSize: 12,
+            mainFontSize: 28,
+            mainFontWeight: '500',
+            iconInput: '📢',
+            iconWidth: 70,
+            iconBgColor: '#3b82f6',
+            headerTextColor: '#93c5fd',
+            mainTextColor: '#ffffff',
+            bgColor: '#1e293b',
+            bgOpacity: 90,
+            autoEmoji: true
+        };
+
+        // ローカルストレージやBroadcastChannelから設定を読み込む
+        function loadConfig() {
+            const saved = localStorage.getItem('obs_ticker_config');
+            if (saved) {
+                try { currentConfig = JSON.parse(saved); } catch(e) {}
+            }
+            applyConfigToDOM();
+        }
+
+        function hexToRgba(hex, opacityPercent) {
+            const num = parseInt((hex || '#1e293b').replace('#', ''), 16);
+            const r = (num >> 16) & 255;
+            const g = (num >> 8) & 255;
+            const b = num & 255;
+            return `rgba(${r}, ${g}, ${b}, ${opacityPercent / 100})`;
+        }
+
+        // 読み込んだ設定をDOMスタイルに反映
+        function applyConfigToDOM() {
+            const container = document.getElementById('tickerContainer');
+            const content = document.getElementById('tickerContent');
+            const header = document.getElementById('tickerHeader');
+            const main = document.getElementById('tickerMain');
+            const icon = document.getElementById('tickerIcon');
+
+            content.style.fontFamily = currentConfig.fontFamily;
+            header.style.fontSize = `${currentConfig.headerFontSize}px`;
+            header.style.color = currentConfig.headerTextColor;
+
+            main.style.fontSize = `${currentConfig.mainFontSize}px`;
+            main.style.fontWeight = currentConfig.mainFontWeight;
+            main.style.color = currentConfig.mainTextColor;
+
+            container.style.backgroundColor = hexToRgba(currentConfig.bgColor, currentConfig.bgOpacity);
+            icon.style.backgroundColor = currentConfig.iconBgColor;
+            icon.style.width = `${currentConfig.iconWidth}px`;
+
+            container.style.width = `${currentConfig.width}px`;
+            container.style.height = `${currentConfig.height}px`;
+        }
+
+        // 別タブ（設定画面）からの設定変更をリアルタイムで検知
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'obs_ticker_config') {
+                loadConfig();
+            }
+        });
+
+        // 以下、従来のCSVパース・アニメーション再生処理
         function renderIconElement(targetEl, iconValue) {
             targetEl.innerHTML = '';
             if (!iconValue) return;
@@ -258,10 +327,22 @@
             tickerMain.style.transition = 'none';
             tickerMain.style.transform = 'translateX(0px)';
 
-            let trans = (record['トランジション'] || 'swipe-up').toLowerCase();
-            let displayIcon = '📢';
+            let trans = currentConfig.transition;
+            if (trans === 'csv') {
+                trans = (record['トランジション'] || 'swipe-up').toLowerCase();
+            }
+
+            let displayIcon = currentConfig.iconInput || '📢';
             let displayText = record['配信内容'] || '';
             let headerText = record['件名'] || ''; 
+
+            if (currentConfig.autoEmoji && displayText) {
+                const emojiMatch = displayText.match(/^([\p{Extended_Pictographic}\u2600-\u27BF])/u);
+                if (emojiMatch) {
+                    displayIcon = emojiMatch[1];
+                    displayText = displayText.replace(/^[\p{Extended_Pictographic}\u2600-\u27BF]+\s*/u, '');
+                }
+            }
 
             renderIconElement(tickerIcon, displayIcon);
 
@@ -295,7 +376,10 @@
                 requestAnimationFrame(() => {
                     bodyContainer.className = `ticker-body-container ${inClass}`;
 
-                    let defaultDurationSec = parseInt(record['表示時間']) || 10;
+                    let defaultDurationSec = parseInt(currentConfig.duration) || 10;
+                    if (record['表示時間'] && !isNaN(parseInt(record['表示時間']))) {
+                        defaultDurationSec = parseInt(record['表示時間']);
+                    }
                     let totalDurationMs = defaultDurationSec * 1000;
 
                     setTimeout(() => {
@@ -329,7 +413,7 @@
 
         function playNextTicker() {
             if (activeRecords.length === 0) {
-                setTimeout(fetchData, 10000); // データがない場合は10秒後に再取得
+                setTimeout(fetchData, 10000);
                 return;
             }
             if (currentIndex >= activeRecords.length) {
@@ -367,7 +451,10 @@
                 });
         }
 
-        window.onload = fetchData;
+        window.onload = function() {
+            loadConfig();
+            fetchData();
+        };
     </script>
 </body>
 </html>
