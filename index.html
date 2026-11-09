@@ -15,7 +15,7 @@
     <style>
         body {
             font-family: 'M PLUS Rounded 1c', sans-serif;
-            background-color: transparent;
+            background-color: transparent !important;
             overflow: hidden;
             margin: 0;
             padding: 0;
@@ -34,12 +34,13 @@
             align-items: center;
             pointer-events: none;
             padding-bottom: 2rem;
+            background: transparent !important;
         }
 
         .ticker-box {
             overflow: hidden;
             position: relative;
-            box-shadow: none; /* シャドウなし */
+            box-shadow: none;
             border: 1px solid rgba(255, 255, 255, 0.18);
             transition: all 0.3s ease;
             box-sizing: border-box;
@@ -47,6 +48,7 @@
             padding: 0;
             display: flex;
             align-items: center;
+            background-color: rgba(30, 41, 59, 0.9); /* デフォルトの半透明背景 */
         }
 
         .ticker-content {
@@ -147,7 +149,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
     </style>
 </head>
-<body class="h-screen w-screen relative">
+<body class="h-screen w-screen relative bg-transparent">
 
     <!-- Toggle Settings Button -->
     <button id="showPanelBtn" title="設定画面を開く (Hキー)" class="fixed top-3 left-3 z-[100] bg-slate-800/80 hover:bg-slate-800 text-white p-2.5 rounded-full shadow-lg border border-white/20 transition-all opacity-40 hover:opacity-100 pointer-events-auto cursor-pointer">
@@ -187,14 +189,14 @@
                 </button>
             </div>
 
-            <!-- ★ 設定画面の最上部に固定表示するプレビューエリア（背景を透明に設定） -->
+            <!-- ★ 設定画面の最上部に固定表示するプレビューエリア (背景完全に透明) -->
             <div class="bg-slate-800/95 border border-indigo-500/40 p-4 rounded-2xl shadow-xl flex flex-col items-center justify-center space-y-2">
                 <div class="w-full flex justify-between items-center text-xs text-indigo-300 font-bold px-2">
                     <span class="flex items-center gap-1.5"><i data-lucide="monitor" class="w-4 h-4"></i> OBS ライブプレビュー (設定画面内常時表示)</span>
                     <span class="text-slate-400">リアルタイム連動中</span>
                 </div>
-                <!-- プレビュー用コンテナ（背景を透明化） -->
-                <div id="previewEmbeddedWrapper" class="w-full flex justify-center py-2 overflow-hidden bg-transparent rounded-xl border border-slate-700/50">
+                <!-- プレビュー用コンテナ（完全に背景を透明化） -->
+                <div id="previewEmbeddedWrapper" class="w-full flex justify-center py-3 overflow-hidden bg-transparent rounded-xl border border-dashed border-slate-700">
                     <!-- JavaScriptでここにプレビュー用ティッカー要素が埋め込まれます -->
                 </div>
             </div>
@@ -396,7 +398,6 @@
         const tickerMain = document.getElementById('tickerMain');
         const previewEmbeddedWrapper = document.getElementById('previewEmbeddedWrapper');
 
-        // 設定画面内にもプレビューを表示するため、tickerContainerを複製（または移動）して埋め込む
         const embeddedTicker = tickerContainer.cloneNode(true);
         embeddedTicker.id = 'embeddedTickerContainer';
         previewEmbeddedWrapper.appendChild(embeddedTicker);
