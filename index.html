@@ -73,6 +73,7 @@
                     <button id="reloadGasBtn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded-lg transition text-white shadow flex items-center justify-center gap-2">
                         <i data-lucide="rotate-cw" class="w-4 h-4"></i> スプレッドシートから再読み込み
                     </button>
+                    <p class="text-[10px] text-slate-400 mt-2 text-center">※3分ごとに自動でバックグラウンド同期されます</p>
                     
                     <div class="mt-4">
                         <label class="block text-xs font-semibold text-slate-400 mb-1">CSVデータ読み込み:</label>
@@ -618,15 +619,21 @@
         }
 
         function fetchFromGAS() {
-            fetch(GAS_WEB_APP_URL)
+            // キャッシュ対策としてタイムスタンプをクエリパラメータに付与
+            const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
+            fetch(cacheBustedUrl)
                 .then(response => response.text())
                 .then(csvText => {
                     if (csvText && csvText.trim().length > 0) {
-                        csvTextArea.value = csvText;
-                        loadCSV(csvText);
+                        // 内容に変化があった場合のみテキストエリア等を更新
+                        if (csvTextArea.value !== csvText) {
+                            csvTextArea.value = csvText;
+                            loadCSV(csvText);
+                            console.log('スプレッドシートの最新データを自動同期しました:', new Date().toLocaleTimeString());
+                        }
                     }
                 })
-                .catch(err => { console.error('GAS取得失敗:', err); });
+                .catch(err => { console.error('GAS自動取得失敗:', err); });
         }
 
         function initCurrentDateLabel() {
@@ -652,7 +659,11 @@
             setupButtonSelector('mainTextColorGroup', 'cfg_mainTextColor', true);
             setupButtonSelector('bgColorGroup', 'cfg_bgColor', true);
 
+            // 初回データ取得
             fetchFromGAS();
+
+            // ⏱️【定期自動フェッチの設定】3分 (180,000ミリ秒) ごとに自動でGASから最新データを取得
+            setInterval(fetchFromGAS, 3 * 60 * 1000);
 
             reloadGasBtn.addEventListener('click', fetchFromGAS);
             applyCsvTextBtn.addEventListener('click', () => { loadCSV(csvTextArea.value); });
