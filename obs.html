@@ -152,7 +152,7 @@
             <div id="tickerContent" class="ticker-content font-bold text-white">
                 <div id="tickerBodyContainer" class="ticker-body-container slide-up-in">
                     <div id="tickerHeader" class="ticker-header-text"></div>
-                    <div id="tickerMain" class="ticker-main-text">設定パネルからデータを待機中...</div>
+                    <div id="tickerMain" class="ticker-main-text">データを読み込み中...</div>
                 </div>
             </div>
         </div>
@@ -175,15 +175,20 @@
             mainTextColor: '#ffffff',
             bgColor: '#0f172a',
             bgOpacity: 90,
-            autoEmoji: true
+            autoEmoji: true,
+            selectedMode: 'ALL'
         };
 
         let currentConfig = { ...DEFAULT_CONFIG };
+        let allRecords = [];
         let activeRecords = [];
         let currentIndex = 0;
         let animationTimer = null;
         let scrollTimer = null;
         let isPlaying = false;
+        const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
+
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
 
         function hexToRgba(hex, opacityPercent) {
             const num = parseInt((hex || '#0f172a').replace('#', ''), 16);
@@ -193,31 +198,18 @@
             return `rgba(${r}, ${g}, ${b}, ${opacityPercent / 100})`;
         }
 
-        function loadConfigAndData() {
-            // 1. 設定情報の読み込み
-            const savedConfig = localStorage.getItem('obs_ticker_config');
-            if (savedConfig) {
+        function loadConfig() {
+            const saved = localStorage.getItem('obs_ticker_config');
+            if (saved) {
                 try { 
-                    currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(savedConfig) }; 
+                    currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(saved) }; 
                 } catch(e) {}
             } else {
                 currentConfig = { ...DEFAULT_CONFIG };
             }
             applyConfigToDOM();
-
-            // 2. index.html側で絞り込まれたアクティブデータの読み込み
-            const savedRecords = localStorage.getItem('obs_active_records');
-            if (savedRecords) {
-                try {
-                    const parsedRecords = JSON.parse(savedRecords);
-                    if (Array.isArray(parsedRecords)) {
-                        activeRecords = parsedRecords;
-                        if (!isPlaying && activeRecords.length > 0) {
-                            isPlaying = true;
-                            playNextTicker();
-                        }
-                    }
-                } catch(e) {}
+            if (allRecords.length > 0) {
+                processRecords(allRecords);
             }
         }
 
@@ -244,6 +236,15 @@
             container.style.height = `${currentConfig.height}px`;
         }
 
+        let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
+        setInterval(() => {
+            const currentStr = localStorage.getItem('obs_ticker_config') || '';
+            if (currentStr !== lastConfigStr) {
+                lastConfigStr = currentStr;
+                loadConfig();
+            }
+        }, 500);
+
         function renderIconElement(targetEl, iconValue) {
             targetEl.innerHTML = '';
             if (!iconValue) return;
@@ -256,6 +257,61 @@
             } else {
                 targetEl.textContent = iconValue;
             }
+        }
+
+        function parseCSV(text) {
+            if (!text || !text.trim()) return [];
+            const lines = [];
+            let currentRow = [];
+            let currentField = '';
+            let insideQuote = false;
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+
+                if (char === '"') {
+                    if (insideQuote && nextChar === '"') { currentField += '"'; i++; }
+                    else { insideQuote = !insideQuote; }
+                } else if (char === ',' && !insideQuote) {
+                    currentRow.push(currentField.trim()); currentField = '';
+                } else if ((char === '\r' || char === '\n') && !insideQuote) {
+                    if (char === '\r' && nextChar === '\n') i++;
+                    currentRow.push(currentField.trim());
+                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                    currentRow = []; currentField = '';
+                } else { currentField += char; }
+            }
+            if (currentField !== '' || currentRow.length > 0) {
+                currentRow.push(currentField.trim());
+                if (lines.length > 0) lines.push(currentRow);
+            }
+
+            if (lines.length < 2) return [];
+            const headers = lines[0];
+            const records = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const row = lines[i];
+                if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
+                const record = {};
+                headers.forEach((h, idx) => { record[h] = row[idx] !== undefined ? row[idx] : ''; });
+
+                let headerVal = '';
+                if (record['件名'] !== undefined && record['件名'].trim() !== '') {
+                    headerVal = record['件名'].trim();
+                }
+                record['件名'] = headerVal;
+
+                let dayVal = (record['配信曜日_AppSheet'] || record['配信曜日'] || '').trim();
+                record['配信曜日_AppSheet'] = dayVal;
+
+                const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
+                record.isStopped = stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes';
+
+                records.push(record);
+            }
+            return records;
         }
 
         function animateTicker(record, onComplete) {
@@ -363,7 +419,7 @@
 
         function playNextTicker() {
             if (activeRecords.length === 0) {
-                setTimeout(loadConfigAndData, 2000);
+                setTimeout(fetchDataAndPlay, 5000);
                 return;
             }
             if (currentIndex >= activeRecords.length) {
@@ -376,11 +432,70 @@
             });
         }
 
-        window.onload = function() {
-            loadConfigAndData();
+        function processRecords(rawRecords) {
+            const todayJa = weekDaysJa[new Date().getDay()];
+            
+            // ユーザーが設定パネルで選択している配信モードを取得（設定されていない場合は 'ALL'）
+            const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
 
-            // 設定パネル側での変更やデータ更新をリアルタイムに監視
-            setInterval(loadConfigAndData, 1000);
+            activeRecords = rawRecords.filter(record => {
+                if (record.isStopped) return false;
+
+                // 配信モードの判定（「配信モード」カラムを探索）
+                let modeVal = (record['配信モード'] || '').trim();
+                if (!modeVal) {
+                    for (let key in record) {
+                        if (key.includes('配信モード')) {
+                            const val = (record[key] || '').trim();
+                            if (val !== '') {
+                                modeVal = val;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // 配信モードが一致するか（ALLまたは一致する場合のみ通過）
+                if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
+                    return false;
+                }
+
+                // 曜日フィルタの判定
+                const days = record['配信曜日_AppSheet'] || record['配信曜日'] || '';
+                if (days.indexOf('不定期') !== -1 || days === '') return true;
+                return days.includes(todayJa);
+            });
+
+            if (currentIndex >= activeRecords.length) {
+                currentIndex = 0;
+            }
+
+            if (!isPlaying && activeRecords.length > 0) {
+                isPlaying = true;
+                playNextTicker();
+            }
+        }
+
+        function fetchDataAndPlay() {
+            const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
+            fetch(cacheBustedUrl)
+                .then(res => res.text())
+                .then(csv => {
+                    allRecords = parseCSV(csv);
+                    processRecords(allRecords);
+                })
+                .catch(err => {
+                    console.error('データ取得エラー:', err);
+                    setTimeout(fetchDataAndPlay, 5000);
+                });
+        }
+
+        window.onload = function() {
+            loadConfig();
+            fetchDataAndPlay();
+
+            // 3分ごとに自動更新
+            setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
     </script>
 </body>
