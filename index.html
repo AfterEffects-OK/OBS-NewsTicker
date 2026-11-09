@@ -196,7 +196,7 @@
                             <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
                         </div>
 
-                        <!-- カラーパレット（ボタン選択式） -->
+                        <!-- カラーパレット（背景色付きボタン選択式） -->
                         <div>
                             <label class="block text-slate-400 mb-1">アイコン背景色</label>
                             <input type="hidden" id="cfg_iconBgColor" value="#3b82f6">
@@ -316,9 +316,12 @@
                     
                     if (isColorGroup) {
                         buttons.forEach(b => {
-                            b.className = "w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow";
+                            b.className = b.className.replace(/border-amber-400 scale-110 ring-2 ring-amber-400\/50/g, 'border-slate-700');
                         });
-                        btn.className = "w-7 h-7 rounded-full border-2 border-amber-400 scale-110 transition shadow ring-2 ring-amber-400/50";
+                        btn.className = btn.className.replace('border-slate-700', 'border-amber-400 scale-110 ring-2 ring-amber-400/50');
+                        if (!btn.className.includes('border-amber-400')) {
+                            btn.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
+                        }
                     } else {
                         buttons.forEach(b => {
                             b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
@@ -378,13 +381,18 @@
                 const bVal = isColorGroup ? b.getAttribute('data-color') : b.getAttribute('data-value');
                 if (bVal === value) {
                     if (isColorGroup) {
-                        b.className = "w-7 h-7 rounded-full border-2 border-amber-400 scale-110 transition shadow ring-2 ring-amber-400/50";
+                        if (!b.className.includes('border-amber-400')) {
+                            b.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
+                        }
                     } else {
                         b.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
                     }
                 } else {
                     if (isColorGroup) {
-                        b.className = "w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow";
+                        b.className = b.className.replace(/border-amber-400 scale-110 ring-2 ring-amber-400\/50/g, '').trim();
+                        if (!b.className.includes('border-slate-700')) {
+                            b.className += ' border-slate-700';
+                        }
                     } else {
                         b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
                     }
