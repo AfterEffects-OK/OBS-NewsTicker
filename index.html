@@ -21,114 +21,6 @@
             margin: 0;
             padding: 0;
         }
-
-        /* ティッカーのプレビュー用スタイル（設定画面内での確認用） */
-        .ticker-box {
-            overflow: hidden;
-            position: relative;
-            box-shadow: none;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .ticker-content {
-            white-space: nowrap;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0;
-            box-sizing: border-box;
-            gap: 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ticker-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            height: 100%;
-            padding: 0 0.4rem;
-            font-size: 1.1em;
-            line-height: 1;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            overflow: hidden;
-            z-index: 10;
-        }
-
-        .ticker-badge img {
-            max-height: 80%;
-            max-width: 100%;
-            object-fit: contain;
-        }
-
-        .ticker-body-container {
-            padding: 0 0.5rem;
-            flex-grow: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform, opacity;
-        }
-
-        .ticker-header-text {
-            font-size: 0.75em;
-            opacity: 0.85;
-            line-height: 1.2;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-weight: 700;
-        }
-
-        .ticker-main-text {
-            font-size: 28px;
-            font-weight: 500;
-            line-height: 1.2;
-            white-space: nowrap;
-            display: inline-block;
-            transition: transform 0.1s linear;
-            will-change: transform;
-            overflow: visible;
-            text-overflow: clip;
-            width: max-content;
-        }
-
-        .ticker-main-text.is-scrolling {
-            overflow: visible !important;
-            text-overflow: clip !important;
-            white-space: nowrap !important;
-        }
-
-        /* Transition Classes (Slide Up) */
-        .slide-up-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .slide-up-out-before { transform: translate3d(0, 100%, 0); opacity: 0; }
-        .slide-up-out-after { transform: translate3d(0, -100%, 0); opacity: 0; }
-
-        .slide-down-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .slide-down-out-before { transform: translate3d(0, -100%, 0); opacity: 0; }
-        .slide-down-out-after { transform: translate3d(0, 100%, 0); opacity: 0; }
-        .slide-left-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .slide-left-out-before { transform: translate3d(100%, 0, 0); opacity: 0; }
-        .slide-left-out-after { transform: translate3d(-100%, 0, 0); opacity: 0; }
-        .slide-right-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .slide-right-out-before { transform: translate3d(-100%, 0, 0); opacity: 0; }
-        .slide-right-out-after { transform: translate3d(100%, 0, 0); opacity: 0; }
-        .fade-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .fade-out { transform: translate3d(0, 0, 0); opacity: 0; }
-
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
@@ -145,13 +37,13 @@
                     OBS ニュースティッカー 設定パネル
                 </h1>
                 <p class="text-sm text-slate-400 mt-1">
-                    OBSのブラウザソースには、以下の専用URL（背景完全透過）を設定してください。
+                    OBSのブラウザソースには、下記の専用URL（背景完全透過）を設定してください。
                 </p>
             </div>
             <div>
                 <a id="obsUrlLink" href="#" target="_blank" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 font-bold text-xs rounded-lg transition-colors shadow flex items-center gap-2 text-white">
                     <i data-lucide="external-link" class="w-4 h-4"></i>
-                    OBS用プレビュー画面を別タブで開く
+                    OBS用プレビュー画面を別タブで確認
                 </a>
             </div>
         </div>
@@ -169,29 +61,10 @@
             </div>
         </div>
 
-        <!-- ライブプレビューエリア (設定確認用) -->
-        <div class="bg-slate-800/95 border border-indigo-500/40 p-4 rounded-2xl shadow-xl flex flex-col items-center justify-center space-y-2">
-            <div class="w-full flex justify-between items-center text-xs text-indigo-300 font-bold px-2">
-                <span class="flex items-center gap-1.5"><i data-lucide="monitor" class="w-4 h-4"></i> プレビュー表示確認</span>
-                <span class="text-slate-400">リアルタイム連動中</span>
-            </div>
-            <div id="previewEmbeddedWrapper" class="w-full flex justify-center py-3 overflow-hidden bg-transparent rounded-xl border border-dashed border-slate-700">
-                <div id="tickerContainer" class="ticker-box rounded-xl my-1">
-                    <span id="tickerIcon" class="ticker-badge">📢</span>
-                    <div id="tickerContent" class="ticker-content font-bold text-white">
-                        <div id="tickerBodyContainer" class="ticker-body-container slide-up-in">
-                            <div id="tickerHeader" class="ticker-header-text"></div>
-                            <div id="tickerMain" class="ticker-main-text">データを読み込み中...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Main Layout Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- Left Column: Status & Filters -->
+            <!-- Left Column: Status & Info -->
             <div class="space-y-6 lg:col-span-1">
                 <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-indigo-300">
@@ -203,140 +76,27 @@
                     
                     <div class="mt-4">
                         <label class="block text-xs font-semibold text-slate-400 mb-1">取得したCSVデータ (確認用):</label>
-                        <textarea id="csvTextArea" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 font-mono" placeholder="読み込み中..."></textarea>
-                        <button id="applyCsvTextBtn" class="w-full mt-2 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg transition">テキストを手動反映</button>
+                        <textarea id="csvTextArea" rows="6" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 font-mono" placeholder="読み込み中..."></textarea>
                     </div>
                 </div>
 
                 <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
                     <h2 class="text-lg font-bold text-indigo-300 flex items-center gap-2">
-                        <i data-lucide="filter" class="w-5 h-5"></i> 配信フィルタ設定
+                        <i data-lucide="filter" class="w-5 h-5"></i> 配信情報
                     </h2>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">件名 (K列) で絞り込み</label>
-                        <select id="modeFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200">
-                            <option value="ALL">すべての件名</option>
-                        </select>
-                    </div>
-                    <div class="pt-2 border-t border-slate-700/60">
-                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                            <input type="checkbox" id="weekdayFilterCheck" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700">
-                            <span>現在の曜日（<span id="currentWeekdayLabel" class="text-amber-400 font-bold"></span>）で自動絞り込み</span>
-                        </label>
-                    </div>
-                    <div class="pt-2 border-t border-slate-700/60 text-xs text-slate-400 space-y-1">
-                        <div class="flex justify-between"><span>総レコード数:</span> <span id="statTotal" class="font-bold text-slate-200">0</span></div>
-                        <div class="flex justify-between"><span>表示対象数:</span> <span id="statActive" class="font-bold text-indigo-400">0</span></div>
+                    <div class="text-xs text-slate-300 space-y-2">
+                        <div class="flex justify-between"><span>総レコード数:</span> <span id="statTotal" class="font-bold text-slate-200">0</span>行</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Settings & Data Preview Table -->
+            <!-- Right Column: Data Preview Table -->
             <div class="space-y-6 lg:col-span-2">
-                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
-                    <h2 class="text-lg font-bold text-indigo-300 flex items-center gap-2">
-                        <i data-lucide="sliders" class="w-5 h-5"></i> ティッカー枠 & 共通設定
-                    </h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">枠の横幅 (px)</label>
-                            <input type="number" id="tickerWidthInput" value="800" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">枠の高さ (px)</label>
-                            <input type="number" id="tickerHeightInput" value="60" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">表示時間（秒/件）</label>
-                            <input type="number" id="displayDuration" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">フォントファミリー</label>
-                            <select id="fontFamilySelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200">
-                                <option value="'M PLUS Rounded 1c', sans-serif" selected>M PLUS Rounded (丸ゴシック)</option>
-                                <option value="'Noto Sans JP', sans-serif">Noto Sans JP (標準)</option>
-                                <option value="sans-serif">ゴシック体</option>
-                                <option value="serif">明朝体</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
-                    <h3 class="text-md font-bold text-amber-400 flex items-center gap-2 border-b border-slate-700 pb-2">
-                        <i data-lucide="palette" class="w-4 h-4"></i> デザイン & アイコン設定
-                    </h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                        <div>
-                            <label class="block text-slate-400 mb-1">アニメーション</label>
-                            <select id="cfg_transition" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
-                                <option value="swipe-up" selected>上方向スライド</option>
-                                <option value="csv">CSVの指定に従う</option>
-                                <option value="swipe-down">下方向スライド</option>
-                                <option value="swipe-left">左方向スライド</option>
-                                <option value="swipe-right">右方向スライド</option>
-                                <option value="fade">フェード</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">件名 (上部) 文字サイズ</label>
-                            <input type="number" id="cfg_headerFontSize" value="12" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">本文 (下部) 文字サイズ</label>
-                            <input type="number" id="cfg_mainFontSize" value="28" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">本文 (下部) フォントの太さ</label>
-                            <select id="cfg_mainFontWeight" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold">
-                                <option value="400">標準 (400)</option>
-                                <option value="500" selected>中太 (500)</option>
-                                <option value="700">太字 (700)</option>
-                                <option value="800">極太 (800)</option>
-                                <option value="900">超極太 (900)</option>
-                            </select>
-                        </div>
-                        <div class="col-span-2 sm:col-span-2">
-                            <label class="block text-slate-400 mb-1">デフォルト アイコン</label>
-                            <input type="text" id="cfg_iconInput" value="📢" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">アイコン領域幅 (px)</label>
-                            <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">アイコン背景色</label>
-                            <input type="color" id="cfg_iconBgColor" value="#3b82f6" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">件名文字色</label>
-                            <input type="color" id="cfg_headerTextColor" value="#93c5fd" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">本文文字色</label>
-                            <input type="color" id="cfg_mainTextColor" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">枠の背景色</label>
-                            <input type="color" id="cfg_bgColor" value="#1e293b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs text-slate-400 mb-1">
-                                <span>背景不透明度</span>
-                                <span id="cfg_bgOpacityVal">90%</span>
-                            </div>
-                            <input type="range" id="cfg_bgOpacity" min="0" max="100" value="90" class="w-full accent-indigo-500">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Data Preview Table -->
                 <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 class="text-lg font-bold mb-3 text-indigo-300 flex items-center justify-between">
-                        <span class="flex items-center gap-2"><i data-lucide="list" class="w-5 h-5"></i> 読み込み中データ一覧 (<span id="tableRowCount">0</span>行)</span>
-                        <span class="text-xs font-normal text-slate-400">※スプレッドシートの全データ</span>
+                        <span class="flex items-center gap-2"><i data-lucide="list" class="w-5 h-5"></i> スプレッドシートデータ一覧 (<span id="tableRowCount">0</span>行)</span>
                     </h2>
-                    <div class="max-h-64 overflow-y-auto overflow-x-auto border border-slate-700 rounded-lg">
+                    <div class="max-h-[500px] overflow-y-auto overflow-x-auto border border-slate-700 rounded-lg">
                         <table id="previewTable" class="w-full text-left text-xs text-slate-300 whitespace-nowrap">
                             <thead id="previewTableHead" class="bg-slate-900/90 text-slate-400 sticky top-0 border-b border-slate-700 z-10"></thead>
                             <tbody id="previewTableBody" class="divide-y divide-slate-700/50"></tbody>
@@ -352,7 +112,7 @@
     <script>
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
         
-        // OBS用プレビューURL（?obs=1 を付与）
+        // OBS用プレビューURL（?obs=1 を付与して obs.html を呼び出す）
         const obsUrl = GAS_WEB_APP_URL + '?obs=1';
         document.getElementById('obsUrlInput').value = obsUrl;
         document.getElementById('obsUrlLink').href = obsUrl;
@@ -366,61 +126,6 @@
 
         let rawCSVHeaders = [];
         let allRecords = [];
-        let activeRecords = [];
-        let currentIndex = 0;
-        let animationTimer = null;
-        let scrollTimer = null;
-        const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
-
-        const reloadGasBtn = document.getElementById('reloadGasBtn');
-        const csvTextArea = document.getElementById('csvTextArea');
-        const applyCsvTextBtn = document.getElementById('applyCsvTextBtn');
-        const modeFilter = document.getElementById('modeFilter');
-        const weekdayFilterCheck = document.getElementById('weekdayFilterCheck');
-        const currentWeekdayLabel = document.getElementById('currentWeekdayLabel');
-        const tickerWidthInput = document.getElementById('tickerWidthInput');
-        const tickerHeightInput = document.getElementById('tickerHeightInput');
-        const displayDuration = document.getElementById('displayDuration');
-        const fontFamilySelect = document.getElementById('fontFamilySelect');
-        const previewTableHead = document.getElementById('previewTableHead');
-        const previewTableBody = document.getElementById('previewTableBody');
-        const statTotal = document.getElementById('statTotal');
-        const statActive = document.getElementById('statActive');
-        const tableRowCount = document.getElementById('tableRowCount');
-
-        const tickerContainer = document.getElementById('tickerContainer');
-        const tickerContent = document.getElementById('tickerContent');
-        const tickerIcon = document.getElementById('tickerIcon');
-        const tickerBodyContainer = document.getElementById('tickerBodyContainer');
-        const tickerHeader = document.getElementById('tickerHeader');
-        const tickerMain = document.getElementById('tickerMain');
-
-        const cfg_transition = document.getElementById('cfg_transition');
-        const cfg_headerFontSize = document.getElementById('cfg_headerFontSize');
-        const cfg_mainFontSize = document.getElementById('cfg_mainFontSize');
-        const cfg_mainFontWeight = document.getElementById('cfg_mainFontWeight');
-        const cfg_iconInput = document.getElementById('cfg_iconInput');
-        const cfg_iconWidth = document.getElementById('cfg_iconWidth');
-        const cfg_iconBgColor = document.getElementById('cfg_iconBgColor');
-        const cfg_headerTextColor = document.getElementById('cfg_headerTextColor');
-        const cfg_mainTextColor = document.getElementById('cfg_mainTextColor');
-        const cfg_bgColor = document.getElementById('cfg_bgColor');
-        const cfg_bgOpacity = document.getElementById('cfg_bgOpacity');
-        const cfg_bgOpacityVal = document.getElementById('cfg_bgOpacityVal');
-
-        function renderIconElement(targetEl, iconValue) {
-            targetEl.innerHTML = '';
-            if (!iconValue) return;
-            if (iconValue.startsWith('http://') || iconValue.startsWith('https://')) {
-                const img = document.createElement('img');
-                img.src = iconValue;
-                img.alt = 'Icon';
-                img.onerror = () => { targetEl.textContent = '📢'; };
-                targetEl.appendChild(img);
-            } else {
-                targetEl.textContent = iconValue;
-            }
-        }
 
         function parseCSV(text) {
             if (!text || !text.trim()) return [];
@@ -434,430 +139,84 @@
                 const nextChar = text[i + 1];
 
                 if (char === '"') {
-                    if (insideQuote && nextChar === '"') {
-                        currentField += '"';
-                        i++;
-                    } else {
-                        insideQuote = !insideQuote;
-                    }
+                    if (insideQuote && nextChar === '"') { currentField += '"'; i++; }
+                    else { insideQuote = !insideQuote; }
                 } else if (char === ',' && !insideQuote) {
-                    currentRow.push(currentField.trim());
-                    currentField = '';
+                    currentRow.push(currentField.trim()); currentField = '';
                 } else if ((char === '\r' || char === '\n') && !insideQuote) {
                     if (char === '\r' && nextChar === '\n') i++;
                     currentRow.push(currentField.trim());
-                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
-                        lines.push(currentRow);
-                    }
-                    currentRow = [];
-                    currentField = '';
-                } else {
-                    currentField += char;
-                }
+                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                    currentRow = []; currentField = '';
+                } else { currentField += char; }
             }
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
-                    lines.push(currentRow);
-                }
+                if (lines.length === 0 || currentRow.length > 1) lines.push(currentRow);
             }
-
             if (lines.length < 2) return [];
 
             rawCSVHeaders = lines[0];
             const records = [];
-
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
                 if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
-
-                const record = { _rawRow: row };
-                rawCSVHeaders.forEach((h, idx) => {
-                    record[h] = row[idx] !== undefined ? row[idx] : '';
-                });
-
-                let headerVal = '';
-                if (record['件名'] !== undefined && record['件名'].trim() !== '') {
-                    headerVal = record['件名'].trim();
-                } else if (rawCSVHeaders[10] && record[rawCSVHeaders[10]] !== undefined && record[rawCSVHeaders[10]].trim() !== '') {
-                    headerVal = record[rawCSVHeaders[10]].trim();
-                }
-                record['件名'] = headerVal;
-
-                let dayVal = '';
-                if (record['配信曜日_AppSheet'] && record['配信曜日_AppSheet'].trim() !== '') {
-                    dayVal = record['配信曜日_AppSheet'].trim();
-                } else if (record['配信曜日'] && record['配信曜日'].trim() !== '') {
-                    dayVal = record['配信曜日'].trim();
-                }
-                record['配信曜日_AppSheet'] = dayVal;
-
-                let timeVal = '';
-                if (record['配信開始時間_AppSheet'] && record['配信開始時間_AppSheet'].trim() !== '') {
-                    timeVal = record['配信開始時間_AppSheet'].trim();
-                }
-                record['配信開始時間_AppSheet'] = timeVal;
-
-                const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
-                record.isStopped = stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes';
-
+                const record = {};
+                rawCSVHeaders.forEach((h, idx) => { record[h] = row[idx] !== undefined ? row[idx] : ''; });
                 records.push(record);
             }
             return records;
         }
 
-        function hexToRgba(hex, opacityPercent) {
-            const num = parseInt(hex.replace('#', ''), 16);
-            const r = (num >> 16) & 255;
-            const g = (num >> 8) & 255;
-            const b = num & 255;
-            return `rgba(${r}, ${g}, ${b}, ${opacityPercent / 100})`;
-        }
-
-        function updateStyles() {
-            const font = fontFamilySelect.value;
-            const fixedWidth = `${tickerWidthInput.value}px`;
-            const fixedHeight = `${tickerHeightInput.value}px`;
-
-            tickerContent.style.fontFamily = font;
-            tickerHeader.style.fontSize = `${cfg_headerFontSize.value}px`;
-            tickerHeader.style.color = cfg_headerTextColor.value;
-
-            tickerMain.style.fontSize = `${cfg_mainFontSize.value}px`;
-            tickerMain.style.fontWeight = cfg_mainFontWeight.value;
-            tickerMain.style.color = cfg_mainTextColor.value;
-
-            tickerContainer.style.backgroundColor = hexToRgba(cfg_bgColor.value, cfg_bgOpacity.value);
-            tickerIcon.style.backgroundColor = cfg_iconBgColor.value;
-            if (cfg_iconWidth && cfg_iconWidth.value) {
-                tickerIcon.style.width = `${cfg_iconWidth.value}px`;
-            }
-
-            tickerContainer.style.width = fixedWidth;
-            tickerContainer.style.height = fixedHeight;
-            cfg_bgOpacityVal.textContent = `${cfg_bgOpacity.value}%`;
-        }
-
-        function animateTicker(record, onAnimationComplete) {
-            if (!record) {
-                tickerHeader.textContent = '';
-                tickerHeader.style.display = 'none';
-                tickerMain.textContent = '';
-                tickerIcon.innerHTML = '';
-                if (onAnimationComplete) onAnimationComplete(10);
-                return;
-            }
-
-            clearTimeout(scrollTimer);
-            tickerMain.classList.remove('is-scrolling');
-            tickerMain.style.transition = 'none';
-            tickerMain.style.transform = 'translateX(0px)';
-
-            let trans = cfg_transition.value;
-            if (trans === 'csv') {
-                trans = (record['トランジション'] || 'swipe-up').toLowerCase();
-            }
-
-            let displayIcon = cfg_iconInput.value || '📢';
-            let displayText = record['配信内容'] || '';
-            let headerText = record['件名'] || ''; 
-
-            renderIconElement(tickerIcon, displayIcon);
-
-            if (headerText === '') {
-                tickerHeader.textContent = '';
-                tickerHeader.style.display = 'none';
-            } else {
-                tickerHeader.textContent = headerText;
-                tickerHeader.style.display = 'block';
-            }
-
-            let outClass = 'slide-up-out-after';
-            let inClass = 'slide-up-in';
-            let prepClass = 'slide-up-out-before';
-
-            if (trans.includes('down')) {
-                outClass = 'slide-down-out-after';
-                inClass = 'slide-down-in';
-                prepClass = 'slide-down-out-before';
-            } else if (trans.includes('left')) {
-                outClass = 'slide-left-out-after';
-                inClass = 'slide-left-in';
-                prepClass = 'slide-left-out-before';
-            } else if (trans.includes('right')) {
-                outClass = 'slide-right-out-after';
-                inClass = 'slide-right-in';
-                prepClass = 'slide-right-out-before';
-            } else if (trans.includes('fade')) {
-                outClass = 'fade-out';
-                inClass = 'fade-in';
-                prepClass = 'fade-out';
-            }
-
-            tickerBodyContainer.className = `ticker-body-container ${outClass}`;
-
-            setTimeout(() => {
-                tickerMain.textContent = displayText;
-                tickerBodyContainer.className = `ticker-body-container ${prepClass}`;
-
-                requestAnimationFrame(() => {
-                    tickerBodyContainer.className = `ticker-body-container ${inClass}`;
-
-                    let defaultDurationSec = parseInt(displayDuration.value) || 10;
-                    if (record['表示時間'] && !isNaN(parseInt(record['表示時間']))) {
-                        defaultDurationSec = parseInt(record['表示時間']);
-                    }
-                    let totalDurationMs = defaultDurationSec * 1000;
-
-                    setTimeout(() => {
-                        tickerMain.classList.add('is-scrolling');
-                        const textWidth = Math.max(tickerMain.scrollWidth, tickerMain.getBoundingClientRect().width);
-                        const containerWidth = tickerBodyContainer.clientWidth;
-
-                        if (textWidth > containerWidth + 2) {
-                            const scrollDistance = textWidth - containerWidth + 20;
-                            const speed = 50;
-                            const scrollDurationSec = scrollDistance / speed;
-                            const scrollDurationMs = scrollDurationSec * 1000;
-                            const requiredTimeMs = 1500 + scrollDurationMs + 1500;
-                            if (requiredTimeMs > totalDurationMs) {
-                                totalDurationMs = requiredTimeMs;
-                            }
-
-                            scrollTimer = setTimeout(() => {
-                                tickerMain.style.transition = `transform ${scrollDurationSec.toFixed(2)}s linear`;
-                                tickerMain.style.transform = `translateX(-${scrollDistance}px)`;
-                            }, 1500);
-                        }
-
-                        if (onAnimationComplete) {
-                            onAnimationComplete(totalDurationMs / 1000);
-                        }
-                    }, 50);
-                });
-            }, 300);
-        }
-
-        function playNextTicker() {
-            if (activeRecords.length === 0) {
-                tickerHeader.style.display = 'none';
-                tickerMain.textContent = '表示可能なニュース項目がありません';
-                renderIconElement(tickerIcon, 'ℹ️');
-                return;
-            }
-
-            if (currentIndex >= activeRecords.length) {
-                currentIndex = 0;
-            }
-
-            const currentRecord = activeRecords[currentIndex];
-            currentIndex = (currentIndex + 1) % activeRecords.length;
-
-            animateTicker(currentRecord, (durationSec) => {
-                clearTimeout(animationTimer);
-                animationTimer = setTimeout(playNextTicker, durationSec * 1000);
-            });
-        }
-
-        function isScheduleMatched(record) {
-            const rawDaysStr = ((record['配信曜日_AppSheet'] || '') + ' ' + (record['配信曜日'] || '')).trim();
-            if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') {
-                return true;
-            }
-            if (!weekdayFilterCheck.checked) return true;
-
-            const now = new Date();
-            const todayIndex = now.getDay();
-            const todayJa = weekDaysJa[todayIndex];
-
-            const cleanedStr = rawDaysStr
-                .replace(/\b\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/g, '')
-                .replace(/\b\d{1,2}[\/\-]\d{1,2}\b/g, '')
-                .replace(/\b\d{1,2}月\d{1,2}日\b/g, '');
-
-            const extractedDays = cleanedStr.match(/[月火水木金土日]/g);
-            if (extractedDays && extractedDays.length > 0) {
-                return Array.from(new Set(extractedDays)).includes(todayJa);
-            }
-            return false;
-        }
-
-        function filterRecords() {
-            const selectedMode = modeFilter.value;
-            activeRecords = allRecords.filter(record => {
-                if (record.isStopped) return false;
-                if (selectedMode !== 'ALL' && record['件名'] !== selectedMode) {
-                    return false;
-                }
-                return isScheduleMatched(record);
-            });
-
-            statTotal.textContent = allRecords.length;
-            statActive.textContent = activeRecords.length;
-            currentIndex = 0;
-            clearTimeout(animationTimer);
-            playNextTicker();
-        }
-
-        function updateModeDropdown() {
-            const currentSelected = modeFilter.value;
-            const modes = new Set();
-            allRecords.forEach(r => {
-                if (r['件名'] && r['件名'].trim() !== '') modes.add(r['件名']);
-            });
-
-            modeFilter.innerHTML = '<option value="ALL">すべての件名</option>';
-            modes.forEach(mode => {
-                const opt = document.createElement('option');
-                opt.value = mode;
-                opt.textContent = mode;
-                modeFilter.appendChild(opt);
-            });
-
-            if (modes.has(currentSelected)) {
-                modeFilter.value = currentSelected;
-            } else {
-                modeFilter.value = 'ALL';
-            }
-        }
-
         function updatePreviewTable() {
-            previewTableHead.innerHTML = '';
-            previewTableBody.innerHTML = '';
-            tableRowCount.textContent = allRecords.length;
+            const head = document.getElementById('previewTableHead');
+            const body = document.getElementById('previewTableBody');
+            head.innerHTML = '';
+            body.innerHTML = '';
+            document.getElementById('tableRowCount').textContent = allRecords.length;
+            document.getElementById('statTotal').textContent = allRecords.length;
 
             if (allRecords.length === 0) return;
 
             const trHead = document.createElement('tr');
-            const extraHeaders = ['表示曜日 (抽出)', '特定日 (抽出)', '表示時間 (抽出)'];
-            extraHeaders.forEach(hText => {
-                const th = document.createElement('th');
-                th.className = 'p-2 bg-indigo-950/80 text-indigo-200 border-r border-slate-700';
-                th.textContent = hText;
-                trHead.appendChild(th);
-            });
-
             rawCSVHeaders.forEach(h => {
                 const th = document.createElement('th');
                 th.className = 'p-2 border-r border-slate-700/50';
                 th.textContent = h;
                 trHead.appendChild(th);
             });
-            previewTableHead.appendChild(trHead);
+            head.appendChild(trHead);
 
             allRecords.forEach((record, index) => {
                 const tr = document.createElement('tr');
-                tr.className = index % 2 === 0 ? 'bg-slate-800/40 hover:bg-slate-700/50' : 'bg-slate-900/40 hover:bg-slate-700/50';
-
-                const rawDaysStr = ((record['配信曜日_AppSheet'] || '') + ' ' + (record['配信曜日'] || '')).trim();
-                let daysText = '-';
-                if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') {
-                    daysText = '月, 火, 水, 木, 金, 土, 日';
-                } else {
-                    const cleanedStr = rawDaysStr
-                        .replace(/\b\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/g, '')
-                        .replace(/\b\d{1,2}[\/\-]\d{1,2}\b/g, '')
-                        .replace(/\b\d{1,2}月\d{1,2}日\b/g, '');
-
-                    const daysMatch = cleanedStr.match(/[月火水木金土日]/g);
-                    if (daysMatch) {
-                        const uniqueDays = Array.from(new Set(daysMatch));
-                        const order = ['月', '火', '水', '木', '金', '土', '日'];
-                        uniqueDays.sort((a, b) => order.indexOf(a) - order.indexOf(b));
-                        daysText = uniqueDays.join(', ');
-                    }
-                }
-
-                let dateText = '-';
-                if (rawDaysStr.indexOf('不定期') === -1) {
-                    const dateMatch = rawDaysStr.match(/\b(?:\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}|\d{1,2}[\/\-]\d{1,2}|\d{1,2}月\d{1,2}日)\b/);
-                    if (dateMatch) dateText = dateMatch[0];
-                }
-
-                const timeText = record['表示時間'] ? `${record['表示時間']}秒` : `${displayDuration.value}秒 (デフォルト)`;
-
-                [daysText, dateText, timeText].forEach(text => {
-                    const td = document.createElement('td');
-                    td.className = 'p-2 font-semibold text-amber-300 border-r border-slate-700/80 bg-indigo-950/30';
-                    td.textContent = text;
-                    tr.appendChild(td);
-                });
-
+                tr.className = index % 2 === 0 ? 'bg-slate-800/40' : 'bg-slate-900/40';
                 rawCSVHeaders.forEach(h => {
                     const td = document.createElement('td');
                     td.className = 'p-2 border-r border-slate-700/50 max-w-xs truncate';
                     td.textContent = record[h] !== undefined ? record[h] : '';
-                    td.title = record[h] !== undefined ? record[h] : '';
                     tr.appendChild(td);
                 });
-
-                previewTableBody.appendChild(tr);
+                body.appendChild(tr);
             });
-        }
-
-        function loadCSV(csvText) {
-            allRecords = parseCSV(csvText);
-            updateModeDropdown();
-            updatePreviewTable();
-            filterRecords();
         }
 
         function fetchFromGAS() {
-            tickerHeader.style.display = 'none';
-            tickerMain.textContent = 'スプレッドシートから読み込み中...';
-            
             fetch(GAS_WEB_APP_URL)
-                .then(response => response.text())
-                .then(csvText => {
-                    if (csvText && csvText.trim().length > 0) {
-                        csvTextArea.value = csvText;
-                        loadCSV(csvText);
-                    } else {
-                        tickerMain.textContent = 'データが空です';
-                    }
+                .then(res => res.text())
+                .then(csv => {
+                    document.getElementById('csvTextArea').value = csv;
+                    allRecords = parseCSV(csv);
+                    updatePreviewTable();
                 })
                 .catch(err => {
-                    console.error('GASからのデータ取得に失敗しました:', err);
-                    tickerMain.textContent = '読み込みエラー';
+                    console.error(err);
                 });
         }
 
-        function initCurrentDateLabel() {
-            const todayJa = weekDaysJa[new Date().getDay()];
-            currentWeekdayLabel.textContent = `${todayJa}曜日`;
-        }
-
         window.onload = function() {
-            initCurrentDateLabel();
             lucide.createIcons();
-            updateStyles();
-
             fetchFromGAS();
-
-            reloadGasBtn.addEventListener('click', fetchFromGAS);
-
-            applyCsvTextBtn.addEventListener('click', () => {
-                loadCSV(csvTextArea.value);
-            });
-
-            modeFilter.addEventListener('change', filterRecords);
-            weekdayFilterCheck.addEventListener('change', filterRecords);
-
-            const styleInputs = [
-                tickerWidthInput, tickerHeightInput, displayDuration, fontFamilySelect,
-                cfg_transition, cfg_headerFontSize, cfg_mainFontSize, cfg_mainFontWeight, cfg_iconInput,
-                cfg_iconWidth, cfg_iconBgColor, cfg_headerTextColor, cfg_mainTextColor,
-                cfg_bgColor, cfg_bgOpacity
-            ];
-
-            styleInputs.forEach(input => {
-                if (input) {
-                    input.addEventListener('input', () => {
-                        updateStyles();
-                        updatePreviewTable();
-                    });
-                }
-            });
+            document.getElementById('reloadGasBtn').addEventListener('click', fetchFromGAS);
         };
     </script>
 </body>
