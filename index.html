@@ -1,48 +1,3 @@
-// ==========================================
-// ⚙️ デフォルト設定値（obs.html と共通）
-// ==========================================
-const DEFAULT_CONFIG = {
-    width: 800,
-    height: 60,
-    duration: 10,
-    fontFamily: "'Noto Sans JP', sans-serif",
-    transition: 'csv',
-    headerFontSize: 12,
-    mainFontSize: 28,
-    mainFontWeight: '500',
-    iconInput: '📢',
-    iconWidth: 70,
-    iconBgColor: '#3b82f6',
-    headerTextColor: '#93c5fd',
-    mainTextColor: '#ffffff',
-    bgColor: '#1e293b',
-    bgOpacity: 90,
-    autoEmoji: true
-};
-
-// ページ読み込み時に、保存された設定またはデフォルト値をフォームに反映
-function initFormValues() {
-    const saved = localStorage.getItem('obs_ticker_config');
-    const config = saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
-
-    document.getElementById('tickerWidthInput').value = config.width;
-    document.getElementById('tickerHeightInput').value = config.height;
-    document.getElementById('displayDuration').value = config.duration;
-    document.getElementById('fontFamilySelect').value = config.fontFamily;
-    document.getElementById('cfg_transition').value = config.transition;
-    document.getElementById('cfg_headerFontSize').value = config.headerFontSize;
-    document.getElementById('cfg_mainFontSize').value = config.mainFontSize;
-    document.getElementById('cfg_mainFontWeight').value = config.mainFontWeight;
-    document.getElementById('cfg_iconInput').value = config.iconInput;
-    document.getElementById('cfg_iconWidth').value = config.iconWidth;
-    document.getElementById('cfg_iconBgColor').value = config.iconBgColor;
-    document.getElementById('cfg_headerTextColor').value = config.headerTextColor;
-    document.getElementById('cfg_mainTextColor').value = config.mainTextColor;
-    document.getElementById('cfg_bgColor').value = config.bgColor;
-    document.getElementById('cfg_bgOpacity').value = config.bgOpacity;
-    document.getElementById('cfg_bgOpacityVal').textContent = `${config.bgOpacity}%`;
-    document.getElementById('cfg_autoEmoji').checked = config.autoEmoji;
-}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -280,6 +235,52 @@ function initFormValues() {
     </div>
 
     <script>
+        // ==========================================
+        // ⚙️ デフォルト設定値（obs.html と共通）
+        // ==========================================
+        const DEFAULT_CONFIG = {
+            width: 800,
+            height: 60,
+            duration: 10,
+            fontFamily: "'Noto Sans JP', sans-serif",
+            transition: 'csv',
+            headerFontSize: 12,
+            mainFontSize: 28,
+            mainFontWeight: '500',
+            iconInput: '📢',
+            iconWidth: 70,
+            iconBgColor: '#3b82f6',
+            headerTextColor: '#93c5fd',
+            mainTextColor: '#ffffff',
+            bgColor: '#1e293b',
+            bgOpacity: 90,
+            autoEmoji: true
+        };
+
+        // ページ読み込み時に、保存された設定またはデフォルト値をフォームに反映
+        function initFormValues() {
+            const saved = localStorage.getItem('obs_ticker_config');
+            const config = saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
+
+            document.getElementById('tickerWidthInput').value = config.width;
+            document.getElementById('tickerHeightInput').value = config.height;
+            document.getElementById('displayDuration').value = config.duration;
+            document.getElementById('fontFamilySelect').value = config.fontFamily;
+            document.getElementById('cfg_transition').value = config.transition;
+            document.getElementById('cfg_headerFontSize').value = config.headerFontSize;
+            document.getElementById('cfg_mainFontSize').value = config.mainFontSize;
+            document.getElementById('cfg_mainFontWeight').value = config.mainFontWeight;
+            document.getElementById('cfg_iconInput').value = config.iconInput;
+            document.getElementById('cfg_iconWidth').value = config.iconWidth;
+            document.getElementById('cfg_iconBgColor').value = config.iconBgColor;
+            document.getElementById('cfg_headerTextColor').value = config.headerTextColor;
+            document.getElementById('cfg_mainTextColor').value = config.mainTextColor;
+            document.getElementById('cfg_bgColor').value = config.bgColor;
+            document.getElementById('cfg_bgOpacity').value = config.bgOpacity;
+            document.getElementById('cfg_bgOpacityVal').textContent = `${config.bgOpacity}%`;
+            document.getElementById('cfg_autoEmoji').checked = config.autoEmoji;
+        }
+
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
         
         // GitHub Pages上の obs.html をOBSブラウザソース用URLとして指定
@@ -546,6 +547,10 @@ function initFormValues() {
         window.onload = function() {
             initCurrentDateLabel();
             lucide.createIcons();
+            
+            // ⚙️ デフォルト設定値または保存された設定をフォームに反映
+            initFormValues();
+
             fetchFromGAS();
 
             reloadGasBtn.addEventListener('click', fetchFromGAS);
