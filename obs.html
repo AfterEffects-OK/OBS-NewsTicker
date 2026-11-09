@@ -160,7 +160,7 @@
 
     <script>
         // ==========================================
-        // ⚙️ デフォルト設定値（ここを書き換えるだけで初期値やデフォルトを変更できます）
+        // ⚙️ デフォルト設定値（設定パネルと共通のiconInputなどを定義）
         // ==========================================
         const DEFAULT_CONFIG = {
             width: 1300,
@@ -171,7 +171,7 @@
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
-            iconInput: 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png',
+            iconInput: 'https://raw.githubusercontent.com/AfterEffects-OK/Portalsite/refs/heads/main/KagisenKun-icon.png',
             iconWidth: 70,
             iconBgColor: '#3b82f6',
             headerTextColor: '#93c5fd',
@@ -284,7 +284,7 @@
             }
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (lines.length > 0) lines.push(currentRow); // fixing loop check fallback
+                if (lines.length > 0) lines.push(currentRow);
             }
             
             if (lines.length < 2) return [];
@@ -435,7 +435,6 @@
         }
 
         function fetchData() {
-            // キャッシュ対策としてタイムスタンプを付与
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
                 .then(res => res.text())
@@ -454,22 +453,19 @@
                         activeRecords = allRecords.filter(r => !r.isStopped);
                     }
 
-                    // 初回ロード時やループ途中でデータが再取得された場合の備え
                     if (currentIndex >= activeRecords.length) {
                         currentIndex = 0;
                     }
                 })
-                .catch(() => {
-                    // エラー時は次回更新を待つ
-                });
+                .catch(() => {});
         }
 
         window.onload = function() {
             loadConfig();
-            fetchData(); // 初回データ取得
-            playNextTicker(); // ループ再生開始
+            fetchData();
+            playNextTicker();
 
-            // ⏱️【定期自動フェッチの設定】3分 (180,000ミリ秒) ごとにOBS側でもバックグラウンドで最新データを同期
+            // 定期自動フェッチ（3分ごと）
             setInterval(fetchData, 3 * 60 * 1000);
         };
     </script>
