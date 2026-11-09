@@ -159,9 +159,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // ⚙️ デフォルト設定値（設定パネルと共通のiconInputなどを定義）
-        // ==========================================
         const DEFAULT_CONFIG = {
             width: 1300,
             height: 80,
@@ -171,7 +168,7 @@
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
-            iconInput: 'https://raw.githubusercontent.com/AfterEffects-OK/Portalsite/refs/heads/main/KagisenKun-icon.png',
+            iconInput: '📢',
             iconWidth: 70,
             iconBgColor: '#3b82f6',
             headerTextColor: '#93c5fd',
@@ -202,6 +199,7 @@
         let currentIndex = 0;
         let animationTimer = null;
         let scrollTimer = null;
+        let isPlaying = false;
         const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
 
         function hexToRgba(hex, opacityPercent) {
@@ -235,7 +233,7 @@
             container.style.height = `${currentConfig.height}px`;
         }
 
-        // 設定の変更を定期的にチェックしてリアルタイム同期する（OBS対策）
+        // 設定の変更を定期的にチェックしてリアルタイム同期する
         let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
         setInterval(() => {
             const currentStr = localStorage.getItem('obs_ticker_config') || '';
@@ -284,9 +282,9 @@
             }
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (lines.length > 0) lines.push(currentRow);
+                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
             }
-            
+
             if (lines.length < 2) return [];
             const headers = lines[0];
             const records = [];
@@ -300,8 +298,6 @@
                 let headerVal = '';
                 if (record['件名'] !== undefined && record['件名'].trim() !== '') {
                     headerVal = record['件名'].trim();
-                } else if (headers[10] && record[headers[10]] !== undefined && record[headers[10]].trim() !== '') {
-                    headerVal = record[headers[10]].trim();
                 }
                 record['件名'] = headerVal;
 
@@ -421,7 +417,7 @@
 
         function playNextTicker() {
             if (activeRecords.length === 0) {
-                setTimeout(fetchData, 10000);
+                setTimeout(fetchDataAndPlay, 5000);
                 return;
             }
             if (currentIndex >= activeRecords.length) {
@@ -434,39 +430,53 @@
             });
         }
 
-        function fetchData() {
+        function processRecords(csvText) {
+            allRecords = parseCSV(csvText);
+            const todayJa = weekDaysJa[new Date().getDay()];
+            
+            // 曜日フィルタ（曜日指定がなければ全て表示、停止フラグが立っているものは除外）
+            activeRecords = allRecords.filter(r => {
+                if (r.isStopped) return false;
+                const days = r['配信曜日_AppSheet'] || '';
+                if (days.indexOf('不定期') !== -1 || days === '') return true;
+                return days.includes(todayJa);
+            });
+
+            // もし今日の曜日に一致するものが0件なら、停止していない全件をフォールバックとして表示
+            if (activeRecords.length === 0) {
+                activeRecords = allRecords.filter(r => !r.isStopped);
+            }
+
+            if (currentIndex >= activeRecords.length) {
+                currentIndex = 0;
+            }
+
+            // 初回データ取得成功時にまだループが始まっていなければ再生開始
+            if (!isPlaying && activeRecords.length > 0) {
+                isPlaying = true;
+                playNextTicker();
+            }
+        }
+
+        function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
                 .then(res => res.text())
                 .then(csv => {
-                    allRecords = parseCSV(csv);
-                    const todayJa = weekDaysJa[new Date().getDay()];
-                    
-                    activeRecords = allRecords.filter(r => {
-                        if (r.isStopped) return false;
-                        const days = r['配信曜日_AppSheet'] || '';
-                        if (days.indexOf('不定期') !== -1 || days === '') return true;
-                        return days.includes(todayJa);
-                    });
-
-                    if (activeRecords.length === 0) {
-                        activeRecords = allRecords.filter(r => !r.isStopped);
-                    }
-
-                    if (currentIndex >= activeRecords.length) {
-                        currentIndex = 0;
-                    }
+                    processRecords(csv);
                 })
-                .catch(() => {});
+                .catch(err => {
+                    console.error('データ取得エラー:', err);
+                    setTimeout(fetchDataAndPlay, 5000);
+                });
         }
 
         window.onload = function() {
             loadConfig();
-            fetchData();
-            playNextTicker();
+            fetchDataAndPlay();
 
-            // 定期自動フェッチ（3分ごと）
-            setInterval(fetchData, 3 * 60 * 1000);
+            // 3分ごとにバックグラウンドで最新データを更新
+            setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
     </script>
 </body>
