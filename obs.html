@@ -249,7 +249,7 @@
                 const img = document.createElement('img');
                 img.src = iconValue;
                 img.alt = 'Icon';
-                img.onerror = () => { targetEl.textContent = '📢'; };
+                img.onerror = () => { targetEl.textContent = 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png'; };
                 targetEl.appendChild(img);
             } else {
                 targetEl.textContent = iconValue;
@@ -335,7 +335,7 @@
                 trans = (record['トランジション'] || 'swipe-up').toLowerCase();
             }
 
-            let displayIcon = currentConfig.iconInput || '📢';
+            let displayIcon = currentConfig.iconInput || 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png';
             let displayText = record['配信内容'] || '';
             let headerText = record['件名'] || ''; 
 
