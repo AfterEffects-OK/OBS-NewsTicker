@@ -71,21 +71,21 @@
             flex-shrink: 0;
             height: 100%;
             width: 70px;
-            padding: 0 0.4rem;
-            font-size: 1.1em;
-            line-height: 1;
-            background-color: #3b82f6;
+            padding: 4px;
+            box-sizing: border-box;
             z-index: 10;
+            overflow: hidden;
         }
 
         .ticker-badge img {
-            max-height: 80%;
-            max-width: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            display: block;
         }
 
         .ticker-body-container {
-            padding: 0 0.5rem;
+            padding: 0 0.8rem;
             flex-grow: 1;
             overflow: hidden;
             display: flex;
@@ -148,7 +148,7 @@
 
     <div class="ticker-wrapper">
         <div id="tickerContainer" class="ticker-box rounded-xl">
-            <span id="tickerIcon" class="ticker-badge">📢</span>
+            <span id="tickerIcon" class="ticker-badge"></span>
             <div id="tickerContent" class="ticker-content font-bold text-white">
                 <div id="tickerBodyContainer" class="ticker-body-container slide-up-in">
                     <div id="tickerHeader" class="ticker-header-text"></div>
@@ -168,7 +168,7 @@
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
-            iconInput: '📢',
+            iconInput: 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png',
             iconWidth: 70,
             iconBgColor: '#3b82f6',
             headerTextColor: '#93c5fd',
@@ -233,7 +233,6 @@
             container.style.height = `${currentConfig.height}px`;
         }
 
-        // 設定の変更を定期的にチェックしてリアルタイム同期する
         let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
         setInterval(() => {
             const currentStr = localStorage.getItem('obs_ticker_config') || '';
@@ -434,7 +433,6 @@
             allRecords = parseCSV(csvText);
             const todayJa = weekDaysJa[new Date().getDay()];
             
-            // 曜日フィルタ（曜日指定がなければ全て表示、停止フラグが立っているものは除外）
             activeRecords = allRecords.filter(r => {
                 if (r.isStopped) return false;
                 const days = r['配信曜日_AppSheet'] || '';
@@ -442,7 +440,6 @@
                 return days.includes(todayJa);
             });
 
-            // もし今日の曜日に一致するものが0件なら、停止していない全件をフォールバックとして表示
             if (activeRecords.length === 0) {
                 activeRecords = allRecords.filter(r => !r.isStopped);
             }
@@ -451,7 +448,6 @@
                 currentIndex = 0;
             }
 
-            // 初回データ取得成功時にまだループが始まっていなければ再生開始
             if (!isPlaying && activeRecords.length > 0) {
                 isPlaying = true;
                 playNextTicker();
@@ -475,7 +471,6 @@
             loadConfig();
             fetchDataAndPlay();
 
-            // 3分ごとにバックグラウンドで最新データを更新
             setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
     </script>
