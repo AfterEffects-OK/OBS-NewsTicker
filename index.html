@@ -120,11 +120,11 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">枠の横幅 (px)</label>
-                            <input type="number" id="tickerWidthInput" value="800" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
+                            <input type="number" id="tickerWidthInput" value="1300" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
                         </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">枠の高さ (px)</label>
-                            <input type="number" id="tickerHeightInput" value="60" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
+                            <input type="number" id="tickerHeightInput" value="80" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
                         </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">表示時間（秒/件）</label>
@@ -135,7 +135,7 @@
                         <!-- フォントファミリー (ボタン選択式) -->
                         <div class="sm:col-span-2 lg:col-span-3">
                             <label class="block text-xs text-slate-400 mb-1.5">フォントファミリー</label>
-                            <input type="hidden" id="fontFamilySelect" value="'Noto Sans JP', sans-serif">
+                            <input type="hidden" id="fontFamilySelect" value="'M PLUS Rounded 1c', sans-serif">
                             <div id="fontFamilyGroup" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                 <button type="button" data-value="'Noto Sans JP', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">Noto Sans JP</button>
                                 <button type="button" data-value="'M PLUS Rounded 1c', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">M PLUS Rounded</button>
@@ -168,11 +168,11 @@
 
                         <div>
                             <label class="block text-slate-400 mb-1">件名 (上部) 文字サイズ</label>
-                            <input type="number" id="cfg_headerFontSize" value="12" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
+                            <input type="number" id="cfg_headerFontSize" value="24" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
                         </div>
                         <div>
                             <label class="block text-slate-400 mb-1">本文 (下部) 文字サイズ</label>
-                            <input type="number" id="cfg_mainFontSize" value="28" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
+                            <input type="number" id="cfg_mainFontSize" value="45" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
                         </div>
                         
                         <!-- 本文フォント太さ選択 (ボタン式) -->
@@ -200,14 +200,14 @@
                         <!-- カラーパレット（確実なインライン背景色つきボタン選択式） -->
                         <div>
                             <label class="block text-slate-400 mb-1">アイコン背景色</label>
-                            <input type="hidden" id="cfg_iconBgColor" value="#3b82f6">
+                            <input type="hidden" id="cfg_iconBgColor" value="#0f172a">
                             <div id="iconBgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダーク"></button>
                                 <button type="button" data-color="#3b82f6" style="background-color: #3b82f6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ブルー"></button>
                                 <button type="button" data-color="#ef4444" style="background-color: #ef4444;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="レッド"></button>
                                 <button type="button" data-color="#10b981" style="background-color: #10b981;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グリーン"></button>
                                 <button type="button" data-color="#f59e0b" style="background-color: #f59e0b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="オレンジ"></button>
                                 <button type="button" data-color="#8b5cf6" style="background-color: #8b5cf6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="パープル"></button>
-                                <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダーク"></button>
                             </div>
                         </div>
 
@@ -215,10 +215,10 @@
                             <label class="block text-slate-400 mb-1">件名 (上部) 文字色</label>
                             <input type="hidden" id="cfg_headerTextColor" value="#fde047">
                             <div id="headerTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
                                 <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
                                 <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
                                 <button type="button" data-color="#6ee7b7" style="background-color: #6ee7b7;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトグリーン"></button>
-                                <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
                                 <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
                             </div>
                         </div>
@@ -237,10 +237,10 @@
 
                         <div>
                             <label class="block text-slate-400 mb-1">枠の背景色</label>
-                            <input type="hidden" id="cfg_bgColor" value="#1e293b">
+                            <input type="hidden" id="cfg_bgColor" value="#0f172a">
                             <div id="bgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#1e293b" style="background-color: #1e293b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="スレート"></button>
                                 <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="黒に近いダーク"></button>
+                                <button type="button" data-color="#1e293b" style="background-color: #1e293b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="スレート"></button>
                                 <button type="button" data-color="#1e3a8a" style="background-color: #1e3a8a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ネイビー"></button>
                                 <button type="button" data-color="#701a75" style="background-color: #701a75;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ディープパープル"></button>
                                 <button type="button" data-color="#065f46" style="background-color: #065f46;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダークグリーン"></button>
@@ -282,9 +282,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // ⚙️ デフォルト設定値（obs.html と共通）
-        // ==========================================
         const DEFAULT_CONFIG = {
             width: 1300,
             height: 80,
@@ -304,7 +301,6 @@
             autoEmoji: true
         };
 
-        // ボタン選択式のUI制御ヘルパー
         function setupButtonSelector(groupId, inputId, isColorGroup = false) {
             const container = document.getElementById(groupId);
             const input = document.getElementById(inputId);
@@ -336,7 +332,6 @@
             });
         }
 
-        // ページ読み込み時に保存された設定またはデフォルト値をフォームに反映
         function initFormValues() {
             const saved = localStorage.getItem('obs_ticker_config');
             const config = saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
@@ -363,7 +358,6 @@
             document.getElementById('cfg_bgOpacityVal').textContent = `${config.bgOpacity}%`;
             document.getElementById('cfg_autoEmoji').checked = config.autoEmoji;
 
-            // ボタンの状態をアクティブに同期
             syncButtonActiveState('fontFamilyGroup', config.fontFamily, false);
             syncButtonActiveState('transitionGroup', config.transition, false);
             syncButtonActiveState('fontWeightGroup', config.mainFontWeight, false);
@@ -457,7 +451,7 @@
             }
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                if (lines.length > 0) lines.push(currentRow);
             }
 
             if (lines.length < 2) return [];
@@ -515,7 +509,20 @@
             const selectedMode = modeFilter.value;
             activeRecords = allRecords.filter(record => {
                 if (record.isStopped) return false;
-                const modeVal = record['配信モード'] || record['ID配信モード'] || '';
+                
+                let modeVal = (record['配信モード'] || '').trim();
+                if (!modeVal) {
+                    for (let key in record) {
+                        if (key.includes('配信モード')) {
+                            const val = (record[key] || '').trim();
+                            if (val !== '') {
+                                modeVal = val;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 if (selectedMode !== 'ALL' && modeVal !== selectedMode) return false;
                 return isScheduleMatched(record);
             });
@@ -528,8 +535,17 @@
             const currentSelected = modeFilter.value;
             const modes = new Set();
             allRecords.forEach(r => {
-                const m = r['配信モード'] || r['ID配信モード'];
-                if (m && m.trim() !== '') modes.add(m.trim());
+                let modeVal = (r['配信モード'] || '').trim();
+                if (!modeVal) {
+                    for (let key in r) {
+                        if (key.includes('配信モード')) {
+                            const m = (r[key] || '').trim();
+                            if (m !== '') modes.add(m);
+                        }
+                    }
+                } else {
+                    modes.add(modeVal);
+                }
             });
 
             modeFilter.innerHTML = '<option value="ALL">すべての配信モード</option>';
@@ -643,24 +659,19 @@
             initCurrentDateLabel();
             lucide.createIcons();
             
-            // 初期設定の復元
             initFormValues();
 
-            // ボタン選択式イベントのバインド
             setupButtonSelector('fontFamilyGroup', 'fontFamilySelect', false);
             setupButtonSelector('transitionGroup', 'cfg_transition', false);
             setupButtonSelector('fontWeightGroup', 'cfg_mainFontWeight', false);
 
-            // カラーボタン選択式イベントのバインド
             setupButtonSelector('iconBgColorGroup', 'cfg_iconBgColor', true);
             setupButtonSelector('headerTextColorGroup', 'cfg_headerTextColor', true);
             setupButtonSelector('mainTextColorGroup', 'cfg_mainTextColor', true);
             setupButtonSelector('bgColorGroup', 'cfg_bgColor', true);
 
-            // 初回データ取得
             fetchFromGAS();
 
-            // ⏱️【定期自動フェッチの設定】3分 (180,000ミリ秒) ごとに自動でGASから最新データを取得
             setInterval(fetchFromGAS, 3 * 60 * 1000);
 
             reloadGasBtn.addEventListener('click', fetchFromGAS);
@@ -696,7 +707,6 @@
             modeFilter.addEventListener('change', filterRecords);
             weekdayFilterCheck.addEventListener('change', filterRecords);
 
-            // 背景不透明度のスライダー変更時に％表示をリアルタイム更新する処理
             const bgOpacityInput = document.getElementById('cfg_bgOpacity');
             const bgOpacityVal = document.getElementById('cfg_bgOpacityVal');
             if (bgOpacityInput && bgOpacityVal) {
@@ -706,7 +716,6 @@
             }
         };
 
-        // 設定内容をローカルストレージに保存し、obs.htmlへリアルタイム通知する
         function saveConfig() {
             const config = {
                 width: document.getElementById('tickerWidthInput').value,
@@ -729,9 +738,8 @@
             localStorage.setItem('obs_ticker_config', JSON.stringify(config));
         }
 
-        // 入力変更時のイベントリスナー追加
         const allInputs = [
-            tickerWidthInput, tickerWidthInput, displayDuration,
+            tickerWidthInput, tickerHeightInput, displayDuration,
             cfg_headerFontSize, cfg_mainFontSize, cfg_iconInput,
             cfg_iconWidth, cfg_bgOpacity, cfg_autoEmoji
         ];
