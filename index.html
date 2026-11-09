@@ -26,43 +26,40 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
     </style>
 </head>
-<body class="min-h-screen p-6 md:p-10">
+<body class="min-h-screen p-4 md:p-6">
 
-    <div class="max-w-6xl mx-auto space-y-8">
+    <div class="max-w-6xl mx-auto space-y-6">
         
-        <!-- Header -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700 pb-4 gap-4">
+        <!-- Header (コンパクト化) -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700/80 pb-3 gap-3">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-300">
+                <h1 class="text-xl md:text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-300">
                     OBS ニュースティッカー 設定パネル
                 </h1>
-                <p class="text-sm text-slate-400 mt-1">
-                    OBSのブラウザソースには、下記の専用URL（背景完全透過）を設定してください。
-                </p>
             </div>
-            <div>
-                <a id="obsUrlLink" href="#" target="_blank" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 font-bold text-xs rounded-lg transition-colors shadow flex items-center gap-2 text-white">
-                    <i data-lucide="external-link" class="w-4 h-4"></i>
-                    OBS用プレビュー画面を別タブで確認
+            <div class="flex items-center gap-2">
+                <a id="obsUrlLink" href="#" target="_blank" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 font-bold text-xs rounded-lg transition-colors shadow flex items-center gap-1.5 text-white">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    プレビュー確認
                 </a>
             </div>
         </div>
 
-        <!-- OBS Source URL Info Box -->
-        <div class="bg-slate-800/90 border border-emerald-500/40 p-4 rounded-2xl shadow-xl space-y-2">
-            <div class="text-xs font-bold text-emerald-300 flex items-center gap-2">
-                <i data-lucide="link" class="w-4 h-4"></i> OBS ブラウザソース用 URL (obs.html)
+        <!-- OBS Source URL Info Box (コンパクト化) -->
+        <div class="bg-slate-800/90 border border-emerald-500/40 px-4 py-3 rounded-xl shadow-lg flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div class="text-xs font-bold text-emerald-300 flex items-center gap-1.5 shrink-0">
+                <i data-lucide="link" class="w-4 h-4"></i> OBS用URL:
             </div>
-            <div class="flex items-center gap-2">
-                <input type="text" id="obsUrlInput" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 font-mono select-all" value="読み込み中...">
-                <button id="copyUrlBtn" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-xs font-bold rounded-lg transition text-white shrink-0">
+            <div class="flex items-center gap-2 flex-grow">
+                <input type="text" id="obsUrlInput" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono select-all" value="読み込み中...">
+                <button id="copyUrlBtn" class="px-3.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-bold rounded-lg transition text-white shrink-0">
                     コピー
                 </button>
             </div>
         </div>
 
         <!-- Main Layout Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Left Column: Status & Filters -->
             <div class="space-y-6 lg:col-span-1">
@@ -197,7 +194,7 @@
                             <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
                         </div>
 
-                        <!-- カラーパレット（確実なインライン背景色つきボタン選択式） -->
+                        <!-- カラーパレット（インライン背景色つきボタン選択式） -->
                         <div>
                             <label class="block text-slate-400 mb-1">アイコン背景色</label>
                             <input type="hidden" id="cfg_iconBgColor" value="#0f172a">
@@ -529,9 +526,6 @@
         
             statTotal.textContent = allRecords.length;
             statActive.textContent = activeRecords.length;
-        
-            // ★【追加】ここで絞り込み済みのデータをobs.html受信用にlocalStorageへ保存する
-            localStorage.setItem('obs_active_records', JSON.stringify(activeRecords));
         }
 
         function updateModeDropdown() {
