@@ -226,12 +226,15 @@
             container.style.height = `${currentConfig.height}px`;
         }
 
-        // 別タブや設定画面からの変更を即座に反映
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'obs_ticker_config') {
+        // 設定の変更を定期的にチェックしてリアルタイム同期する（OBS対策）
+        let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
+        setInterval(() => {
+            const currentStr = localStorage.getItem('obs_ticker_config') || '';
+            if (currentStr !== lastConfigStr) {
+                lastConfigStr = currentStr;
                 loadConfig();
             }
-        });
+        }, 500);
 
         function renderIconElement(targetEl, iconValue) {
             targetEl.innerHTML = '';
