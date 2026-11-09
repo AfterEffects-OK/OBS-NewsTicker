@@ -70,7 +70,7 @@
             justify-content: center;
             flex-shrink: 0;
             height: 100%;
-            aspect-ratio: 1 / 1; /* ← 高さに合わせて正方形にする */
+            aspect-ratio: 1 / 1;
             padding: 4px;
             box-sizing: border-box;
             z-index: 10;
@@ -175,12 +175,17 @@
             mainTextColor: '#ffffff',
             bgColor: '#0f172a',
             bgOpacity: 90,
-            autoEmoji: true
+            autoEmoji: true,
+            selectedMode: 'ALL' // 配信モードの初期値
         };
 
         let currentConfig = { ...DEFAULT_CONFIG };
 
+        // URLパラメータから ?mode=xxx を優先取得し、なければ localStorage から取得
         function loadConfig() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramMode = urlParams.get('mode');
+
             const saved = localStorage.getItem('obs_ticker_config');
             if (saved) {
                 try { 
@@ -189,6 +194,11 @@
             } else {
                 currentConfig = { ...DEFAULT_CONFIG };
             }
+
+            if (paramMode) {
+                currentConfig.selectedMode = paramMode;
+            }
+
             applyConfigToDOM();
         }
 
@@ -231,8 +241,14 @@
 
             container.style.width = `${currentConfig.width}px`;
             container.style.height = `${currentConfig.height}px`;
+
+            // 設定変更時に即座にフィルタリングを再適用
+            if (allRecords.length > 0) {
+                processRecords(allRecords);
+            }
         }
 
+        // 設定の変更をリアルタイム検知
         let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
         setInterval(() => {
             const currentStr = localStorage.getItem('obs_ticker_config') || '';
@@ -249,7 +265,7 @@
                 const img = document.createElement('img');
                 img.src = iconValue;
                 img.alt = 'Icon';
-                img.onerror = () => { targetEl.textContent = 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png'; };
+                img.onerror = () => { targetEl.textContent = '📢'; };
                 targetEl.appendChild(img);
             } else {
                 targetEl.textContent = iconValue;
@@ -281,7 +297,7 @@
             }
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                if (lines.length > 0) lines.push(currentRow);
             }
 
             if (lines.length < 2) return [];
@@ -429,20 +445,48 @@
             });
         }
 
-        function processRecords(csvText) {
-            allRecords = parseCSV(csvText);
+        // 配信モードおよび曜日による正確なフィルタリング処理
+        function processRecords(rawRecordsInput) {
             const todayJa = weekDaysJa[new Date().getDay()];
-            
-            activeRecords = allRecords.filter(r => {
-                if (r.isStopped) return false;
-                const days = r['配信曜日_AppSheet'] || '';
-                if (days.indexOf('不定期') !== -1 || days === '') return true;
-                return days.includes(todayJa);
-            });
+            const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
 
-            if (activeRecords.length === 0) {
-                activeRecords = allRecords.filter(r => !r.isStopped);
-            }
+            activeRecords = rawRecordsInput.filter(record => {
+                if (record.isStopped) return false;
+
+                // 配信モードの正確なカラム名（または部分一致）を探索して判定
+                let modeVal = (record['配信モード'] || '').trim();
+                if (!modeVal) {
+                    for (let key in record) {
+                        if (key.includes('配信モード')) {
+                            const val = (record[key] || '').trim();
+                            if (val !== '') {
+                                modeVal = val;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // 選択された配信モードと一致するかチェック（ALL以外の場合）
+                if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
+                    return false;
+                }
+
+                // 曜日フィルタの判定
+                const rawDaysStr = ((record['配信曜日_AppSheet'] || '') + ' ' + (record['配信曜日'] || '')).trim();
+                if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') return true;
+
+                const cleanedStr = rawDaysStr
+                    .replace(/\b\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/g, '')
+                    .replace(/\b\d{1,2}[\/\-]\d{1,2}\b/g, '')
+                    .replace(/\b\d{1,2}月\d{1,2}日\b/g, '');
+
+                const extractedDays = cleanedStr.match(/[月火水木金土日]/g);
+                if (extractedDays && extractedDays.length > 0) {
+                    return Array.from(new Set(extractedDays)).includes(todayJa);
+                }
+                return true;
+            });
 
             if (currentIndex >= activeRecords.length) {
                 currentIndex = 0;
@@ -459,7 +503,8 @@
             fetch(cacheBustedUrl)
                 .then(res => res.text())
                 .then(csv => {
-                    processRecords(csv);
+                    allRecords = parseCSV(csv);
+                    processRecords(allRecords);
                 })
                 .catch(err => {
                     console.error('データ取得エラー:', err);
@@ -471,6 +516,7 @@
             loadConfig();
             fetchDataAndPlay();
 
+            // 3分ごとに定期同期
             setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
     </script>
