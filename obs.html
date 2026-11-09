@@ -1,3 +1,39 @@
+// ==========================================
+// ⚙️ デフォルト設定値（ここを書き換えるだけで初期値やデフォルトを変更できます）
+// ==========================================
+const DEFAULT_CONFIG = {
+    width: 800,
+    height: 60,
+    duration: 10,
+    fontFamily: "'Noto Sans JP', sans-serif",
+    transition: 'csv',
+    headerFontSize: 12,
+    mainFontSize: 28,
+    mainFontWeight: '500',
+    iconInput: '📢',
+    iconWidth: 70,
+    iconBgColor: '#3b82f6',
+    headerTextColor: '#93c5fd',
+    mainTextColor: '#ffffff',
+    bgColor: '#1e293b',
+    bgOpacity: 90,
+    autoEmoji: true
+};
+
+let currentConfig = { ...DEFAULT_CONFIG };
+
+function loadConfig() {
+    const saved = localStorage.getItem('obs_ticker_config');
+    if (saved) {
+        try { 
+            // 保存されている設定に欠損項目があればデフォルト値で補完する
+            currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(saved) }; 
+        } catch(e) {}
+    } else {
+        currentConfig = { ...DEFAULT_CONFIG };
+    }
+    applyConfigToDOM();
+}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
