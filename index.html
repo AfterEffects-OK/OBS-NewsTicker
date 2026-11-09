@@ -522,13 +522,16 @@
                         }
                     }
                 }
-
+        
                 if (selectedMode !== 'ALL' && modeVal !== selectedMode) return false;
                 return isScheduleMatched(record);
             });
-
+        
             statTotal.textContent = allRecords.length;
             statActive.textContent = activeRecords.length;
+        
+            // ★【追加】ここで絞り込み済みのデータをobs.html受信用にlocalStorageへ保存する
+            localStorage.setItem('obs_active_records', JSON.stringify(activeRecords));
         }
 
         function updateModeDropdown() {
