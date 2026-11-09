@@ -189,7 +189,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-slate-400 mb-1">デフォルト アイコン (絵文字等)</label>
+                            <label class="block text-slate-400 mb-1">デフォルト アイコン (画像URL or 絵文字)</label>
                             <input type="text" id="cfg_iconInput" value="https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
                         </div>
                         <div>
@@ -294,7 +294,7 @@
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
-            iconInput: '📢',
+            iconInput: 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png',
             iconWidth: 70,
             iconBgColor: '#3b82f6',
             headerTextColor: '#93c5fd',
@@ -731,7 +731,7 @@
 
         // 入力変更時のイベントリスナー追加
         const allInputs = [
-            tickerWidthInput, tickerHeightInput, displayDuration,
+            tickerWidthInput, tickerWidthInput, displayDuration,
             cfg_headerFontSize, cfg_mainFontSize, cfg_iconInput,
             cfg_iconWidth, cfg_bgOpacity, cfg_autoEmoji
         ];
