@@ -17,6 +17,7 @@
             margin: 0;
             padding: 0;
         }
+
         .ticker-wrapper {
             position: absolute;
             top: 0;
@@ -27,22 +28,28 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            background: transparent !important;
+            pointer-events: none;
             padding-bottom: 2rem;
+            background: transparent !important;
         }
+
         .ticker-box {
             overflow: hidden;
             position: relative;
             box-shadow: none;
             border: 1px solid rgba(255, 255, 255, 0.18);
-            background-color: rgba(30, 41, 59, 0.9);
+            transition: all 0.3s ease;
             box-sizing: border-box;
+            flex-shrink: 0;
+            padding: 0;
             display: flex;
             align-items: center;
+            background-color: rgba(30, 41, 59, 0.9);
             width: 800px;
             height: 60px;
             border-radius: 0.75rem;
         }
+
         .ticker-content {
             white-space: nowrap;
             width: 100%;
@@ -52,9 +59,11 @@
             justify-content: flex-start;
             padding: 0;
             box-sizing: border-box;
+            gap: 0;
             position: relative;
             overflow: hidden;
         }
+
         .ticker-badge {
             display: inline-flex;
             align-items: center;
@@ -64,9 +73,17 @@
             width: 70px;
             padding: 0 0.4rem;
             font-size: 1.1em;
+            line-height: 1;
             background-color: #3b82f6;
             z-index: 10;
         }
+
+        .ticker-badge img {
+            max-height: 80%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
         .ticker-body-container {
             padding: 0 0.5rem;
             flex-grow: 1;
@@ -76,36 +93,66 @@
             justify-content: center;
             height: 100%;
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity;
         }
+
         .ticker-header-text {
             font-size: 12px;
             opacity: 0.85;
             color: #93c5fd;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             font-weight: 700;
-            display: none;
         }
+
         .ticker-main-text {
             font-size: 28px;
             font-weight: 500;
             color: #ffffff;
+            line-height: 1.2;
             white-space: nowrap;
             display: inline-block;
             transition: transform 0.1s linear;
+            will-change: transform;
+            overflow: visible;
+            text-overflow: clip;
             width: max-content;
         }
+
+        .ticker-main-text.is-scrolling {
+            overflow: visible !important;
+            text-overflow: clip !important;
+            white-space: nowrap !important;
+        }
+
+        /* Transition Classes */
         .slide-up-in { transform: translate3d(0, 0, 0); opacity: 1; }
         .slide-up-out-before { transform: translate3d(0, 100%, 0); opacity: 0; }
         .slide-up-out-after { transform: translate3d(0, -100%, 0); opacity: 0; }
+        .slide-down-in { transform: translate3d(0, 0, 0); opacity: 1; }
+        .slide-down-out-before { transform: translate3d(0, -100%, 0); opacity: 0; }
+        .slide-down-out-after { transform: translate3d(0, 100%, 0); opacity: 0; }
+        .slide-left-in { transform: translate3d(0, 0, 0); opacity: 1; }
+        .slide-left-out-before { transform: translate3d(100%, 0, 0); opacity: 0; }
+        .slide-left-out-after { transform: translate3d(-100%, 0, 0); opacity: 0; }
+        .slide-right-in { transform: translate3d(0, 0, 0); opacity: 1; }
+        .slide-right-out-before { transform: translate3d(-100%, 0, 0); opacity: 0; }
+        .slide-right-out-after { transform: translate3d(100%, 0, 0); opacity: 0; }
+        .fade-in { transform: translate3d(0, 0, 0); opacity: 1; }
+        .fade-out { transform: translate3d(0, 0, 0); opacity: 0; }
     </style>
 </head>
 <body class="h-screen w-screen relative bg-transparent">
+
     <div class="ticker-wrapper">
-        <div id="tickerContainer" class="ticker-box">
+        <div id="tickerContainer" class="ticker-box rounded-xl">
             <span id="tickerIcon" class="ticker-badge">📢</span>
             <div class="ticker-content font-bold text-white">
                 <div id="tickerBodyContainer" class="ticker-body-container slide-up-in">
                     <div id="tickerHeader" class="ticker-header-text"></div>
-                    <div id="tickerMain" class="ticker-main-text">読み込み中...</div>
+                    <div id="tickerMain" class="ticker-main-text">データを読み込み中...</div>
                 </div>
             </div>
         </div>
@@ -113,9 +160,27 @@
 
     <script>
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
+
         let allRecords = [];
         let activeRecords = [];
         let currentIndex = 0;
+        let animationTimer = null;
+        let scrollTimer = null;
+        const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
+
+        function renderIconElement(targetEl, iconValue) {
+            targetEl.innerHTML = '';
+            if (!iconValue) return;
+            if (iconValue.startsWith('http://') || iconValue.startsWith('https://')) {
+                const img = document.createElement('img');
+                img.src = iconValue;
+                img.alt = 'Icon';
+                img.onerror = () => { targetEl.textContent = '📢'; };
+                targetEl.appendChild(img);
+            } else {
+                targetEl.textContent = iconValue;
+            }
+        }
 
         function parseCSV(text) {
             if (!text || !text.trim()) return [];
@@ -123,9 +188,11 @@
             let currentRow = [];
             let currentField = '';
             let insideQuote = false;
+
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
                 const nextChar = text[i + 1];
+
                 if (char === '"') {
                     if (insideQuote && nextChar === '"') { currentField += '"'; i++; }
                     else { insideQuote = !insideQuote; }
@@ -142,18 +209,23 @@
                 currentRow.push(currentField.trim());
                 if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
             }
+
             if (lines.length < 2) return [];
             const headers = lines[0];
             const records = [];
+
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
                 if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
                 const record = {};
                 headers.forEach((h, idx) => { record[h] = row[idx] !== undefined ? row[idx] : ''; });
-                
+
                 let headerVal = '';
-                if (record['件名'] !== undefined && record['件名'].trim() !== '') headerVal = record['件名'].trim();
-                else if (headers[10] && record[headers[10]] !== undefined && record[headers[10]].trim() !== '') headerVal = record[headers[10]].trim();
+                if (record['件名'] !== undefined && record['件名'].trim() !== '') {
+                    headerVal = record['件名'].trim();
+                } else if (headers[10] && record[headers[10]] !== undefined && record[headers[10]].trim() !== '') {
+                    headerVal = record[headers[10]].trim();
+                }
                 record['件名'] = headerVal;
 
                 let dayVal = (record['配信曜日_AppSheet'] || record['配信曜日'] || '').trim();
@@ -161,65 +233,112 @@
 
                 const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
                 record.isStopped = stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes';
+
                 records.push(record);
             }
             return records;
         }
 
         function animateTicker(record, onComplete) {
+            const tickerHeader = document.getElementById('tickerHeader');
+            const tickerMain = document.getElementById('tickerMain');
+            const tickerIcon = document.getElementById('tickerIcon');
+            const bodyContainer = document.getElementById('tickerBodyContainer');
+
             if (!record) {
+                tickerHeader.style.display = 'none';
+                tickerMain.textContent = '表示可能なニュース項目がありません';
+                renderIconElement(tickerIcon, 'ℹ️');
                 if (onComplete) onComplete(10);
                 return;
             }
-            const tickerHeader = document.getElementById('tickerHeader');
-            const tickerMain = document.getElementById('tickerMain');
-            const bodyContainer = document.getElementById('tickerBodyContainer');
 
+            clearTimeout(scrollTimer);
+            tickerMain.classList.remove('is-scrolling');
             tickerMain.style.transition = 'none';
             tickerMain.style.transform = 'translateX(0px)';
 
-            let headerText = record['件名'] || '';
+            let trans = (record['トランジション'] || 'swipe-up').toLowerCase();
+            let displayIcon = '📢';
+            let displayText = record['配信内容'] || '';
+            let headerText = record['件名'] || ''; 
+
+            renderIconElement(tickerIcon, displayIcon);
+
             if (headerText === '') {
                 tickerHeader.style.display = 'none';
             } else {
                 tickerHeader.textContent = headerText;
                 tickerHeader.style.display = 'block';
             }
-            tickerMain.textContent = record['配信内容'] || '';
 
-            bodyContainer.className = 'ticker-body-container slide-up-out-before';
+            let outClass = 'slide-up-out-after';
+            let inClass = 'slide-up-in';
+            let prepClass = 'slide-up-out-before';
+
+            if (trans.includes('down')) {
+                outClass = 'slide-down-out-after'; inClass = 'slide-down-in'; prepClass = 'slide-down-out-before';
+            } else if (trans.includes('left')) {
+                outClass = 'slide-left-out-after'; inClass = 'slide-left-in'; prepClass = 'slide-left-out-before';
+            } else if (trans.includes('right')) {
+                outClass = 'slide-right-out-after'; inClass = 'slide-right-in'; prepClass = 'slide-right-out-before';
+            } else if (trans.includes('fade')) {
+                outClass = 'fade-out'; inClass = 'fade-in'; prepClass = 'fade-out';
+            }
+
+            bodyContainer.className = `ticker-body-container ${outClass}`;
+
             setTimeout(() => {
-                bodyContainer.className = 'ticker-body-container slide-up-in';
-                let durationSec = parseInt(record['表示時間']) || 10;
-                let totalMs = durationSec * 1000;
+                tickerMain.textContent = displayText;
+                bodyContainer.className = `ticker-body-container ${prepClass}`;
 
-                setTimeout(() => {
-                    const textWidth = Math.max(tickerMain.scrollWidth, tickerMain.getBoundingClientRect().width);
-                    const containerWidth = bodyContainer.clientWidth;
-                    if (textWidth > containerWidth + 2) {
-                        const dist = textWidth - containerWidth + 20;
-                        const scrollSec = dist / 50;
-                        const reqMs = 1500 + (scrollSec * 1000) + 1500;
-                        if (reqMs > totalMs) totalMs = reqMs;
-                        setTimeout(() => {
-                            tickerMain.style.transition = `transform ${scrollSec.toFixed(2)}s linear`;
-                            tickerMain.style.transform = `translateX(-${dist}px)`;
-                        }, 1500);
-                    }
-                    if (onComplete) onComplete(totalMs / 1000);
-                }, 50);
+                requestAnimationFrame(() => {
+                    bodyContainer.className = `ticker-body-container ${inClass}`;
+
+                    let defaultDurationSec = parseInt(record['表示時間']) || 10;
+                    let totalDurationMs = defaultDurationSec * 1000;
+
+                    setTimeout(() => {
+                        tickerMain.classList.add('is-scrolling');
+                        const textWidth = Math.max(tickerMain.scrollWidth, tickerMain.getBoundingClientRect().width);
+                        const containerWidth = bodyContainer.clientWidth;
+
+                        if (textWidth > containerWidth + 2) {
+                            const scrollDistance = textWidth - containerWidth + 20;
+                            const speed = 50;
+                            const scrollDurationSec = scrollDistance / speed;
+                            const scrollDurationMs = scrollDurationSec * 1000;
+                            const requiredTimeMs = 1500 + scrollDurationMs + 1500;
+                            if (requiredTimeMs > totalDurationMs) {
+                                totalDurationMs = requiredTimeMs;
+                            }
+
+                            scrollTimer = setTimeout(() => {
+                                tickerMain.style.transition = `transform ${scrollDurationSec.toFixed(2)}s linear`;
+                                tickerMain.style.transform = `translateX(-${scrollDistance}px)`;
+                            }, 1500);
+                        }
+
+                        if (onComplete) {
+                            onComplete(totalDurationMs / 1000);
+                        }
+                    }, 50);
+                });
             }, 300);
         }
 
-        function playLoop() {
+        function playNextTicker() {
             if (activeRecords.length === 0) {
-                setTimeout(fetchData, 5000);
+                setTimeout(fetchData, 10000); // データがない場合は10秒後に再取得
                 return;
             }
-            if (currentIndex >= activeRecords.length) currentIndex = 0;
-            const rec = activeRecords[currentIndex++];
-            animateTicker(rec, (sec) => {
-                setTimeout(playLoop, sec * 1000);
+            if (currentIndex >= activeRecords.length) {
+                currentIndex = 0;
+            }
+            const currentRecord = activeRecords[currentIndex++];
+            animateTicker(currentRecord, (durationSec) => {
+                clearTimeout(animationTimer);
+                animationTimer = setTimeout(playNextTicker, durationSec * 1000);
             });
         }
 
@@ -228,18 +347,23 @@
                 .then(res => res.text())
                 .then(csv => {
                     allRecords = parseCSV(csv);
-                    const todayJa = ['日', '月', '火', '水', '木', '金', '土'][new Date().getDay()];
+                    const todayJa = weekDaysJa[new Date().getDay()];
+                    
                     activeRecords = allRecords.filter(r => {
                         if (r.isStopped) return false;
                         const days = r['配信曜日_AppSheet'] || '';
                         if (days.indexOf('不定期') !== -1 || days === '') return true;
                         return days.includes(todayJa);
                     });
-                    if (activeRecords.length === 0) activeRecords = allRecords.filter(r => !r.isStopped);
-                    playLoop();
+
+                    if (activeRecords.length === 0) {
+                        activeRecords = allRecords.filter(r => !r.isStopped);
+                    }
+
+                    playNextTicker();
                 })
                 .catch(() => {
-                    setTimeout(fetchData, 5000);
+                    setTimeout(fetchData, 10000);
                 });
         }
 
