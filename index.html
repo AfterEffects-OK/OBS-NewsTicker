@@ -187,15 +187,15 @@
                 </button>
             </div>
 
-            <!-- ★ 設定画面の最上部に固定表示するプレビューエリア -->
-            <div class="bg-slate-800/90 border border-indigo-500/40 p-4 rounded-2xl shadow-xl flex flex-col items-center justify-center space-y-2">
+            <!-- ★ 設定画面の最上部に固定表示するプレビューエリア（背景を透明に設定） -->
+            <div class="bg-slate-800/95 border border-indigo-500/40 p-4 rounded-2xl shadow-xl flex flex-col items-center justify-center space-y-2">
                 <div class="w-full flex justify-between items-center text-xs text-indigo-300 font-bold px-2">
                     <span class="flex items-center gap-1.5"><i data-lucide="monitor" class="w-4 h-4"></i> OBS ライブプレビュー (設定画面内常時表示)</span>
                     <span class="text-slate-400">リアルタイム連動中</span>
                 </div>
-                <!-- プレビュー用コンテナ（設定画面内での埋め込み用ラッパー） -->
-                <div id="previewEmbeddedWrapper" class="w-full flex justify-center py-2 overflow-hidden bg-slate-950/60 rounded-xl border border-slate-700/50">
-                    <!-- JavaScriptでここにプレビュー用ティッカー要素を移動または複製します -->
+                <!-- プレビュー用コンテナ（背景を透明化） -->
+                <div id="previewEmbeddedWrapper" class="w-full flex justify-center py-2 overflow-hidden bg-transparent rounded-xl border border-slate-700/50">
+                    <!-- JavaScriptでここにプレビュー用ティッカー要素が埋め込まれます -->
                 </div>
             </div>
 
