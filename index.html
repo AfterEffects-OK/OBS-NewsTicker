@@ -21,7 +21,7 @@
             padding: 0;
         }
 
-        /* 画面中央配置用スタイル */
+        /* 画面中央配置用スタイル (OBS表示モード時) */
         .ticker-wrapper {
             position: absolute;
             top: 0;
@@ -154,7 +154,7 @@
         <i data-lucide="settings" class="w-5 h-5"></i>
     </button>
 
-    <!-- Ticker Output Area -->
+    <!-- Ticker Output Area (OBS用フルスクリーン) -->
     <div class="ticker-wrapper" id="tickerWrapper">
         <div id="tickerContainer" class="ticker-box rounded-xl my-1">
             <span id="tickerIcon" class="ticker-badge">📢</span>
@@ -169,7 +169,7 @@
 
     <!-- Control Panel HUD -->
     <div id="controlPanel" class="fixed inset-0 bg-slate-900/95 text-slate-100 z-50 overflow-y-auto p-6 md:p-10 pointer-events-auto transition-opacity duration-300">
-        <div class="max-w-6xl mx-auto space-y-8">
+        <div class="max-w-6xl mx-auto space-y-6">
             
             <!-- Header -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700 pb-4 gap-4">
@@ -185,6 +185,18 @@
                     <i data-lucide="eye-off" class="w-4 h-4"></i>
                     OBS表示モードにする (非表示)
                 </button>
+            </div>
+
+            <!-- ★ 設定画面の最上部に固定表示するプレビューエリア -->
+            <div class="bg-slate-800/90 border border-indigo-500/40 p-4 rounded-2xl shadow-xl flex flex-col items-center justify-center space-y-2">
+                <div class="w-full flex justify-between items-center text-xs text-indigo-300 font-bold px-2">
+                    <span class="flex items-center gap-1.5"><i data-lucide="monitor" class="w-4 h-4"></i> OBS ライブプレビュー (設定画面内常時表示)</span>
+                    <span class="text-slate-400">リアルタイム連動中</span>
+                </div>
+                <!-- プレビュー用コンテナ（設定画面内での埋め込み用ラッパー） -->
+                <div id="previewEmbeddedWrapper" class="w-full flex justify-center py-2 overflow-hidden bg-slate-950/60 rounded-xl border border-slate-700/50">
+                    <!-- JavaScriptでここにプレビュー用ティッカー要素を移動または複製します -->
+                </div>
             </div>
 
             <!-- Main Layout Grid -->
@@ -382,6 +394,14 @@
         const tickerBodyContainer = document.getElementById('tickerBodyContainer');
         const tickerHeader = document.getElementById('tickerHeader');
         const tickerMain = document.getElementById('tickerMain');
+        const previewEmbeddedWrapper = document.getElementById('previewEmbeddedWrapper');
+
+        // 設定画面内にもプレビューを表示するため、tickerContainerを複製（または移動）して埋め込む
+        const embeddedTicker = tickerContainer.cloneNode(true);
+        embeddedTicker.id = 'embeddedTickerContainer';
+        previewEmbeddedWrapper.appendChild(embeddedTicker);
+        const embeddedHeader = embeddedTicker.querySelector('#tickerHeader');
+        const embeddedMain = embeddedTicker.querySelector('#tickerMain');
 
         const cfg_transition = document.getElementById('cfg_transition');
         const cfg_headerFontSize = document.getElementById('cfg_headerFontSize');
@@ -464,7 +484,6 @@
                     record[h] = row[idx] !== undefined ? row[idx] : '';
                 });
 
-                // 件名（K列：インデックス10、または「件名」ヘッダー）の値を厳密に取得（空欄なら空のまま）
                 let headerVal = '';
                 if (record['件名'] !== undefined && record['件名'].trim() !== '') {
                     headerVal = record['件名'].trim();
@@ -511,19 +530,33 @@
             tickerContent.style.fontFamily = font;
             tickerHeader.style.fontSize = `${cfg_headerFontSize.value}px`;
             tickerHeader.style.color = cfg_headerTextColor.value;
+            embeddedHeader.style.fontSize = `${cfg_headerFontSize.value}px`;
+            embeddedHeader.style.color = cfg_headerTextColor.value;
 
             tickerMain.style.fontSize = `${cfg_mainFontSize.value}px`;
             tickerMain.style.fontWeight = cfg_mainFontWeight.value;
             tickerMain.style.color = cfg_mainTextColor.value;
+            embeddedMain.style.fontSize = `${cfg_mainFontSize.value}px`;
+            embeddedMain.style.fontWeight = cfg_mainFontWeight.value;
+            embeddedMain.style.color = cfg_mainTextColor.value;
 
-            tickerContainer.style.backgroundColor = hexToRgba(cfg_bgColor.value, cfg_bgOpacity.value);
+            const bgRgba = hexToRgba(cfg_bgColor.value, cfg_bgOpacity.value);
+            tickerContainer.style.backgroundColor = bgRgba;
+            embeddedTicker.style.backgroundColor = bgRgba;
+
             tickerIcon.style.backgroundColor = cfg_iconBgColor.value;
+            embeddedTicker.querySelector('#tickerIcon').style.backgroundColor = cfg_iconBgColor.value;
+
             if (cfg_iconWidth && cfg_iconWidth.value) {
                 tickerIcon.style.width = `${cfg_iconWidth.value}px`;
+                embeddedTicker.querySelector('#tickerIcon').style.width = `${cfg_iconWidth.value}px`;
             }
 
             tickerContainer.style.width = fixedWidth;
             tickerContainer.style.height = fixedHeight;
+            embeddedTicker.style.width = fixedWidth;
+            embeddedTicker.style.height = fixedHeight;
+
             cfg_bgOpacityVal.textContent = `${cfg_bgOpacity.value}%`;
         }
 
@@ -531,16 +564,23 @@
             if (!record) {
                 tickerHeader.textContent = '';
                 tickerHeader.style.display = 'none';
+                embeddedHeader.textContent = '';
+                embeddedHeader.style.display = 'none';
                 tickerMain.textContent = '';
+                embeddedMain.textContent = '';
                 tickerIcon.innerHTML = '';
+                embeddedTicker.querySelector('#tickerIcon').innerHTML = '';
                 if (onAnimationComplete) onAnimationComplete(10);
                 return;
             }
 
             clearTimeout(scrollTimer);
             tickerMain.classList.remove('is-scrolling');
+            embeddedMain.classList.remove('is-scrolling');
             tickerMain.style.transition = 'none';
             tickerMain.style.transform = 'translateX(0px)';
+            embeddedMain.style.transition = 'none';
+            embeddedMain.style.transform = 'translateX(0px)';
 
             let trans = cfg_transition.value;
             if (trans === 'csv') {
@@ -552,13 +592,18 @@
             let headerText = record['件名'] || ''; 
 
             renderIconElement(tickerIcon, displayIcon);
+            renderIconElement(embeddedTicker.querySelector('#tickerIcon'), displayIcon);
 
             if (headerText === '') {
                 tickerHeader.textContent = '';
                 tickerHeader.style.display = 'none';
+                embeddedHeader.textContent = '';
+                embeddedHeader.style.display = 'none';
             } else {
                 tickerHeader.textContent = headerText;
                 tickerHeader.style.display = 'block';
+                embeddedHeader.textContent = headerText;
+                embeddedHeader.style.display = 'block';
             }
 
             let outClass = 'slide-up-out-after';
@@ -584,13 +629,18 @@
             }
 
             tickerBodyContainer.className = `ticker-body-container ${outClass}`;
+            const embeddedBodyContainer = embeddedTicker.querySelector('#tickerBodyContainer');
+            embeddedBodyContainer.className = `ticker-body-container ${outClass}`;
 
             setTimeout(() => {
                 tickerMain.textContent = displayText;
+                embeddedMain.textContent = displayText;
                 tickerBodyContainer.className = `ticker-body-container ${prepClass}`;
+                embeddedBodyContainer.className = `ticker-body-container ${prepClass}`;
 
                 requestAnimationFrame(() => {
                     tickerBodyContainer.className = `ticker-body-container ${inClass}`;
+                    embeddedBodyContainer.className = `ticker-body-container ${inClass}`;
 
                     let defaultDurationSec = parseInt(displayDuration.value) || 10;
                     if (record['表示時間'] && !isNaN(parseInt(record['表示時間']))) {
@@ -600,6 +650,8 @@
 
                     setTimeout(() => {
                         tickerMain.classList.add('is-scrolling');
+                        embeddedMain.classList.add('is-scrolling');
+
                         const textWidth = Math.max(tickerMain.scrollWidth, tickerMain.getBoundingClientRect().width);
                         const containerWidth = tickerBodyContainer.clientWidth;
 
@@ -616,6 +668,8 @@
                             scrollTimer = setTimeout(() => {
                                 tickerMain.style.transition = `transform ${scrollDurationSec.toFixed(2)}s linear`;
                                 tickerMain.style.transform = `translateX(-${scrollDistance}px)`;
+                                embeddedMain.style.transition = `transform ${scrollDurationSec.toFixed(2)}s linear`;
+                                embeddedMain.style.transform = `translateX(-${scrollDistance}px)`;
                             }, 1500);
                         }
 
@@ -630,8 +684,11 @@
         function playNextTicker() {
             if (activeRecords.length === 0) {
                 tickerHeader.style.display = 'none';
+                embeddedHeader.style.display = 'none';
                 tickerMain.textContent = '表示可能なニュース項目がありません';
+                embeddedMain.textContent = '表示可能なニュース項目がありません';
                 renderIconElement(tickerIcon, 'ℹ️');
+                renderIconElement(embeddedTicker.querySelector('#tickerIcon'), 'ℹ️');
                 return;
             }
 
@@ -793,7 +850,9 @@
 
         function fetchFromGAS() {
             tickerHeader.style.display = 'none';
+            embeddedHeader.style.display = 'none';
             tickerMain.textContent = 'スプレッドシートから読み込み中...';
+            embeddedMain.textContent = 'スプレッドシートから読み込み中...';
             
             fetch(GAS_WEB_APP_URL)
                 .then(response => response.text())
@@ -803,11 +862,13 @@
                         loadCSV(csvText);
                     } else {
                         tickerMain.textContent = 'データが空です';
+                        embeddedMain.textContent = 'データが空です';
                     }
                 })
                 .catch(err => {
                     console.error('GASからのデータ取得に失敗しました:', err);
                     tickerMain.textContent = '読み込みエラー';
+                    embeddedMain.textContent = '読み込みエラー';
                 });
         }
 
