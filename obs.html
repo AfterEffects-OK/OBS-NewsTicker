@@ -241,13 +241,12 @@
             container.style.width = `${currentConfig.width}px`;
             container.style.height = `${currentConfig.height}px`;
 
-            // 設定変更時にデータを再処理してフィルタリングを即座に反映
             if (allRecords.length > 0) {
                 processRecords(allRecords);
             }
         }
 
-        // localStorageの変更（設定パネルでの変更）を500msごとに監視してリアルタイム反映
+        // 設定パネルでの変更をリアルタイム検知
         let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
         setInterval(() => {
             const currentStr = localStorage.getItem('obs_ticker_config') || '';
@@ -444,7 +443,6 @@
             });
         }
 
-        // 配信モードおよび曜日に基づく厳密なフィルタリング処理
         function processRecords(rawRecordsInput) {
             const todayJa = weekDaysJa[new Date().getDay()];
             const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
@@ -452,7 +450,6 @@
             activeRecords = rawRecordsInput.filter(record => {
                 if (record.isStopped) return false;
 
-                // 配信モードのカラム名（配信モード）または類似カラムを自動探索
                 let modeVal = (record['配信モード'] || '').trim();
                 if (!modeVal) {
                     for (let key in record) {
@@ -466,12 +463,10 @@
                     }
                 }
 
-                // 選択された配信モードと不一致なら除外（ALL以外）
                 if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
                     return false;
                 }
 
-                // 曜日フィルタの判定
                 const rawDaysStr = ((record['配信曜日_AppSheet'] || '') + ' ' + (record['配信曜日'] || '')).trim();
                 if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') return true;
 
@@ -515,7 +510,6 @@
             loadConfig();
             fetchDataAndPlay();
 
-            // 3分ごとにバックグラウンドで最新データを同期
             setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
     </script>
