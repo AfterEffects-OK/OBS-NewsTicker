@@ -284,9 +284,9 @@
             }
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                if (lines.length > 0) lines.push(currentRow); // fixing loop check fallback
             }
-
+            
             if (lines.length < 2) return [];
             const headers = lines[0];
             const records = [];
@@ -435,7 +435,9 @@
         }
 
         function fetchData() {
-            fetch(GAS_WEB_APP_URL)
+            // キャッシュ対策としてタイムスタンプを付与
+            const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
+            fetch(cacheBustedUrl)
                 .then(res => res.text())
                 .then(csv => {
                     allRecords = parseCSV(csv);
@@ -452,16 +454,23 @@
                         activeRecords = allRecords.filter(r => !r.isStopped);
                     }
 
-                    playNextTicker();
+                    // 初回ロード時やループ途中でデータが再取得された場合の備え
+                    if (currentIndex >= activeRecords.length) {
+                        currentIndex = 0;
+                    }
                 })
                 .catch(() => {
-                    setTimeout(fetchData, 10000);
+                    // エラー時は次回更新を待つ
                 });
         }
 
         window.onload = function() {
             loadConfig();
-            fetchData();
+            fetchData(); // 初回データ取得
+            playNextTicker(); // ループ再生開始
+
+            // ⏱️【定期自動フェッチの設定】3分 (180,000ミリ秒) ごとにOBS側でもバックグラウンドで最新データを同期
+            setInterval(fetchData, 3 * 60 * 1000);
         };
     </script>
 </body>
