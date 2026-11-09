@@ -196,17 +196,17 @@
                             <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
                         </div>
 
-                        <!-- カラーパレット（背景色付きボタン選択式） -->
+                        <!-- カラーパレット（確実なインライン背景色つきボタン選択式） -->
                         <div>
                             <label class="block text-slate-400 mb-1">アイコン背景色</label>
                             <input type="hidden" id="cfg_iconBgColor" value="#3b82f6">
                             <div id="iconBgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#3b82f6" class="w-7 h-7 rounded-full bg-blue-500 border-2 border-slate-700 hover:scale-110 transition shadow" title="ブルー"></button>
-                                <button type="button" data-color="#ef4444" class="w-7 h-7 rounded-full bg-red-500 border-2 border-slate-700 hover:scale-110 transition shadow" title="レッド"></button>
-                                <button type="button" data-color="#10b981" class="w-7 h-7 rounded-full bg-emerald-500 border-2 border-slate-700 hover:scale-110 transition shadow" title="グリーン"></button>
-                                <button type="button" data-color="#f59e0b" class="w-7 h-7 rounded-full bg-amber-500 border-2 border-slate-700 hover:scale-110 transition shadow" title="オレンジ"></button>
-                                <button type="button" data-color="#8b5cf6" class="w-7 h-7 rounded-full bg-purple-500 border-2 border-slate-700 hover:scale-110 transition shadow" title="パープル"></button>
-                                <button type="button" data-color="#0f172a" class="w-7 h-7 rounded-full bg-slate-900 border-2 border-slate-700 hover:scale-110 transition shadow" title="ダーク"></button>
+                                <button type="button" data-color="#3b82f6" style="background-color: #3b82f6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ブルー"></button>
+                                <button type="button" data-color="#ef4444" style="background-color: #ef4444;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="レッド"></button>
+                                <button type="button" data-color="#10b981" style="background-color: #10b981;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グリーン"></button>
+                                <button type="button" data-color="#f59e0b" style="background-color: #f59e0b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="オレンジ"></button>
+                                <button type="button" data-color="#8b5cf6" style="background-color: #8b5cf6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="パープル"></button>
+                                <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダーク"></button>
                             </div>
                         </div>
 
@@ -214,11 +214,11 @@
                             <label class="block text-slate-400 mb-1">件名 (上部) 文字色</label>
                             <input type="hidden" id="cfg_headerTextColor" value="#93c5fd">
                             <div id="headerTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#93c5fd" class="w-7 h-7 rounded-full bg-blue-300 border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
-                                <button type="button" data-color="#fca5a5" class="w-7 h-7 rounded-full bg-red-300 border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
-                                <button type="button" data-color="#6ee7b7" class="w-7 h-7 rounded-full bg-emerald-300 border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトグリーン"></button>
-                                <button type="button" data-color="#fde047" class="w-7 h-7 rounded-full bg-yellow-300 border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
-                                <button type="button" data-color="#ffffff" class="w-7 h-7 rounded-full bg-white border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
+                                <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
+                                <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
+                                <button type="button" data-color="#6ee7b7" style="background-color: #6ee7b7;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトグリーン"></button>
+                                <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
+                                <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
                             </div>
                         </div>
 
@@ -226,11 +226,11 @@
                             <label class="block text-slate-400 mb-1">本文 (下部) 文字色</label>
                             <input type="hidden" id="cfg_mainTextColor" value="#ffffff">
                             <div id="mainTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#ffffff" class="w-7 h-7 rounded-full bg-white border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
-                                <button type="button" data-color="#93c5fd" class="w-7 h-7 rounded-full bg-blue-300 border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
-                                <button type="button" data-color="#fde047" class="w-7 h-7 rounded-full bg-yellow-300 border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
-                                <button type="button" data-color="#fca5a5" class="w-7 h-7 rounded-full bg-red-300 border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
-                                <button type="button" data-color="#cbd5e1" class="w-7 h-7 rounded-full bg-slate-300 border-2 border-slate-700 hover:scale-110 transition shadow" title="グレー"></button>
+                                <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
+                                <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
+                                <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
+                                <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
+                                <button type="button" data-color="#cbd5e1" style="background-color: #cbd5e1;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グレー"></button>
                             </div>
                         </div>
 
@@ -238,11 +238,11 @@
                             <label class="block text-slate-400 mb-1">枠の背景色</label>
                             <input type="hidden" id="cfg_bgColor" value="#1e293b">
                             <div id="bgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#1e293b" class="w-7 h-7 rounded-full bg-slate-800 border-2 border-slate-700 hover:scale-110 transition shadow" title="スレート"></button>
-                                <button type="button" data-color="#0f172a" class="w-7 h-7 rounded-full bg-slate-950 border-2 border-slate-700 hover:scale-110 transition shadow" title="黒に近いダーク"></button>
-                                <button type="button" data-color="#1e3a8a" class="w-7 h-7 rounded-full bg-blue-900 border-2 border-slate-700 hover:scale-110 transition shadow" title="ネイビー"></button>
-                                <button type="button" data-color="#701a75" class="w-7 h-7 rounded-full bg-purple-900 border-2 border-slate-700 hover:scale-110 transition shadow" title="ディープパープル"></button>
-                                <button type="button" data-color="#065f46" class="w-7 h-7 rounded-full bg-emerald-900 border-2 border-slate-700 hover:scale-110 transition shadow" title="ダークグリーン"></button>
+                                <button type="button" data-color="#1e293b" style="background-color: #1e293b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="スレート"></button>
+                                <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="黒に近いダーク"></button>
+                                <button type="button" data-color="#1e3a8a" style="background-color: #1e3a8a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ネイビー"></button>
+                                <button type="button" data-color="#701a75" style="background-color: #701a75;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ディープパープル"></button>
+                                <button type="button" data-color="#065f46" style="background-color: #065f46;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダークグリーン"></button>
                             </div>
                         </div>
 
@@ -318,7 +318,6 @@
                         buttons.forEach(b => {
                             b.className = b.className.replace(/border-amber-400 scale-110 ring-2 ring-amber-400\/50/g, 'border-slate-700');
                         });
-                        btn.className = btn.className.replace('border-slate-700', 'border-amber-400 scale-110 ring-2 ring-amber-400/50');
                         if (!btn.className.includes('border-amber-400')) {
                             btn.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
                         }
@@ -687,6 +686,15 @@
 
             modeFilter.addEventListener('change', filterRecords);
             weekdayFilterCheck.addEventListener('change', filterRecords);
+
+            // 背景不透明度のスライダー変更時に％表示をリアルタイム更新する処理
+            const bgOpacityInput = document.getElementById('cfg_bgOpacity');
+            const bgOpacityVal = document.getElementById('cfg_bgOpacityVal');
+            if (bgOpacityInput && bgOpacityVal) {
+                bgOpacityInput.addEventListener('input', () => {
+                    bgOpacityVal.textContent = `${bgOpacityInput.value}%`;
+                });
+            }
         };
 
         // 設定内容をローカルストレージに保存し、obs.htmlへリアルタイム通知する
