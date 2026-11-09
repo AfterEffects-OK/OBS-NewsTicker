@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'M PLUS Rounded 1c', sans-serif;
+            font-family: 'Noto Sans JP', sans-serif;
             background-color: transparent !important;
             overflow: hidden;
             margin: 0;
@@ -149,7 +149,7 @@
     <div class="ticker-wrapper">
         <div id="tickerContainer" class="ticker-box rounded-xl">
             <span id="tickerIcon" class="ticker-badge">📢</span>
-            <div class="ticker-content font-bold text-white">
+            <div id="tickerContent" class="ticker-content font-bold text-white">
                 <div id="tickerBodyContainer" class="ticker-body-container slide-up-in">
                     <div id="tickerHeader" class="ticker-header-text"></div>
                     <div id="tickerMain" class="ticker-main-text">データを読み込み中...</div>
@@ -168,7 +168,6 @@
         let scrollTimer = null;
         const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
 
-        // デフォルト設定値
         let currentConfig = {
             width: 800,
             height: 60,
@@ -188,15 +187,6 @@
             autoEmoji: true
         };
 
-        // ローカルストレージやBroadcastChannelから設定を読み込む
-        function loadConfig() {
-            const saved = localStorage.getItem('obs_ticker_config');
-            if (saved) {
-                try { currentConfig = JSON.parse(saved); } catch(e) {}
-            }
-            applyConfigToDOM();
-        }
-
         function hexToRgba(hex, opacityPercent) {
             const num = parseInt((hex || '#1e293b').replace('#', ''), 16);
             const r = (num >> 16) & 255;
@@ -205,7 +195,14 @@
             return `rgba(${r}, ${g}, ${b}, ${opacityPercent / 100})`;
         }
 
-        // 読み込んだ設定をDOMスタイルに反映
+        function loadConfig() {
+            const saved = localStorage.getItem('obs_ticker_config');
+            if (saved) {
+                try { currentConfig = JSON.parse(saved); } catch(e) {}
+            }
+            applyConfigToDOM();
+        }
+
         function applyConfigToDOM() {
             const container = document.getElementById('tickerContainer');
             const content = document.getElementById('tickerContent');
@@ -229,14 +226,13 @@
             container.style.height = `${currentConfig.height}px`;
         }
 
-        // 別タブ（設定画面）からの設定変更をリアルタイムで検知
+        // 別タブや設定画面からの変更を即座に反映
         window.addEventListener('storage', (e) => {
             if (e.key === 'obs_ticker_config') {
                 loadConfig();
             }
         });
 
-        // 以下、従来のCSVパース・アニメーション再生処理
         function renderIconElement(targetEl, iconValue) {
             targetEl.innerHTML = '';
             if (!iconValue) return;
