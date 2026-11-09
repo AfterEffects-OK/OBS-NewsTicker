@@ -75,9 +75,15 @@
                     </button>
                     
                     <div class="mt-4">
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">取得したCSVデータ (確認用):</label>
-                        <textarea id="csvTextArea" rows="6" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 font-mono" placeholder="読み込み中..."></textarea>
-                        <button id="applyCsvTextBtn" class="w-full mt-2 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg transition text-white">テキストを手動反映</button>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">CSVデータ読み込み:</label>
+                        <div id="dropZone" class="border-2 border-dashed border-slate-600 hover:border-indigo-500 rounded-lg p-4 text-center cursor-pointer transition bg-slate-900/50 mb-3">
+                            <p class="text-xs text-slate-300">CSVファイルをドラッグ＆ドロップ</p>
+                            <p class="text-[10px] text-slate-500 mt-1">またはクリックしてファイル選択</p>
+                            <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                        </div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">または CSVテキストを直接貼り付け:</label>
+                        <textarea id="csvTextArea" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 font-mono" placeholder="読み込み中..."></textarea>
+                        <button id="applyCsvTextBtn" class="w-full mt-2 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg transition text-white">テキストを反映</button>
                     </div>
                 </div>
 
@@ -122,6 +128,16 @@
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">表示時間（秒/件）</label>
                             <input type="number" id="displayDuration" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
+                            <span class="text-[10px] text-slate-500">※CSV個別の「表示時間」優先</span>
+                        </div>
+                        <div class="sm:col-span-2 lg:col-span-3">
+                            <label class="block text-xs text-slate-400 mb-1">フォントファミリー</label>
+                            <select id="fontFamilySelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200">
+                                <option value="'Noto Sans JP', sans-serif" selected>Noto Sans JP (標準)</option>
+                                <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded (丸ゴシック)</option>
+                                <option value="sans-serif">ゴシック体 (標準)</option>
+                                <option value="serif">明朝体</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -135,8 +151,8 @@
                             <label class="block text-slate-400 mb-1">アニメーション</label>
                             <select id="cfg_transition" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
                                 <option value="csv" selected>CSVの指定に従う</option>
-                                <option value="swipe-up">上方向スライド</option>
                                 <option value="swipe-down">下方向スライド</option>
+                                <option value="swipe-up">上方向スライド</option>
                                 <option value="swipe-left">左方向スライド</option>
                                 <option value="swipe-right">右方向スライド</option>
                                 <option value="fade">フェード</option>
@@ -150,22 +166,60 @@
                             <label class="block text-slate-400 mb-1">本文 (下部) 文字サイズ</label>
                             <input type="number" id="cfg_mainFontSize" value="28" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
                         </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">本文 (下部) フォントの太さ</label>
+                            <select id="cfg_mainFontWeight" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold">
+                                <option value="400">標準 (400)</option>
+                                <option value="500" selected>中太 (500)</option>
+                                <option value="700">太字 (700)</option>
+                                <option value="800">極太 (800)</option>
+                                <option value="900">超極太 (900)</option>
+                            </select>
+                        </div>
                         <div class="col-span-2 sm:col-span-2">
-                            <label class="block text-slate-400 mb-1">デフォルト アイコン</label>
+                            <label class="block text-slate-400 mb-1">デフォルト アイコン画像URL (または絵文字)</label>
                             <input type="text" id="cfg_iconInput" value="📢" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
                         </div>
                         <div>
                             <label class="block text-slate-400 mb-1">アイコン領域幅 (px)</label>
                             <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
                         </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">アイコン背景色</label>
+                            <input type="color" id="cfg_iconBgColor" value="#3b82f6" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">件名 (上部) 文字色</label>
+                            <input type="color" id="cfg_headerTextColor" value="#93c5fd" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">本文 (下部) 文字色</label>
+                            <input type="color" id="cfg_mainTextColor" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">枠の背景色</label>
+                            <input type="color" id="cfg_bgColor" value="#1e293b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>背景不透明度</span>
+                                <span id="cfg_bgOpacityVal">90%</span>
+                            </div>
+                            <input type="range" id="cfg_bgOpacity" min="0" max="100" value="90" class="w-full accent-indigo-500">
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-700/60">
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" id="cfg_autoEmoji" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700">
+                            <span>文章先頭の絵文字を自動抽出してアイコン化</span>
+                        </label>
                     </div>
                 </div>
 
                 <!-- Data Preview Table -->
                 <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 class="text-lg font-bold mb-3 text-indigo-300 flex items-center justify-between">
-                        <span class="flex items-center gap-2"><i data-lucide="list" class="w-5 h-5"></i> 読み込み中データ一覧 (<span id="tableRowCount">0</span>行)</span>
-                        <span class="text-xs font-normal text-slate-400">※スプレッドシートの全データ</span>
+                        <span class="flex items-center gap-2"><i data-lucide="list" class="w-5 h-5"></i> 読み込み中データ一覧 ※スプレッドシートの全カラム・全データをそのまま表示</span>
                     </h2>
                     <div class="max-h-64 overflow-y-auto overflow-x-auto border border-slate-700 rounded-lg">
                         <table id="previewTable" class="w-full text-left text-xs text-slate-300 whitespace-nowrap">
@@ -203,6 +257,8 @@
         const reloadGasBtn = document.getElementById('reloadGasBtn');
         const csvTextArea = document.getElementById('csvTextArea');
         const applyCsvTextBtn = document.getElementById('applyCsvTextBtn');
+        const csvFileInput = document.getElementById('csvFileInput');
+        const dropZone = document.getElementById('dropZone');
         const modeFilter = document.getElementById('modeFilter');
         const weekdayFilterCheck = document.getElementById('weekdayFilterCheck');
         const currentWeekdayLabel = document.getElementById('currentWeekdayLabel');
@@ -211,7 +267,6 @@
         const previewTableBody = document.getElementById('previewTableBody');
         const statTotal = document.getElementById('statTotal');
         const statActive = document.getElementById('statActive');
-        const tableRowCount = document.getElementById('tableRowCount');
 
         function parseCSV(text) {
             if (!text || !text.trim()) return [];
@@ -347,7 +402,6 @@
         function updatePreviewTable() {
             previewTableHead.innerHTML = '';
             previewTableBody.innerHTML = '';
-            tableRowCount.textContent = allRecords.length;
 
             if (allRecords.length === 0) return;
 
@@ -453,6 +507,33 @@
 
             applyCsvTextBtn.addEventListener('click', () => {
                 loadCSV(csvTextArea.value);
+            });
+
+            dropZone.addEventListener('click', () => csvFileInput.click());
+            csvFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    csvTextArea.value = event.target.result;
+                    loadCSV(event.target.result);
+                };
+                reader.readAsText(file);
+            });
+
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500'); });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-indigo-500');
+                const file = e.dataTransfer.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    csvTextArea.value = event.target.result;
+                    loadCSV(event.target.result);
+                };
+                reader.readAsText(file);
             });
 
             modeFilter.addEventListener('change', filterRecords);
