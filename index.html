@@ -130,14 +130,17 @@
                             <input type="number" id="displayDuration" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
                             <span class="text-[10px] text-slate-500">※CSV個別の「表示時間」優先</span>
                         </div>
+                        
+                        <!-- フォントファミリー (ボタン選択式) -->
                         <div class="sm:col-span-2 lg:col-span-3">
-                            <label class="block text-xs text-slate-400 mb-1">フォントファミリー</label>
-                            <select id="fontFamilySelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200">
-                                <option value="'Noto Sans JP', sans-serif" selected>Noto Sans JP (標準)</option>
-                                <option value="'M PLUS Rounded 1c', sans-serif">M PLUS Rounded (丸ゴシック)</option>
-                                <option value="sans-serif">ゴシック体 (標準)</option>
-                                <option value="serif">明朝体</option>
-                            </select>
+                            <label class="block text-xs text-slate-400 mb-1.5">フォントファミリー</label>
+                            <input type="hidden" id="fontFamilySelect" value="'Noto Sans JP', sans-serif">
+                            <div id="fontFamilyGroup" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button type="button" data-value="'Noto Sans JP', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">Noto Sans JP</button>
+                                <button type="button" data-value="'M PLUS Rounded 1c', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">M PLUS Rounded</button>
+                                <button type="button" data-value="sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">ゴシック体</button>
+                                <button type="button" data-value="serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">明朝体</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -147,17 +150,21 @@
                         <i data-lucide="palette" class="w-4 h-4"></i> デザイン & アイコン設定
                     </h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                        <div>
-                            <label class="block text-slate-400 mb-1">アニメーション</label>
-                            <select id="cfg_transition" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
-                                <option value="csv" selected>CSVの指定に従う</option>
-                                <option value="swipe-down">下方向スライド</option>
-                                <option value="swipe-up">上方向スライド</option>
-                                <option value="swipe-left">左方向スライド</option>
-                                <option value="swipe-right">右方向スライド</option>
-                                <option value="fade">フェード</option>
-                            </select>
+                        
+                        <!-- アニメーション選択 (ボタン式) -->
+                        <div class="col-span-2 sm:col-span-3">
+                            <label class="block text-slate-400 mb-1.5">アニメーション</label>
+                            <input type="hidden" id="cfg_transition" value="csv">
+                            <div id="transitionGroup" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <button type="button" data-value="csv" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">CSV指定に従う</button>
+                                <button type="button" data-value="swipe-up" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">上スライド</button>
+                                <button type="button" data-value="swipe-down" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">下スライド</button>
+                                <button type="button" data-value="swipe-left" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">左スライド</button>
+                                <button type="button" data-value="swipe-right" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">右スライド</button>
+                                <button type="button" data-value="fade" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">フェード</button>
+                            </div>
                         </div>
+
                         <div>
                             <label class="block text-slate-400 mb-1">件名 (上部) 文字サイズ</label>
                             <input type="number" id="cfg_headerFontSize" value="12" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
@@ -166,16 +173,20 @@
                             <label class="block text-slate-400 mb-1">本文 (下部) 文字サイズ</label>
                             <input type="number" id="cfg_mainFontSize" value="28" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
                         </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">本文 (下部) フォントの太さ</label>
-                            <select id="cfg_mainFontWeight" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold">
-                                <option value="400">標準 (400)</option>
-                                <option value="500" selected>中太 (500)</option>
-                                <option value="700">太字 (700)</option>
-                                <option value="800">極太 (800)</option>
-                                <option value="900">超極太 (900)</option>
-                            </select>
+                        
+                        <!-- 本文フォント太さ選択 (ボタン式) -->
+                        <div class="col-span-2 sm:col-span-3">
+                            <label class="block text-slate-400 mb-1.5">本文 (下部) フォントの太さ</label>
+                            <input type="hidden" id="cfg_mainFontWeight" value="500">
+                            <div id="fontWeightGroup" class="grid grid-cols-5 gap-2">
+                                <button type="button" data-value="400" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition">標準(400)</button>
+                                <button type="button" data-value="500" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition">中太(500)</button>
+                                <button type="button" data-value="700" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition">太字(700)</button>
+                                <button type="button" data-value="800" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition">極太(800)</button>
+                                <button type="button" data-value="900" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition">超極太(900)</button>
+                            </div>
                         </div>
+
                         <div class="col-span-2 sm:col-span-2">
                             <label class="block text-slate-400 mb-1">デフォルト アイコン画像URL (または絵文字)</label>
                             <input type="text" id="cfg_iconInput" value="📢" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
@@ -257,7 +268,28 @@
             autoEmoji: true
         };
 
-        // ページ読み込み時に、保存された設定またはデフォルト値をフォームに反映
+        // ボタン選択式のUI制御ヘルパー
+        function setupButtonSelector(groupId, inputId) {
+            const container = document.getElementById(groupId);
+            const input = document.getElementById(inputId);
+            if (!container || !input) return;
+            const buttons = container.querySelectorAll('button');
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => {
+                        b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
+                    });
+                    btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
+                    
+                    input.value = btn.getAttribute('data-value');
+                    input.dispatchEvent(new Event('change'));
+                    saveConfig();
+                });
+            });
+        }
+
+        // ページ読み込み時に保存された設定またはデフォルト値をフォームに反映
         function initFormValues() {
             const saved = localStorage.getItem('obs_ticker_config');
             const config = saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
@@ -265,11 +297,13 @@
             document.getElementById('tickerWidthInput').value = config.width;
             document.getElementById('tickerHeightInput').value = config.height;
             document.getElementById('displayDuration').value = config.duration;
+            
             document.getElementById('fontFamilySelect').value = config.fontFamily;
             document.getElementById('cfg_transition').value = config.transition;
+            document.getElementById('cfg_mainFontWeight').value = config.mainFontWeight;
+
             document.getElementById('cfg_headerFontSize').value = config.headerFontSize;
             document.getElementById('cfg_mainFontSize').value = config.mainFontSize;
-            document.getElementById('cfg_mainFontWeight').value = config.mainFontWeight;
             document.getElementById('cfg_iconInput').value = config.iconInput;
             document.getElementById('cfg_iconWidth').value = config.iconWidth;
             document.getElementById('cfg_iconBgColor').value = config.iconBgColor;
@@ -279,11 +313,27 @@
             document.getElementById('cfg_bgOpacity').value = config.bgOpacity;
             document.getElementById('cfg_bgOpacityVal').textContent = `${config.bgOpacity}%`;
             document.getElementById('cfg_autoEmoji').checked = config.autoEmoji;
+
+            // ボタンの状態をアクティブに同期
+            syncButtonActiveState('fontFamilyGroup', config.fontFamily);
+            syncButtonActiveState('transitionGroup', config.transition);
+            syncButtonActiveState('fontWeightGroup', config.mainFontWeight);
+        }
+
+        function syncButtonActiveState(groupId, value) {
+            const container = document.getElementById(groupId);
+            if (!container) return;
+            container.querySelectorAll('button').forEach(b => {
+                if (b.getAttribute('data-value') === value) {
+                    b.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
+                } else {
+                    b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
+                }
+            });
         }
 
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
         
-        // GitHub Pages上の obs.html をOBSブラウザソース用URLとして指定
         const obsUrl = 'https://aftereffects-ok.github.io/OBS-NewsTicker/obs.html';
         document.getElementById('obsUrlInput').value = obsUrl;
         document.getElementById('obsUrlLink').href = obsUrl;
@@ -326,32 +376,20 @@
                 const nextChar = text[i + 1];
 
                 if (char === '"') {
-                    if (insideQuote && nextChar === '"') {
-                        currentField += '"';
-                        i++;
-                    } else {
-                        insideQuote = !insideQuote;
-                    }
+                    if (insideQuote && nextChar === '"') { currentField += '"'; i++; }
+                    else { insideQuote = !insideQuote; }
                 } else if (char === ',' && !insideQuote) {
-                    currentRow.push(currentField.trim());
-                    currentField = '';
+                    currentRow.push(currentField.trim()); currentField = '';
                 } else if ((char === '\r' || char === '\n') && !insideQuote) {
                     if (char === '\r' && nextChar === '\n') i++;
                     currentRow.push(currentField.trim());
-                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
-                        lines.push(currentRow);
-                    }
-                    currentRow = [];
-                    currentField = '';
-                } else {
-                    currentField += char;
-                }
+                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                    currentRow = []; currentField = '';
+                } else { currentField += char; }
             }
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
-                    lines.push(currentRow);
-                }
+                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
             }
 
             if (lines.length < 2) return [];
@@ -386,9 +424,7 @@
 
         function isScheduleMatched(record) {
             const rawDaysStr = ((record['配信曜日_AppSheet'] || '') + ' ' + (record['配信曜日'] || '')).trim();
-            if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') {
-                return true;
-            }
+            if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') return true;
             if (!weekdayFilterCheck.checked) return true;
 
             const now = new Date();
@@ -412,9 +448,7 @@
             activeRecords = allRecords.filter(record => {
                 if (record.isStopped) return false;
                 const modeVal = record['配信モード'] || record['ID配信モード'] || '';
-                if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
-                    return false;
-                }
+                if (selectedMode !== 'ALL' && modeVal !== selectedMode) return false;
                 return isScheduleMatched(record);
             });
 
@@ -438,22 +472,17 @@
                 modeFilter.appendChild(opt);
             });
 
-            if (modes.has(currentSelected)) {
-                modeFilter.value = currentSelected;
-            } else {
-                modeFilter.value = 'ALL';
-            }
+            if (modes.has(currentSelected)) modeFilter.value = currentSelected;
+            else modeFilter.value = 'ALL';
         }
 
         function updatePreviewTable() {
             previewTableHead.innerHTML = '';
             previewTableBody.innerHTML = '';
-
             if (allRecords.length === 0) return;
 
             const trHead = document.createElement('tr');
-            const extraHeaders = ['表示曜日 (抽出)', '特定日 (抽出)', '表示時間 (抽出)'];
-            extraHeaders.forEach(hText => {
+            ['表示曜日 (抽出)', '特定日 (抽出)', '表示時間 (抽出)'].forEach(hText => {
                 const th = document.createElement('th');
                 th.className = 'p-2 bg-indigo-950/80 text-indigo-200 border-r border-slate-700';
                 th.textContent = hText;
@@ -477,11 +506,7 @@
                 if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') {
                     daysText = '月, 火, 水, 木, 金, 土, 日';
                 } else {
-                    const cleanedStr = rawDaysStr
-                        .replace(/\b\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/g, '')
-                        .replace(/\b\d{1,2}[\/\-]\d{1,2}\b/g, '')
-                        .replace(/\b\d{1,2}月\d{1,2}日\b/g, '');
-
+                    const cleanedStr = rawDaysStr.replace(/\b\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/g, '').replace(/\b\d{1,2}[\/\-]\d{1,2}\b/g, '').replace(/\b\d{1,2}月\d{1,2}日\b/g, '');
                     const daysMatch = cleanedStr.match(/[月火水木金土日]/g);
                     if (daysMatch) {
                         const uniqueDays = Array.from(new Set(daysMatch));
@@ -534,9 +559,7 @@
                         loadCSV(csvText);
                     }
                 })
-                .catch(err => {
-                    console.error('GASからのデータ取得に失敗しました:', err);
-                });
+                .catch(err => { console.error('GAS取得失敗:', err); });
         }
 
         function initCurrentDateLabel() {
@@ -548,16 +571,18 @@
             initCurrentDateLabel();
             lucide.createIcons();
             
-            // ⚙️ デフォルト設定値または保存された設定をフォームに反映
+            // 初期設定の復元
             initFormValues();
+
+            // ボタン選択式イベントのバインド
+            setupButtonSelector('fontFamilyGroup', 'fontFamilySelect');
+            setupButtonSelector('transitionGroup', 'cfg_transition');
+            setupButtonSelector('fontWeightGroup', 'cfg_mainFontWeight');
 
             fetchFromGAS();
 
             reloadGasBtn.addEventListener('click', fetchFromGAS);
-
-            applyCsvTextBtn.addEventListener('click', () => {
-                loadCSV(csvTextArea.value);
-            });
+            applyCsvTextBtn.addEventListener('click', () => { loadCSV(csvTextArea.value); });
 
             dropZone.addEventListener('click', () => csvFileInput.click());
             csvFileInput.addEventListener('change', (e) => {
@@ -613,10 +638,10 @@
             localStorage.setItem('obs_ticker_config', JSON.stringify(config));
         }
 
-        // イベントリスナーに追加
+        // 入力変更時のイベントリスナー追加
         const allInputs = [
-            tickerWidthInput, tickerHeightInput, displayDuration, fontFamilySelect,
-            cfg_transition, cfg_headerFontSize, cfg_mainFontSize, cfg_mainFontWeight, cfg_iconInput,
+            tickerWidthInput, tickerHeightInput, displayDuration,
+            cfg_headerFontSize, cfg_mainFontSize, cfg_iconInput,
             cfg_iconWidth, cfg_iconBgColor, cfg_headerTextColor, cfg_mainTextColor,
             cfg_bgColor, cfg_bgOpacity, cfg_autoEmoji
         ];
