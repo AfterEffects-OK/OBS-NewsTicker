@@ -505,34 +505,27 @@
             return false;
         }
 
-        // 配信モードによるフィルタリングの確実な判定例
-        const selectedMode = modeFilter ? modeFilter.value : 'ALL';
-        
-        activeRecords = allRecords.filter(record => {
-            if (record.isStopped) return false;
-        
-            // 「配信モード」カラムの値を安全に取得
-            let modeVal = (record['配信モード'] || '').trim();
-            if (!modeVal) {
-                for (let key in record) {
-                    if (key.includes('配信モード')) {
-                        const val = (record[key] || '').trim();
-                        if (val !== '') {
-                            modeVal = val;
-                            break;
+        function filterRecords() {
+            const selectedMode = modeFilter.value;
+            activeRecords = allRecords.filter(record => {
+                if (record.isStopped) return false;
+                
+                let modeVal = (record['配信モード'] || '').trim();
+                if (!modeVal) {
+                    for (let key in record) {
+                        if (key.includes('配信モード')) {
+                            const val = (record[key] || '').trim();
+                            if (val !== '') {
+                                modeVal = val;
+                                break;
+                            }
                         }
                     }
                 }
-            }
         
-            // 「ALL」以外で、かつモードが一致しない場合は非表示（除外）にする
-            if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
-                return false;
-            }
-        
-            // 曜日や日時のフィルタ判定へ続く
-            return isScheduleMatched(record);
-        });
+                if (selectedMode !== 'ALL' && modeVal !== selectedMode) return false;
+                return isScheduleMatched(record);
+            });
         
             statTotal.textContent = allRecords.length;
             statActive.textContent = activeRecords.length;
