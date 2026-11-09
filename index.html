@@ -539,6 +539,44 @@
             modeFilter.addEventListener('change', filterRecords);
             weekdayFilterCheck.addEventListener('change', filterRecords);
         };
+
+        // 設定内容をローカルストレージに保存し、obs.htmlへリアルタイム通知する
+        function saveConfig() {
+            const config = {
+                width: document.getElementById('tickerWidthInput').value,
+                height: document.getElementById('tickerHeightInput').value,
+                duration: document.getElementById('displayDuration').value,
+                fontFamily: document.getElementById('fontFamilySelect').value,
+                transition: document.getElementById('cfg_transition').value,
+                headerFontSize: document.getElementById('cfg_headerFontSize').value,
+                mainFontSize: document.getElementById('cfg_mainFontSize').value,
+                mainFontWeight: document.getElementById('cfg_mainFontWeight').value,
+                iconInput: document.getElementById('cfg_iconInput').value,
+                iconWidth: document.getElementById('cfg_iconWidth').value,
+                iconBgColor: document.getElementById('cfg_iconBgColor').value,
+                headerTextColor: document.getElementById('cfg_headerTextColor').value,
+                mainTextColor: document.getElementById('cfg_mainTextColor').value,
+                bgColor: document.getElementById('cfg_bgColor').value,
+                bgOpacity: document.getElementById('cfg_bgOpacity').value,
+                autoEmoji: document.getElementById('cfg_autoEmoji').checked
+            };
+            localStorage.setItem('obs_ticker_config', JSON.stringify(config));
+        }
+
+        // イベントリスナーに追加
+        const allInputs = [
+            tickerWidthInput, tickerHeightInput, displayDuration, fontFamilySelect,
+            cfg_transition, cfg_headerFontSize, cfg_mainFontSize, cfg_mainFontWeight, cfg_iconInput,
+            cfg_iconWidth, cfg_iconBgColor, cfg_headerTextColor, cfg_mainTextColor,
+            cfg_bgColor, cfg_bgOpacity, cfg_autoEmoji
+        ];
+
+        allInputs.forEach(input => {
+            if (input) {
+                input.addEventListener('input', saveConfig);
+                input.addEventListener('change', saveConfig);
+            }
+        });
     </script>
 </body>
 </html>
