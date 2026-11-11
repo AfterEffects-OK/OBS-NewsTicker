@@ -476,17 +476,17 @@
                     return false;
                 }
 
-                // 3. G列（配信曜日_AppSheet）のみのチェック（カンマ区切り対応 & 本日の曜日または空欄）
+                // 3. G列（配信曜日_AppSheet）のチェック（カンマ区切りおよび時間表記に対応）
                 const days = (record['配信曜日_AppSheet'] || '').trim();
                 
                 if (days === '') {
                     return true; // 空欄の場合は通す
                 }
 
-                // カンマなどで分割して個別の曜日に分解（例: "金 , 月" -> ["金", "月"]）
-                const dayList = days.split(/[,、\s]+/).map(d => d.replace(/[^月火水木金土日]/g, '')).filter(Boolean);
+                // 文字列から「月」「火」「水」「木」「金」「土」「日」の文字だけを安全にすべて抽出する
+                const dayList = days.match(/[月火水木金土日]/g) || [];
                 
-                // 本日の曜日が含まれている場合
+                // 抽出された曜日のリストに本日の曜日が含まれている場合
                 if (dayList.includes(todayJa)) {
                     return true;
                 }
