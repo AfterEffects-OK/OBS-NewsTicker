@@ -17,6 +17,7 @@
             margin: 0;
             padding: 0;
         }
+
         .ticker-wrapper {
             position: absolute;
             top: 0;
@@ -31,6 +32,7 @@
             padding-bottom: 2rem;
             background: transparent !important;
         }
+
         .ticker-box {
             overflow: hidden;
             position: relative;
@@ -47,6 +49,7 @@
             height: 80px;
             border-radius: 0.75rem;
         }
+
         .ticker-content {
             white-space: nowrap;
             width: 100%;
@@ -60,6 +63,7 @@
             position: relative;
             overflow: hidden;
         }
+
         .ticker-badge {
             display: inline-flex;
             align-items: center;
@@ -72,12 +76,14 @@
             z-index: 10;
             overflow: hidden;
         }
+
         .ticker-badge img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             display: block;
         }
+
         .ticker-body-container {
             padding: 0 0.8rem;
             flex-grow: 1;
@@ -89,6 +95,7 @@
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: transform, opacity;
         }
+
         .ticker-header-text {
             font-size: 24px;
             opacity: 0.85;
@@ -99,6 +106,7 @@
             white-space: nowrap;
             font-weight: 700;
         }
+
         .ticker-main-text {
             font-size: 45px;
             font-weight: 500;
@@ -112,11 +120,13 @@
             text-overflow: clip;
             width: max-content;
         }
+
         .ticker-main-text.is-scrolling {
             overflow: visible !important;
             text-overflow: clip !important;
             white-space: nowrap !important;
         }
+
         /* Transition Classes */
         .slide-up-in { transform: translate3d(0, 0, 0); opacity: 1; }
         .slide-up-out-before { transform: translate3d(0, 100%, 0); opacity: 0; }
@@ -135,6 +145,7 @@
     </style>
 </head>
 <body class="h-screen w-screen relative bg-transparent">
+
     <div class="ticker-wrapper">
         <div id="tickerContainer" class="ticker-box rounded-xl">
             <span id="tickerIcon" class="ticker-badge"></span>
@@ -175,8 +186,8 @@
         let animationTimer = null;
         let scrollTimer = null;
         let isPlaying = false;
-
         const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
+
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
 
         function hexToRgba(hex, opacityPercent) {
@@ -190,8 +201,8 @@
         function loadConfig() {
             const saved = localStorage.getItem('obs_ticker_config');
             if (saved) {
-                try {
-                    currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(saved) };
+                try { 
+                    currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(saved) }; 
                 } catch(e) {}
             } else {
                 currentConfig = { ...DEFAULT_CONFIG };
@@ -212,12 +223,15 @@
             content.style.fontFamily = currentConfig.fontFamily;
             header.style.fontSize = `${currentConfig.headerFontSize}px`;
             header.style.color = currentConfig.headerTextColor;
+
             main.style.fontSize = `${currentConfig.mainFontSize}px`;
             main.style.fontWeight = currentConfig.mainFontWeight;
             main.style.color = currentConfig.mainTextColor;
+
             container.style.backgroundColor = hexToRgba(currentConfig.bgColor, currentConfig.bgOpacity);
             icon.style.backgroundColor = currentConfig.iconBgColor;
             icon.style.width = `${currentConfig.iconWidth}px`;
+
             container.style.width = `${currentConfig.width}px`;
             container.style.height = `${currentConfig.height}px`;
         }
@@ -238,9 +252,7 @@
                 const img = document.createElement('img');
                 img.src = iconValue;
                 img.alt = 'Icon';
-                img.onerror = () => {
-                    targetEl.textContent = '📢';
-                };
+                img.onerror = () => { targetEl.textContent = '📢'; };
                 targetEl.appendChild(img);
             } else {
                 targetEl.textContent = iconValue;
@@ -253,57 +265,52 @@
             let currentRow = [];
             let currentField = '';
             let insideQuote = false;
-            
+
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
                 const nextChar = text[i + 1];
-                
+
                 if (char === '"') {
-                    if (insideQuote && nextChar === '"') {
-                        currentField += '"';
-                        i++;
-                    } else {
-                        insideQuote = !insideQuote;
-                    }
+                    if (insideQuote && nextChar === '"') { currentField += '"'; i++; }
+                    else { insideQuote = !insideQuote; }
                 } else if (char === ',' && !insideQuote) {
-                    currentRow.push(currentField.trim());
-                    currentField = '';
+                    currentRow.push(currentField.trim()); currentField = '';
                 } else if ((char === '\r' || char === '\n') && !insideQuote) {
                     if (char === '\r' && nextChar === '\n') i++;
                     currentRow.push(currentField.trim());
-                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
-                        lines.push(currentRow);
-                    }
-                    currentRow = [];
-                    currentField = '';
-                } else {
-                    currentField += char;
-                }
+                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                    currentRow = []; currentField = '';
+                } else { currentField += char; }
             }
-            
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
-                    lines.push(currentRow);
-                }
+                if (lines.length > 0) lines.push(currentRow);
             }
-            
+
             if (lines.length < 2) return [];
-            
-            const headers = lines[0].map(h => h.replace(/^\uFEFF/, '').trim());
+            const headers = lines[0];
             const records = [];
-            
+
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
                 if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
-                
                 const record = {};
-                headers.forEach((h, idx) => {
-                    record[h] = row[idx] !== undefined ? row[idx].trim() : '';
-                });
+                headers.forEach((h, idx) => { record[h] = row[idx] !== undefined ? row[idx] : ''; });
+
+                let headerVal = '';
+                if (record['件名'] !== undefined && record['件名'].trim() !== '') {
+                    headerVal = record['件名'].trim();
+                }
+                record['件名'] = headerVal;
+
+                let dayVal = (record['配信曜日_AppSheet'] || record['配信曜日'] || '').trim();
+                record['配信曜日_AppSheet'] = dayVal;
+
+                const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
+                record.isStopped = stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes';
+
                 records.push(record);
             }
-            
             return records;
         }
 
@@ -333,7 +340,7 @@
 
             let displayIcon = currentConfig.iconInput || 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png';
             let displayText = record['配信内容'] || '';
-            let headerText = record['件名'] || '';
+            let headerText = record['件名'] || ''; 
 
             if (currentConfig.autoEmoji && displayText) {
                 const emojiMatch = displayText.match(/^([\p{Extended_Pictographic}\u2600-\u27BF])/u);
@@ -357,21 +364,13 @@
             let prepClass = 'slide-up-out-before';
 
             if (trans.includes('down')) {
-                outClass = 'slide-down-out-after';
-                inClass = 'slide-down-in';
-                prepClass = 'slide-down-out-before';
+                outClass = 'slide-down-out-after'; inClass = 'slide-down-in'; prepClass = 'slide-down-out-before';
             } else if (trans.includes('left')) {
-                outClass = 'slide-left-out-after';
-                inClass = 'slide-left-in';
-                prepClass = 'slide-left-out-before';
+                outClass = 'slide-left-out-after'; inClass = 'slide-left-in'; prepClass = 'slide-left-out-before';
             } else if (trans.includes('right')) {
-                outClass = 'slide-right-out-after';
-                inClass = 'slide-right-in';
-                prepClass = 'slide-right-out-before';
+                outClass = 'slide-right-out-after'; inClass = 'slide-right-in'; prepClass = 'slide-right-out-before';
             } else if (trans.includes('fade')) {
-                outClass = 'fade-out';
-                inClass = 'fade-in';
-                prepClass = 'fade-out';
+                outClass = 'fade-out'; inClass = 'fade-in'; prepClass = 'fade-out';
             }
 
             bodyContainer.className = `ticker-body-container ${outClass}`;
@@ -387,7 +386,6 @@
                     if (record['表示時間'] && !isNaN(parseInt(record['表示時間']))) {
                         defaultDurationSec = parseInt(record['表示時間']);
                     }
-
                     let totalDurationMs = defaultDurationSec * 1000;
 
                     setTimeout(() => {
@@ -401,7 +399,6 @@
                             const scrollDurationSec = scrollDistance / speed;
                             const scrollDurationMs = scrollDurationSec * 1000;
                             const requiredTimeMs = 1500 + scrollDurationMs + 1500;
-
                             if (requiredTimeMs > totalDurationMs) {
                                 totalDurationMs = requiredTimeMs;
                             }
@@ -422,14 +419,12 @@
 
         function playNextTicker() {
             if (activeRecords.length === 0) {
-                document.getElementById('tickerMain').textContent = '条件に合うデータがありません';
                 setTimeout(fetchDataAndPlay, 5000);
                 return;
             }
             if (currentIndex >= activeRecords.length) {
                 currentIndex = 0;
             }
-
             const currentRecord = activeRecords[currentIndex++];
             animateTicker(currentRecord, (durationSec) => {
                 clearTimeout(animationTimer);
@@ -438,22 +433,33 @@
         }
 
         function processRecords(rawRecords) {
-            const todayJa = weekDaysJa[new Date().getDay()]; // 本日の曜日（水など）
-            const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
+            const todayJa = weekDaysJa[new Date().getDay()];
+            // 設定パネルの選択モードをローカルストレージから取得
+            let selectedMode = 'ALL';
+            const savedConfig = localStorage.getItem('obs_ticker_config');
+            if (savedConfig) {
+                try {
+                    const parsed = JSON.parse(savedConfig);
+                    if (parsed.selectedMode) selectedMode = parsed.selectedMode;
+                } catch(e) {}
+            }
+            selectedMode = (selectedMode || 'ALL').trim();
 
             activeRecords = rawRecords.filter(record => {
-                // 1. D列（配信停止フラグ）のチェック
-                // 「TRUE」「はい」「1」などの場合は停止中とみなして除外する（FALSEや空欄は配信中とみなす）
-                const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
-                const isStopped = (stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes');
-                if (isStopped) return false;
+                if (selectedMode === 'ALL' && record.isStopped) {
+                    return false;
+                }
 
-                // 2. I列（配信モード）のチェック
-                let modeVal = '';
-                for (let key in record) {
-                    if (key.includes('配信モード')) {
-                        modeVal = (record[key] || '').trim();
-                        if (modeVal !== '') break;
+                let modeVal = (record['配信モード'] || '').trim();
+                if (!modeVal) {
+                    for (let key in record) {
+                        if (key.includes('配信モード')) {
+                            const val = (record[key] || '').trim();
+                            if (val !== '') {
+                                modeVal = val;
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -461,29 +467,9 @@
                     return false;
                 }
 
-                // 3. G列（配信曜日_AppSheet）のチェック
-                let daysVal = '';
-                for (let key in record) {
-                    if (key.includes('配信曜日_AppSheet')) {
-                        daysVal = (record[key] || '').trim();
-                        break;
-                    }
-                }
-                
-                // G列が空欄の場合は抽出対象にする
-                if (daysVal === '') {
-                    return true;
-                }
-
-                // 文字列から曜日の文字（月火水木金土日）をすべて抽出
-                const dayList = daysVal.match(/[月火水木金土日]/g) || [];
-                
-                // 抽出された曜日のリストに本日の曜日が含まれている場合
-                if (dayList.includes(todayJa)) {
-                    return true;
-                }
-
-                return false;
+                const days = record['配信曜日_AppSheet'] || record['配信曜日'] || '';
+                if (days.indexOf('不定期') !== -1 || days === '') return true;
+                return days.includes(todayJa);
             });
 
             if (currentIndex >= activeRecords.length) {
@@ -493,25 +479,26 @@
             if (!isPlaying && activeRecords.length > 0) {
                 isPlaying = true;
                 playNextTicker();
-            } else if (activeRecords.length > 0 && !animationTimer) {
-                playNextTicker();
             }
         }
 
-        async function fetchDataAndPlay() {
+        // GASが返す純粋なCSVテキストを直接受け取って処理する関数
+        function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
-            try {
-                const res = await fetch(cacheBustedUrl);
-                if (!res.ok) throw new Error(`HTTPエラー! ステータス: ${res.status}`);
-                const csv = await res.text();
-                
-                allRecords = parseCSV(csv);
-                processRecords(allRecords);
-            } catch (err) {
-                console.error('データ取得エラー:', err);
-                document.getElementById('tickerMain').textContent = 'データ取得エラー（再試行中...）';
-                setTimeout(fetchDataAndPlay, 5000);
-            }
+            fetch(cacheBustedUrl)
+                .then(res => {
+                    if (!res.ok) throw new Error('ネットワーク応答エラー: ' + res.status);
+                    return res.text();
+                })
+                .then(csvText => {
+                    allRecords = parseCSV(csvText);
+                    processRecords(allRecords);
+                })
+                .catch(err => {
+                    console.error('データ取得エラー:', err);
+                    document.getElementById('tickerMain').textContent = 'データ取得エラー: ' + err.message;
+                    setTimeout(fetchDataAndPlay, 5000);
+                });
         }
 
         window.onload = function() {
