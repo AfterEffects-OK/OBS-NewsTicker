@@ -13,7 +13,7 @@
         body {
             font-family: 'Noto Sans JP', sans-serif;
             background-color: transparent !important;
-            overflow: hidden;
+            overflow: visible;
             margin: 0;
             padding: 0;
         }
@@ -30,9 +30,9 @@
             pointer-events: none;
             padding-bottom: 2rem;
             background: transparent !important;
+            overflow: visible;
         }
         .ticker-box {
-            overflow: hidden;
             position: relative;
             transition: all 0.3s ease;
             box-sizing: border-box;
@@ -53,32 +53,39 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
         }
 
-        /* 枠のエッジ（デザイン）スタイル定義（角丸が消えないように擬似要素やグラデーションボーダーを最適化） */
+        /* 枠のエッジ（デザイン）スタイル定義 */
         .edge-default {
             border: 1px solid rgba(255, 255, 255, 0.18);
+            overflow: hidden;
         }
         .edge-gold {
             border: 3px solid transparent;
             background-image: linear-gradient(var(--bg-color, #0f172a), var(--bg-color, #0f172a)), linear-gradient(135deg, #bf953f, #fc6, #fbf5b7, #aa771c);
             background-origin: border-box;
             background-clip: padding-box, border-box;
+            overflow: hidden;
         }
         .edge-silver {
             border: 3px solid transparent;
             background-image: linear-gradient(var(--bg-color, #0f172a), var(--bg-color, #0f172a)), linear-gradient(135deg, #bdc3c7, #2c3e50, #ecf0f1, #bdc3c7);
             background-origin: border-box;
             background-clip: padding-box, border-box;
+            overflow: hidden;
         }
         .edge-stripe {
             border: 2px solid #ffffff;
             background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 10px, transparent 10px, transparent 20px);
+            overflow: hidden;
         }
         .edge-neon {
             border: 2px solid #22d3ee;
-            box-shadow: 0 0 15px #22d3ee, 0 0 30px rgba(34, 211, 238, 0.6), inset 0 0 15px #22d3ee !important;
+            /* 外側に強く広がる光芒（グロー効果）と内側への発光を同時定義 */
+            box-shadow: 0 0 10px #22d3ee, 0 0 25px #22d3ee, 0 0 50px rgba(34, 211, 238, 0.7), inset 0 0 15px #22d3ee !important;
+            overflow: visible !important;
         }
         .edge-double {
             border: 4px double rgba(255, 255, 255, 0.8);
+            overflow: hidden;
         }
 
         .ticker-content {
