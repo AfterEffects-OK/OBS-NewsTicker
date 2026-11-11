@@ -53,17 +53,21 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
         }
 
-        /* 枠のエッジ（デザイン）スタイル定義（box-sizing: border-boxにより外側に枠が広がるため内部が狭くなりません） */
+        /* 枠のエッジ（デザイン）スタイル定義（角丸が消えないように擬似要素やグラデーションボーダーを最適化） */
         .edge-default {
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
         .edge-gold {
-            border: 3px solid;
-            border-image: linear-gradient(135deg, #bf953f, #fc6, #fbf5b7, #fbf5b7, #aa771c) 1;
+            border: 3px solid transparent;
+            background-image: linear-gradient(var(--bg-color, #0f172a), var(--bg-color, #0f172a)), linear-gradient(135deg, #bf953f, #fc6, #fbf5b7, #aa771c);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
         }
         .edge-silver {
-            border: 3px solid;
-            border-image: linear-gradient(135deg, #bdc3c7, #2c3e50, #ecf0f1, #bdc3c7) 1;
+            border: 3px solid transparent;
+            background-image: linear-gradient(var(--bg-color, #0f172a), var(--bg-color, #0f172a)), linear-gradient(135deg, #bdc3c7, #2c3e50, #ecf0f1, #bdc3c7);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
         }
         .edge-stripe {
             border: 2px solid #ffffff;
@@ -71,7 +75,7 @@
         }
         .edge-neon {
             border: 2px solid #22d3ee;
-            box-shadow: 0 0 10px #22d3ee, inset 0 0 10px #22d3ee;
+            box-shadow: 0 0 15px #22d3ee, 0 0 30px rgba(34, 211, 238, 0.6), inset 0 0 15px #22d3ee !important;
         }
         .edge-double {
             border: 4px double rgba(255, 255, 255, 0.8);
@@ -242,7 +246,11 @@
             main.style.fontSize = `${currentConfig.mainFontSize}px`;
             main.style.fontWeight = currentConfig.mainFontWeight;
             main.style.color = currentConfig.mainTextColor;
-            container.style.backgroundColor = hexToRgba(currentConfig.bgColor, currentConfig.bgOpacity);
+            
+            const bgColorHex = currentConfig.bgColor || '#0f172a';
+            container.style.setProperty('--bg-color', bgColorHex);
+            container.style.backgroundColor = hexToRgba(bgColorHex, currentConfig.bgOpacity);
+
             icon.style.backgroundColor = currentConfig.iconBgColor;
             icon.style.width = `${currentConfig.iconWidth}px`;
             container.style.width = `${currentConfig.width}px`;
