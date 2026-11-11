@@ -45,7 +45,7 @@
             border-radius: 0.75rem;
         }
 
-        /* シャドウ（ドロップ影）の有無切り替え用クラス（CSSの優先度を高めに設定） */
+        /* シャドウ（ドロップ影）の有無切り替え用クラス */
         .ticker-box.box-shadow-off {
             box-shadow: none !important;
         }
@@ -53,7 +53,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
         }
 
-        /* 枠のエッジ（デザイン）スタイル定義 */
+        /* 枠のエッジ（デザイン）スタイル定義（box-sizing: border-boxにより外側に枠が広がるため内部が狭くなりません） */
         .edge-default {
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
