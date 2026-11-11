@@ -488,7 +488,10 @@
         function filterRecords() {
             const selectedMode = modeFilter.value;
             activeRecords = allRecords.filter(record => {
-                if (record.isStopped) return false;
+                // ★ モードで絞り込んでいるときは配信停止フラグを無視する
+                if (selectedMode === 'ALL' && record.isStopped) {
+                    return false;
+                }
 
                 let modeVal = (record['配信モード'] || '').trim();
                 if (!modeVal) {
@@ -504,7 +507,7 @@
                 }
 
                 if (selectedMode !== 'ALL' && modeVal !== selectedMode) return false;
-                return isScheduleMatched(record);
+                return isScheduleMatched(record); // 曜日チェックは有効
             });
 
             statTotal.textContent = allRecords.length;
