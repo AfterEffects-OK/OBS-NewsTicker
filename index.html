@@ -132,15 +132,18 @@
                             <span class="text-[10px] text-slate-500">※CSV個別の「表示時間」優先</span>
                         </div>
                         
-                        <!-- フォントファミリー (ボタン選択式：実際のフォントで表示) -->
+                        <!-- フォントファミリー選択 (全7種) -->
                         <div class="sm:col-span-2 lg:col-span-3">
                             <label class="block text-xs text-slate-400 mb-1.5">フォントファミリー</label>
-                            <input type="hidden" id="fontFamilySelect" value="'Kaisei Decol', serif">
+                            <input type="hidden" id="fontFamilySelect" value="'M PLUS Rounded 1c', sans-serif">
                             <div id="fontFamilyGroup" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                <button type="button" data-value="'Kaisei Decol', serif" style="font-family: 'Kaisei Decol', serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 transition text-left">Kaisei Decol</button>
-                                <button type="button" data-value="'Yusei Magic', sans-serif" style="font-family: 'Yusei Magic', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 transition text-left">Yusei Magic</button>
-                                <button type="button" data-value="'Stick', sans-serif" style="font-family: 'Stick', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 transition text-left">Stick</button>
-                                <button type="button" data-value="'DotGothic16', sans-serif" style="font-family: 'DotGothic16', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 transition text-left">DotGothic16</button>
+                                <button type="button" data-value="'M PLUS Rounded 1c', sans-serif" style="font-family: 'M PLUS Rounded 1c', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">M PLUS Rounded</button>
+                                <button type="button" data-value="'Noto Sans JP', sans-serif" style="font-family: 'Noto Sans JP', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">Noto Sans JP</button>
+                                <button type="button" data-value="'Kaisei Decol', serif" style="font-family: 'Kaisei Decol', serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">Kaisei Decol</button>
+                                <button type="button" data-value="'Yusei Magic', sans-serif" style="font-family: 'Yusei Magic', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">Yusei Magic</button>
+                                <button type="button" data-value="'Stick', sans-serif" style="font-family: 'Stick', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">Stick</button>
+                                <button type="button" data-value="'DotGothic16', sans-serif" style="font-family: 'DotGothic16', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">DotGothic16</button>
+                                <button type="button" data-value="serif" style="font-family: serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">明朝体</button>
                             </div>
                         </div>
                     </div>
@@ -176,7 +179,7 @@
                             </div>
                         </div>
 
-                        <!-- アニメーション選択 (ボタン式) -->
+                        <!-- アニメーション選択 -->
                         <div class="sm:col-span-2">
                             <label class="block text-slate-400 mb-1.5">アニメーション</label>
                             <input type="hidden" id="cfg_transition" value="csv">
@@ -199,7 +202,7 @@
                             <input type="number" id="cfg_mainFontSize" value="45" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
                         </div>
                         
-                        <!-- 本文フォント太さ選択 (ボタン式) -->
+                        <!-- 本文フォント太さ選択 -->
                         <div class="sm:col-span-2">
                             <label class="block text-slate-400 mb-1.5">本文 (下部) フォントの太さ</label>
                             <input type="hidden" id="cfg_mainFontWeight" value="500">
@@ -310,7 +313,7 @@
             width: 1300,
             height: 80,
             duration: 10,
-            fontFamily: "'Kaisei Decol', serif",
+            fontFamily: "'M PLUS Rounded 1c', sans-serif",
             transition: 'swipe-up',
             edgeStyle: 'default',
             shadow: 'none',
