@@ -701,15 +701,19 @@
                 reader.readAsText(file);
             });
 
-            modeFilter.addEventListener('change', filterRecords);
-            weekdayFilterCheck.addEventListener('change', filterRecords);
-
-            const bgOpacityInput = document.getElementById('cfg_bgOpacity');
-            const bgOpacityVal = document.getElementById('cfg_bgOpacityVal');
-            if (bgOpacityInput && bgOpacityVal) {
-                bgOpacityInput.addEventListener('input', () => {
-                    bgOpacityVal.textContent = `${bgOpacityInput.value}%`;
-                });
+            // 配信モード変更時にGASへ設定を保存する例
+            modeFilter.addEventListener('change', () => {
+                filterRecords();
+                
+                const selectedMode = modeFilter.value;
+                
+                // GASへ現在の設定をPOST送信して保存する
+                fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ action: 'saveConfig', selectedMode: selectedMode })
+                }).catch(err => console.error('設定保存エラー:', err));
+            });
             }
         };
 
