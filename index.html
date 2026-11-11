@@ -734,7 +734,8 @@
                 mainTextColor: document.getElementById('cfg_mainTextColor').value,
                 bgColor: document.getElementById('cfg_bgColor').value,
                 bgOpacity: document.getElementById('cfg_bgOpacity').value,
-                autoEmoji: document.getElementById('cfg_autoEmoji').checked
+                autoEmoji: document.getElementById('cfg_autoEmoji').checked,
+                selectedMode: document.getElementById('modeFilter').value
             };
             localStorage.setItem('obs_ticker_config', JSON.stringify(config));
         }
