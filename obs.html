@@ -34,7 +34,6 @@
         .ticker-box {
             overflow: hidden;
             position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
             box-sizing: border-box;
             flex-shrink: 0;
@@ -46,6 +45,14 @@
             border-radius: 0.75rem;
         }
 
+        /* シャドウ（ドロップ影）の有無切り替え用クラス（CSSの優先度を高めに設定） */
+        .ticker-box.box-shadow-off {
+            box-shadow: none !important;
+        }
+        .ticker-box.box-shadow-on {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+        }
+
         /* 枠のエッジ（デザイン）スタイル定義 */
         .edge-default {
             border: 1px solid rgba(255, 255, 255, 0.18);
@@ -53,25 +60,21 @@
         .edge-gold {
             border: 3px solid;
             border-image: linear-gradient(135deg, #bf953f, #fc6, #fbf5b7, #fbf5b7, #aa771c) 1;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4), inset 0 0 10px rgba(212, 175, 55, 0.3);
         }
         .edge-silver {
             border: 3px solid;
             border-image: linear-gradient(135deg, #bdc3c7, #2c3e50, #ecf0f1, #bdc3c7) 1;
-            box-shadow: 0 0 15px rgba(189, 195, 199, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.2);
         }
         .edge-stripe {
             border: 2px solid #ffffff;
             background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 10px, transparent 10px, transparent 20px);
-            box-shadow: 0 0 10px rgba(0,0,0,0.8);
         }
         .edge-neon {
             border: 2px solid #22d3ee;
-            box-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee, inset 0 0 10px #22d3ee;
+            box-shadow: 0 0 10px #22d3ee, inset 0 0 10px #22d3ee;
         }
         .edge-double {
             border: 4px double rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 15px rgba(0,0,0,0.6);
         }
 
         .ticker-content {
@@ -163,7 +166,7 @@
 </head>
 <body class="h-screen w-screen relative bg-transparent">
     <div class="ticker-wrapper">
-        <div id="tickerContainer" class="ticker-box rounded-xl edge-default">
+        <div id="tickerContainer" class="ticker-box rounded-xl edge-default box-shadow-off">
             <span id="tickerIcon" class="ticker-badge"></span>
             <div id="tickerContent" class="ticker-content font-bold text-white">
                 <div id="tickerBodyContainer" class="ticker-body-container slide-up-in">
@@ -182,6 +185,7 @@
             fontFamily: "'M PLUS Rounded 1c', sans-serif",
             transition: 'swipe-up',
             edgeStyle: 'default',
+            shadow: 'none',
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
@@ -223,9 +227,6 @@
                 currentConfig = { ...DEFAULT_CONFIG };
             }
             applyConfigToDOM();
-            if (activeRecords.length > 0) {
-                // 既存の再生状態を維持
-            }
         }
 
         function applyConfigToDOM() {
@@ -248,9 +249,18 @@
             container.style.height = `${currentConfig.height}px`;
 
             // エッジデザインスタイルの適用
-            container.className = "ticker-box rounded-xl";
             const edge = currentConfig.edgeStyle || 'default';
-            container.classList.add(`edge-${edge}`);
+            container.className = `ticker-box rounded-xl edge-${edge}`;
+
+            // シャドウ（影）の適用制御
+            const shadowVal = currentConfig.shadow || 'none';
+            if (shadowVal === 'shadow') {
+                container.classList.add('box-shadow-on');
+                container.classList.remove('box-shadow-off');
+            } else {
+                container.classList.add('box-shadow-off');
+                container.classList.remove('box-shadow-on');
+            }
         }
 
         let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
@@ -261,7 +271,6 @@
                 loadConfig();
             }
 
-            // 設定パネル側でフィルタリング・保存されたアクティブデータを自動で同期して読み込む
             const savedActiveRecords = localStorage.getItem('obs_active_records');
             if (savedActiveRecords) {
                 try {
@@ -473,7 +482,6 @@
                 const csv = await res.text();
                 
                 const parsed = parseCSV(csv);
-                // セーブデータ（フィルター後）があればそちらを優先、なければ全件
                 const savedActive = localStorage.getItem('obs_active_records');
                 if (savedActive) {
                     try {
