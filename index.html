@@ -349,9 +349,17 @@
                         }
                     } else {
                         buttons.forEach(b => {
-                            b.className = b.className.replace(/bg-indigo-600 border-indigo-500 font-bold text-white shadow/g, 'bg-slate-900 border-slate-700 text-slate-200');
+                            // 非選択状態のベースクラスに統一
+                            b.className = b.className.replace(/bg-indigo-600 border-indigo-500 font-bold text-white shadow/g, '').trim();
+                            if (!b.className.includes('bg-slate-900')) {
+                                b.className += ' bg-slate-900 border border-slate-700 text-slate-200';
+                            }
                         });
-                        btn.className = btn.className.replace(/bg-slate-900 border-slate-700 text-slate-200/g, '') + " bg-indigo-600 border border-indigo-500 text-white font-bold shadow";
+                        // 選択されたボタンにハイライトを付与
+                        btn.className = btn.className.replace(/bg-slate-900 border border-slate-700 text-slate-200/g, '').trim();
+                        if (!btn.className.includes('bg-indigo-600')) {
+                            btn.className += ' bg-indigo-600 border border-indigo-500 text-white font-bold shadow';
+                        }
                     }
                     
                     input.value = val;
@@ -412,8 +420,9 @@
                             b.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
                         }
                     } else {
+                        b.className = b.className.replace(/bg-slate-900 border border-slate-700 text-slate-200/g, '').trim();
                         if (!b.className.includes('bg-indigo-600')) {
-                            b.className = b.className.replace(/bg-slate-900 border-slate-700 text-slate-200/g, '') + " bg-indigo-600 border border-indigo-500 text-white font-bold shadow";
+                            b.className += ' bg-indigo-600 border border-indigo-500 text-white font-bold shadow';
                         }
                     }
                 } else {
@@ -423,7 +432,7 @@
                             b.className += ' border-slate-700';
                         }
                     } else {
-                        b.className = b.className.replace(/bg-indigo-600 border-indigo-500 font-bold text-white shadow/g, 'bg-slate-900 border-slate-700 text-slate-200');
+                        b.className = b.className.replace(/bg-indigo-600 border-indigo-500 font-bold text-white shadow/g, '').trim();
                         if (!b.className.includes('bg-slate-900')) {
                             b.className += ' bg-slate-900 border border-slate-700 text-slate-200';
                         }
