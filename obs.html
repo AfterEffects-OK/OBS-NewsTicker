@@ -77,10 +77,14 @@
             background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 10px, transparent 10px, transparent 20px);
             overflow: hidden;
         }
+        /* クリスマス風デザイン（ネオン発光の選択肢をクリスマス仕様に置き換え） */
         .edge-neon {
-            border: 2px solid #22d3ee;
-            /* 外側に強く広がる光芒（グロー効果）と内側への発光を同時定義 */
-            box-shadow: 0 0 10px #22d3ee, 0 0 25px #22d3ee, 0 0 50px rgba(34, 211, 238, 0.7), inset 0 0 15px #22d3ee !important;
+            border: 3px solid #f87171; /* クリスマスレッドのアクセントボーダー */
+            background-image: linear-gradient(var(--bg-color, #064e3b), var(--bg-color, #064e3b)), linear-gradient(135deg, #166534, #15803d, #dc2626, #b91c1c);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            /* 🎄 温かみのあるゴールドと赤・緑のホリデーグロー（光芒） */
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.7), 0 0 30px rgba(234, 179, 8, 0.5), inset 0 0 10px rgba(22, 101, 52, 0.8) !important;
             overflow: visible !important;
         }
         .edge-double {
@@ -308,7 +312,7 @@
                 const img = document.createElement('img');
                 img.src = iconValue;
                 img.alt = 'Icon';
-                img.onerror = () => { targetEl.textContent = '📢'; };
+                img.onerror = () => { targetEl.textContent = '🎄'; };
                 targetEl.appendChild(img);
             } else {
                 targetEl.textContent = iconValue;
@@ -368,7 +372,7 @@
             if (!record) {
                 tickerHeader.style.display = 'none';
                 tickerMain.textContent = '表示可能なニュース項目がありません';
-                renderIconElement(tickerIcon, 'ℹ️');
+                renderIconElement(tickerIcon, '🎄');
                 if (onComplete) onComplete(10);
                 return;
             }
