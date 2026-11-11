@@ -175,7 +175,6 @@
         let scrollTimer = null;
         let isPlaying = false;
 
-        const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
 
         function hexToRgba(hex, opacityPercent) {
@@ -300,7 +299,6 @@
                     '配信停止フラグ': row[3] || '',
                     'トランジション': row[4] || '',
                     '表示時間': row[5] || '',
-                    '配信曜日_AppSheet': row[6] || '',
                     '件名': row[10] || ''
                 };
                 records.push(record);
@@ -440,30 +438,16 @@
         }
 
         function processRecords(rawRecords) {
-            const todayJa = weekDaysJa[new Date().getDay()]; // 本日の曜日（水など）
-
             activeRecords = rawRecords.filter((record, index) => {
                 const row = record.rawRow || [];
                 const stopVal = (row[3] || '').trim().toUpperCase();
-                const daysVal = (row[6] || '').trim();
 
-                // 条件1: D列（配信停止フラグ）が TRUE、1、はい などの場合は除外する
+                // D列（配信停止フラグ）が TRUE、1、はい、YES などの場合は除外する（FALSEや空欄は通す）
                 if (stopVal === 'TRUE' || stopVal === '1' || stopVal === 'はい' || stopVal === 'YES') {
                     return false;
                 }
 
-                // 条件2: G列（配信曜日_AppSheet）が空欄の場合は通す
-                if (daysVal === '') {
-                    return true;
-                }
-
-                // 条件3: G列に本日の曜日が含まれている場合のみ通す
-                const dayList = daysVal.match(/[月火水木金土日]/g) || [];
-                if (dayList.includes(todayJa)) {
-                    return true;
-                }
-
-                return false;
+                return true;
             });
 
             console.log("【フィルター結果】アクティブデータ:", activeRecords);
