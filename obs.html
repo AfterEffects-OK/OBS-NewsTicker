@@ -34,19 +34,46 @@
         .ticker-box {
             overflow: hidden;
             position: relative;
-            box-shadow: none;
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
             box-sizing: border-box;
             flex-shrink: 0;
             padding: 0;
             display: flex;
             align-items: center;
-            background-color: rgba(30, 41, 59, 0.9);
             width: 1300px;
             height: 80px;
             border-radius: 0.75rem;
         }
+
+        /* 枠のエッジ（デザイン）スタイル定義 */
+        .edge-default {
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .edge-gold {
+            border: 3px solid;
+            border-image: linear-gradient(135deg, #bf953f, #fc6, #fbf5b7, #fbf5b7, #aa771c) 1;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4), inset 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        .edge-silver {
+            border: 3px solid;
+            border-image: linear-gradient(135deg, #bdc3c7, #2c3e50, #ecf0f1, #bdc3c7) 1;
+            box-shadow: 0 0 15px rgba(189, 195, 199, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        .edge-stripe {
+            border: 2px solid #ffffff;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 10px, transparent 10px, transparent 20px);
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        .edge-neon {
+            border: 2px solid #22d3ee;
+            box-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee, inset 0 0 10px #22d3ee;
+        }
+        .edge-double {
+            border: 4px double rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.6);
+        }
+
         .ticker-content {
             white-space: nowrap;
             width: 100%;
@@ -136,7 +163,7 @@
 </head>
 <body class="h-screen w-screen relative bg-transparent">
     <div class="ticker-wrapper">
-        <div id="tickerContainer" class="ticker-box rounded-xl">
+        <div id="tickerContainer" class="ticker-box rounded-xl edge-default">
             <span id="tickerIcon" class="ticker-badge"></span>
             <div id="tickerContent" class="ticker-content font-bold text-white">
                 <div id="tickerBodyContainer" class="ticker-body-container slide-up-in">
@@ -154,6 +181,7 @@
             duration: 10,
             fontFamily: "'M PLUS Rounded 1c', sans-serif",
             transition: 'swipe-up',
+            edgeStyle: 'default',
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
@@ -175,7 +203,6 @@
         let scrollTimer = null;
         let isPlaying = false;
 
-        const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
 
         function hexToRgba(hex, opacityPercent) {
@@ -196,8 +223,8 @@
                 currentConfig = { ...DEFAULT_CONFIG };
             }
             applyConfigToDOM();
-            if (allRecords.length > 0) {
-                processRecords(allRecords);
+            if (activeRecords.length > 0) {
+                // 既存の再生状態を維持
             }
         }
 
@@ -219,6 +246,11 @@
             icon.style.width = `${currentConfig.iconWidth}px`;
             container.style.width = `${currentConfig.width}px`;
             container.style.height = `${currentConfig.height}px`;
+
+            // エッジデザインスタイルの適用
+            container.className = "ticker-box rounded-xl";
+            const edge = currentConfig.edgeStyle || 'default';
+            container.classList.add(`edge-${edge}`);
         }
 
         let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
@@ -227,6 +259,21 @@
             if (currentStr !== lastConfigStr) {
                 lastConfigStr = currentStr;
                 loadConfig();
+            }
+
+            // 設定パネル側でフィルタリング・保存されたアクティブデータを自動で同期して読み込む
+            const savedActiveRecords = localStorage.getItem('obs_active_records');
+            if (savedActiveRecords) {
+                try {
+                    const parsed = JSON.parse(savedActiveRecords);
+                    if (JSON.stringify(parsed) !== JSON.stringify(activeRecords)) {
+                        activeRecords = parsed;
+                        if (!isPlaying && activeRecords.length > 0) {
+                            isPlaying = true;
+                            playNextTicker();
+                        }
+                    }
+                } catch(e) {}
             }
         }, 500);
 
@@ -237,9 +284,7 @@
                 const img = document.createElement('img');
                 img.src = iconValue;
                 img.alt = 'Icon';
-                img.onerror = () => {
-                    targetEl.textContent = '📢';
-                };
+                img.onerror = () => { targetEl.textContent = '📢'; };
                 targetEl.appendChild(img);
             } else {
                 targetEl.textContent = iconValue;
@@ -258,54 +303,35 @@
                 const nextChar = text[i + 1];
                 
                 if (char === '"') {
-                    if (insideQuote && nextChar === '"') {
-                        currentField += '"';
-                        i++;
-                    } else {
-                        insideQuote = !insideQuote;
-                    }
+                    if (insideQuote && nextChar === '"') { currentField += '"'; i++; }
+                    else { insideQuote = !insideQuote; }
                 } else if (char === ',' && !insideQuote) {
-                    currentRow.push(currentField.trim());
-                    currentField = '';
+                    currentRow.push(currentField.trim()); currentField = '';
                 } else if ((char === '\r' || char === '\n') && !insideQuote) {
                     if (char === '\r' && nextChar === '\n') i++;
                     currentRow.push(currentField.trim());
-                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
-                        lines.push(currentRow);
-                    }
-                    currentRow = [];
-                    currentField = '';
-                } else {
-                    currentField += char;
-                }
+                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                    currentRow = []; currentField = '';
+                } else { currentField += char; }
             }
-            
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
-                if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
-                    lines.push(currentRow);
-                }
+                if (lines.length > 0) lines.push(currentRow);
             }
-            
             if (lines.length < 2) return [];
-            
+
+            const headers = lines[0];
             const records = [];
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
                 if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
                 
-                const record = {
-                    rawRow: row,
-                    '配信内容': row[1] || '',
-                    '配信停止フラグ': row[3] || '',
-                    'トランジション': row[4] || '',
-                    '表示時間': row[5] || '',
-                    '配信曜日_AppSheet': row[6] || '',
-                    '件名': row[10] || ''
-                };
+                const record = {};
+                headers.forEach((h, idx) => {
+                    record[h] = row[idx] !== undefined ? row[idx] : '';
+                });
                 records.push(record);
             }
-            
             return records;
         }
 
@@ -439,47 +465,6 @@
             });
         }
 
-        function processRecords(rawRecords) {
-            const todayJa = weekDaysJa[new Date().getDay()]; // 本日の曜日
-
-            activeRecords = rawRecords.filter((record, index) => {
-                const row = record.rawRow || [];
-                const stopVal = (row[3] || '').trim().toUpperCase();
-                const daysVal = (row[6] || '').trim();
-
-                // 1. D列（配信停止フラグ）が TRUE、1、はい、YES などの場合は除外する
-                if (stopVal === 'TRUE' || stopVal === '1' || stopVal === 'はい' || stopVal === 'YES') {
-                    return false;
-                }
-
-                // 2. G列（配信曜日_AppSheet）が空欄の場合は無条件に通す
-                if (daysVal === '') {
-                    return true;
-                }
-
-                // 3. G列に本日の曜日が含まれている場合のみ通す
-                const dayList = daysVal.match(/[月火水木金土日]/g) || [];
-                if (dayList.includes(todayJa)) {
-                    return true;
-                }
-
-                return false;
-            });
-
-            console.log("【フィルター結果】アクティブデータ:", activeRecords);
-
-            if (currentIndex >= activeRecords.length) {
-                currentIndex = 0;
-            }
-
-            if (!isPlaying && activeRecords.length > 0) {
-                isPlaying = true;
-                playNextTicker();
-            } else if (activeRecords.length > 0 && !animationTimer) {
-                playNextTicker();
-            }
-        }
-
         async function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             try {
@@ -487,8 +472,25 @@
                 if (!res.ok) throw new Error(`HTTPエラー! ステータス: ${res.status}`);
                 const csv = await res.text();
                 
-                allRecords = parseCSV(csv);
-                processRecords(allRecords);
+                const parsed = parseCSV(csv);
+                // セーブデータ（フィルター後）があればそちらを優先、なければ全件
+                const savedActive = localStorage.getItem('obs_active_records');
+                if (savedActive) {
+                    try {
+                        activeRecords = JSON.parse(savedActive);
+                    } catch(e) {
+                        activeRecords = parsed;
+                    }
+                } else {
+                    activeRecords = parsed;
+                }
+
+                if (!isPlaying && activeRecords.length > 0) {
+                    isPlaying = true;
+                    playNextTicker();
+                } else if (activeRecords.length > 0 && !animationTimer) {
+                    playNextTicker();
+                }
             } catch (err) {
                 console.error('データ取得エラー:', err);
                 document.getElementById('tickerMain').textContent = 'データ取得エラー（再試行中...）';
