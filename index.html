@@ -3,175 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS ライブプレビュー出力</title>
+    <title>OBS ニュースティッカー 設定パネル</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: transparent !important;
-            overflow: hidden;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
             margin: 0;
             padding: 0;
         }
-        .ticker-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            pointer-events: none;
-            padding-bottom: 2rem;
-            background: transparent !important;
-        }
-        .ticker-box {
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            width: 1300px;
-            height: 80px;
-            border-radius: 0.75rem;
-        }
-
-        /* 枠のエッジ（デザイン）スタイル定義 */
-        .edge-default {
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-        .edge-gold {
-            border: 3px solid;
-            border-image: linear-gradient(135deg, #bf953f, #fc6, #fbf5b7, #fbf5b7, #aa771c) 1;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4), inset 0 0 10px rgba(212, 175, 55, 0.3);
-        }
-        .edge-silver {
-            border: 3px solid;
-            border-image: linear-gradient(135deg, #bdc3c7, #2c3e50, #ecf0f1, #bdc3c7) 1;
-            box-shadow: 0 0 15px rgba(189, 195, 199, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.2);
-        }
-        .edge-stripe {
-            border: 2px solid #ffffff;
-            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 10px, transparent 10px, transparent 20px);
-            box-shadow: 0 0 10px rgba(0,0,0,0.8);
-        }
-        .edge-neon {
-            border: 2px solid #22d3ee;
-            box-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee, inset 0 0 10px #22d3ee;
-        }
-        .edge-double {
-            border: 4px double rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 15px rgba(0,0,0,0.6);
-        }
-
-        .ticker-content {
-            white-space: nowrap;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0;
-            box-sizing: border-box;
-            gap: 0;
-            position: relative;
-            overflow: hidden;
-        }
-        .ticker-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            height: 100%;
-            aspect-ratio: 1 / 1;
-            padding: 4px;
-            box-sizing: border-box;
-            z-index: 10;
-            overflow: hidden;
-        }
-        .ticker-badge img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
-        .ticker-body-container {
-            padding: 0 0.8rem;
-            flex-grow: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform, opacity;
-        }
-        .ticker-header-text {
-            font-size: 24px;
-            opacity: 0.85;
-            color: #fde047;
-            line-height: 1.2;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-weight: 700;
-        }
-        .ticker-main-text {
-            font-size: 45px;
-            font-weight: 500;
-            color: #ffffff;
-            line-height: 1.2;
-            white-space: nowrap;
-            display: inline-block;
-            transition: transform 0.1s linear;
-            will-change: transform;
-            overflow: visible;
-            text-overflow: clip;
-            width: max-content;
-        }
-        .ticker-main-text.is-scrolling {
-            overflow: visible !important;
-            text-overflow: clip !important;
-            white-space: nowrap !important;
-        }
-        /* Transition Classes */
-        .slide-up-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .slide-up-out-before { transform: translate3d(0, 100%, 0); opacity: 0; }
-        .slide-up-out-after { transform: translate3d(0, -100%, 0); opacity: 0; }
-        .slide-down-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .slide-down-out-before { transform: translate3d(0, -100%, 0); opacity: 0; }
-        .slide-down-out-after { transform: translate3d(0, 100%, 0); opacity: 0; }
-        .slide-left-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .slide-left-out-before { transform: translate3d(100%, 0, 0); opacity: 0; }
-        .slide-left-out-after { transform: translate3d(-100%, 0, 0); opacity: 0; }
-        .slide-right-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .slide-right-out-before { transform: translate3d(-100%, 0, 0); opacity: 0; }
-        .slide-right-out-after { transform: translate3d(100%, 0, 0); opacity: 0; }
-        .fade-in { transform: translate3d(0, 0, 0); opacity: 1; }
-        .fade-out { transform: translate3d(0, 0, 0); opacity: 0; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
     </style>
 </head>
-<body class="h-screen w-screen relative bg-transparent">
-    <div class="ticker-wrapper">
-        <div id="tickerContainer" class="ticker-box rounded-xl edge-default">
-            <span id="tickerIcon" class="ticker-badge"></span>
-            <div id="tickerContent" class="ticker-content font-bold text-white">
-                <div id="tickerBodyContainer" class="ticker-body-container slide-up-in">
-                    <div id="tickerHeader" class="ticker-header-text"></div>
-                    <div id="tickerMain" class="ticker-main-text">データを読み込み中...</div>
-                </div>
+<body class="min-h-screen p-6 md:p-10">
+
+    <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700 pb-4 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-300">
+                    OBS ニュースティッカー 設定パネル
+                </h1>
+                <p class="text-sm text-slate-400 mt-1">
+                    OBSのブラウザソースには、下記の専用URL（背景完全透過）を設定してください。
+                </p>
+            </div>
+            <div>
+                <a id="obsUrlLink" href="#" target="_blank" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 font-bold text-xs rounded-lg transition-colors shadow flex items-center gap-2 text-white">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                    OBS用プレビュー画面を別タブで確認
+                </a>
             </div>
         </div>
+
+        <!-- OBS Source URL Info Box -->
+        <div class="bg-slate-800/90 border border-emerald-500/40 p-4 rounded-2xl shadow-xl space-y-2">
+            <div class="text-xs font-bold text-emerald-300 flex items-center gap-2">
+                <i data-lucide="link" class="w-4 h-4"></i> OBS ブラウザソース用 URL (obs.html)
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="text" id="obsUrlInput" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 font-mono select-all" value="読み込み中...">
+                <button id="copyUrlBtn" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-xs font-bold rounded-lg transition text-white shrink-0">
+                    コピー
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Layout Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Status & Filters -->
+            <div class="space-y-6 lg:col-span-1">
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
+                    <h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-indigo-300">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i> GASデータ連携ステータス
+                    </h2>
+                    <button id="reloadGasBtn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded-lg transition text-white shadow flex items-center justify-center gap-2">
+                        <i data-lucide="rotate-cw" class="w-4 h-4"></i> スプレッドシートから再読み込み
+                    </button>
+                    <p class="text-[10px] text-slate-400 mt-2 text-center">※3分ごとに自動でバックグラウンド同期されます</p>
+                    
+                    <div class="mt-4">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">CSVデータ読み込み:</label>
+                        <div id="dropZone" class="border-2 border-dashed border-slate-600 hover:border-indigo-500 rounded-lg p-4 text-center cursor-pointer transition bg-slate-900/50 mb-3">
+                            <p class="text-xs text-slate-300">CSVファイルをドラッグ＆ドロップ</p>
+                            <p class="text-[10px] text-slate-500 mt-1">またはクリックしてファイル選択</p>
+                            <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                        </div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">または CSVテキストを直接貼り付け:</label>
+                        <textarea id="csvTextArea" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 font-mono" placeholder="読み込み中..."></textarea>
+                        <button id="applyCsvTextBtn" class="w-full mt-2 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg transition text-white">テキストを反映</button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                    <h2 class="text-lg font-bold text-indigo-300 flex items-center gap-2">
+                        <i data-lucide="filter" class="w-5 h-5"></i> 配信フィルタ設定
+                    </h2>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">配信モードで絞り込み</label>
+                        <select id="modeFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200">
+                            <option value="ALL">すべての配信モード</option>
+                        </select>
+                    </div>
+                    <div class="pt-2 border-t border-slate-700/60">
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" id="weekdayFilterCheck" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700">
+                            <span>現在の曜日（<span id="currentWeekdayLabel" class="text-amber-400 font-bold"></span>）で自動絞り込み</span>
+                        </label>
+                    </div>
+                    <div class="pt-2 border-t border-slate-700/60 text-xs text-slate-400 space-y-1">
+                        <div class="flex justify-between"><span>総レコード数:</span> <span id="statTotal" class="font-bold text-slate-200">0</span></div>
+                        <div class="flex justify-between"><span>表示対象数:</span> <span id="statActive" class="font-bold text-indigo-400">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Settings & Data Preview Table -->
+            <div class="space-y-6 lg:col-span-2">
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                    <h2 class="text-lg font-bold text-indigo-300 flex items-center gap-2">
+                        <i data-lucide="sliders" class="w-5 h-5"></i> ティッカー枠 & 共通設定
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">枠の横幅 (px)</label>
+                            <input type="number" id="tickerWidthInput" value="1300" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">枠の高さ (px)</label>
+                            <input type="number" id="tickerHeightInput" value="80" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">表示時間（秒/件）</label>
+                            <input type="number" id="displayDuration" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
+                            <span class="text-[10px] text-slate-500">※CSV個別の「表示時間」優先</span>
+                        </div>
+                        
+                        <!-- フォントファミリー (ボタン選択式) -->
+                        <div class="sm:col-span-2 lg:col-span-3">
+                            <label class="block text-xs text-slate-400 mb-1.5">フォントファミリー</label>
+                            <input type="hidden" id="fontFamilySelect" value="'M PLUS Rounded 1c', sans-serif">
+                            <div id="fontFamilyGroup" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button type="button" data-value="'Noto Sans JP', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">Noto Sans JP</button>
+                                <button type="button" data-value="'M PLUS Rounded 1c', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">M PLUS Rounded</button>
+                                <button type="button" data-value="sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">ゴシック体</button>
+                                <button type="button" data-value="serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">明朝体</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                    <h3 class="text-md font-bold text-amber-400 flex items-center gap-2 border-b border-slate-700 pb-2">
+                        <i data-lucide="palette" class="w-4 h-4"></i> デザイン & アイコン設定
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        
+                        <!-- アニメーション選択 (ボタン式) -->
+                        <div class="sm:col-span-2">
+                            <label class="block text-slate-400 mb-1.5">アニメーション</label>
+                            <input type="hidden" id="cfg_transition" value="csv">
+                            <div id="transitionGroup" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <button type="button" data-value="csv" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">CSV指定に従う</button>
+                                <button type="button" data-value="swipe-up" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">上スライド</button>
+                                <button type="button" data-value="swipe-down" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">下スライド</button>
+                                <button type="button" data-value="swipe-left" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">左スライド</button>
+                                <button type="button" data-value="swipe-right" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">右スライド</button>
+                                <button type="button" data-value="fade" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">フェード</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-400 mb-1">件名 (上部) 文字サイズ</label>
+                            <input type="number" id="cfg_headerFontSize" value="24" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">本文 (下部) 文字サイズ</label>
+                            <input type="number" id="cfg_mainFontSize" value="45" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
+                        </div>
+                        
+                        <!-- 本文フォント太さ選択 (ボタン式) -->
+                        <div class="sm:col-span-2">
+                            <label class="block text-slate-400 mb-1.5">本文 (下部) フォントの太さ</label>
+                            <input type="hidden" id="cfg_mainFontWeight" value="500">
+                            <div id="fontWeightGroup" class="grid grid-cols-5 gap-1.5">
+                                <button type="button" data-value="400" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition text-center">標準(400)</button>
+                                <button type="button" data-value="500" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition text-center">中太(500)</button>
+                                <button type="button" data-value="700" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition text-center">太字(700)</button>
+                                <button type="button" data-value="800" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition text-center">極太(800)</button>
+                                <button type="button" data-value="900" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition text-center">超極太(900)</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-400 mb-1">デフォルト アイコン (画像URL or 絵文字)</label>
+                            <input type="text" id="cfg_iconInput" value="https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">アイコン領域幅 (px)</label>
+                            <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
+                        </div>
+
+                        <!-- カラーパレット（確実なインライン背景色つきボタン選択式） -->
+                        <div>
+                            <label class="block text-slate-400 mb-1">アイコン背景色</label>
+                            <input type="hidden" id="cfg_iconBgColor" value="#0f172a">
+                            <div id="iconBgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダーク"></button>
+                                <button type="button" data-color="#3b82f6" style="background-color: #3b82f6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ブルー"></button>
+                                <button type="button" data-color="#ef4444" style="background-color: #ef4444;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="レッド"></button>
+                                <button type="button" data-color="#10b981" style="background-color: #10b981;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グリーン"></button>
+                                <button type="button" data-color="#f59e0b" style="background-color: #f59e0b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="オレンジ"></button>
+                                <button type="button" data-color="#8b5cf6" style="background-color: #8b5cf6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="パープル"></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-400 mb-1">件名 (上部) 文字色</label>
+                            <input type="hidden" id="cfg_headerTextColor" value="#fde047">
+                            <div id="headerTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
+                                <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
+                                <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
+                                <button type="button" data-color="#6ee7b7" style="background-color: #6ee7b7;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトグリーン"></button>
+                                <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-400 mb-1">本文 (下部) 文字色</label>
+                            <input type="hidden" id="cfg_mainTextColor" value="#ffffff">
+                            <div id="mainTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
+                                <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
+                                <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
+                                <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
+                                <button type="button" data-color="#cbd5e1" style="background-color: #cbd5e1;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グレー"></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-400 mb-1">枠の背景色</label>
+                            <input type="hidden" id="cfg_bgColor" value="#0f172a">
+                            <div id="bgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="黒に近いダーク"></button>
+                                <button type="button" data-color="#1e293b" style="background-color: #1e293b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="スレート"></button>
+                                <button type="button" data-color="#1e3a8a" style="background-color: #1e3a8a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ネイビー"></button>
+                                <button type="button" data-color="#701a75" style="background-color: #701a75;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ディープパープル"></button>
+                                <button type="button" data-color="#065f46" style="background-color: #065f46;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダークグリーン"></button>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>背景不透明度</span>
+                                <span id="cfg_bgOpacityVal">90%</span>
+                            </div>
+                            <input type="range" id="cfg_bgOpacity" min="0" max="100" value="90" class="w-full accent-indigo-500">
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-700/60">
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" id="cfg_autoEmoji" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700">
+                            <span>文章先頭の絵文字を自動抽出してアイコン化</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Data Preview Table -->
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
+                    <h2 class="text-lg font-bold mb-3 text-indigo-300 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i data-lucide="list" class="w-5 h-5"></i> 読み込み中データ一覧 ※スプレッドシートの全カラム・全データをそのまま表示</span>
+                    </h2>
+                    <div class="max-h-64 overflow-y-auto overflow-x-auto border border-slate-700 rounded-lg">
+                        <table id="previewTable" class="w-full text-left text-xs text-slate-300 whitespace-nowrap">
+                            <thead id="previewTableHead" class="bg-slate-900/90 text-slate-400 sticky top-0 border-b border-slate-700 z-10"></thead>
+                            <tbody id="previewTableBody" class="divide-y divide-slate-700/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
     <script>
@@ -181,7 +288,6 @@
             duration: 10,
             fontFamily: "'M PLUS Rounded 1c', sans-serif",
             transition: 'swipe-up',
-            edgeStyle: 'default',
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
@@ -195,86 +301,130 @@
             autoEmoji: true
         };
 
-        let currentConfig = { ...DEFAULT_CONFIG };
-        let allRecords = [];
-        let activeRecords = [];
-        let currentIndex = 0;
-        let animationTimer = null;
-        let scrollTimer = null;
-        let isPlaying = false;
+        function setupButtonSelector(groupId, inputId, isColorGroup = false) {
+            const container = document.getElementById(groupId);
+            const input = document.getElementById(inputId);
+            if (!container || !input) return;
+            const buttons = container.querySelectorAll('button');
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = isColorGroup ? btn.getAttribute('data-color') : btn.getAttribute('data-value');
+                    
+                    if (isColorGroup) {
+                        buttons.forEach(b => {
+                            b.className = b.className.replace(/border-amber-400 scale-110 ring-2 ring-amber-400\/50/g, 'border-slate-700');
+                        });
+                        if (!btn.className.includes('border-amber-400')) {
+                            btn.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
+                        }
+                    } else {
+                        buttons.forEach(b => {
+                            b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
+                        });
+                        btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
+                    }
+                    
+                    input.value = val;
+                    input.dispatchEvent(new Event('change'));
+                    saveConfig();
+                });
+            });
+        }
+
+        function initFormValues() {
+            const saved = localStorage.getItem('obs_ticker_config');
+            const config = saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
+
+            document.getElementById('tickerWidthInput').value = config.width;
+            document.getElementById('tickerHeightInput').value = config.height;
+            document.getElementById('displayDuration').value = config.duration;
+            
+            document.getElementById('fontFamilySelect').value = config.fontFamily;
+            document.getElementById('cfg_transition').value = config.transition;
+            document.getElementById('cfg_mainFontWeight').value = config.mainFontWeight;
+
+            document.getElementById('cfg_headerFontSize').value = config.headerFontSize;
+            document.getElementById('cfg_mainFontSize').value = config.mainFontSize;
+            document.getElementById('cfg_iconInput').value = config.iconInput;
+            document.getElementById('cfg_iconWidth').value = config.iconWidth;
+            
+            document.getElementById('cfg_iconBgColor').value = config.iconBgColor;
+            document.getElementById('cfg_headerTextColor').value = config.headerTextColor;
+            document.getElementById('cfg_mainTextColor').value = config.mainTextColor;
+            document.getElementById('cfg_bgColor').value = config.bgColor;
+
+            document.getElementById('cfg_bgOpacity').value = config.bgOpacity;
+            document.getElementById('cfg_bgOpacityVal').textContent = `${config.bgOpacity}%`;
+            document.getElementById('cfg_autoEmoji').checked = config.autoEmoji;
+
+            syncButtonActiveState('fontFamilyGroup', config.fontFamily, false);
+            syncButtonActiveState('transitionGroup', config.transition, false);
+            syncButtonActiveState('fontWeightGroup', config.mainFontWeight, false);
+
+            syncButtonActiveState('iconBgColorGroup', config.iconBgColor, true);
+            syncButtonActiveState('headerTextColorGroup', config.headerTextColor, true);
+            syncButtonActiveState('mainTextColorGroup', config.mainTextColor, true);
+            syncButtonActiveState('bgColorGroup', config.bgColor, true);
+        }
+
+        function syncButtonActiveState(groupId, value, isColorGroup) {
+            const container = document.getElementById(groupId);
+            if (!container) return;
+            container.querySelectorAll('button').forEach(b => {
+                const bVal = isColorGroup ? b.getAttribute('data-color') : b.getAttribute('data-value');
+                if (bVal === value) {
+                    if (isColorGroup) {
+                        if (!b.className.includes('border-amber-400')) {
+                            b.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
+                        }
+                    } else {
+                        b.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
+                    }
+                } else {
+                    if (isColorGroup) {
+                        b.className = b.className.replace(/border-amber-400 scale-110 ring-2 ring-amber-400\/50/g, '').trim();
+                        if (!b.className.includes('border-slate-700')) {
+                            b.className += ' border-slate-700';
+                        }
+                    } else {
+                        b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
+                    }
+                }
+            });
+        }
 
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
+        
+        const obsUrl = 'https://aftereffects-ok.github.io/OBS-NewsTicker/obs.html';
+        document.getElementById('obsUrlInput').value = obsUrl;
+        document.getElementById('obsUrlLink').href = obsUrl;
 
-        function hexToRgba(hex, opacityPercent) {
-            const num = parseInt((hex || '#0f172a').replace('#', ''), 16);
-            const r = (num >> 16) & 255;
-            const g = (num >> 8) & 255;
-            const b = num & 255;
-            return `rgba(${r}, ${g}, ${b}, ${opacityPercent / 100})`;
-        }
+        document.getElementById('copyUrlBtn').addEventListener('click', () => {
+            const input = document.getElementById('obsUrlInput');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            alert('OBS用URLをコピーしました！');
+        });
 
-        function loadConfig() {
-            const saved = localStorage.getItem('obs_ticker_config');
-            if (saved) {
-                try {
-                    currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(saved) };
-                } catch(e) {}
-            } else {
-                currentConfig = { ...DEFAULT_CONFIG };
-            }
-            applyConfigToDOM();
-            if (allRecords.length > 0) {
-                processRecords(allRecords);
-            }
-        }
+        let rawCSVHeaders = [];
+        let allRecords = [];
+        let activeRecords = [];
+        const weekDaysJa = ['日', '月', '火', '水', '木', '金', '土'];
 
-        function applyConfigToDOM() {
-            const container = document.getElementById('tickerContainer');
-            const content = document.getElementById('tickerContent');
-            const header = document.getElementById('tickerHeader');
-            const main = document.getElementById('tickerMain');
-            const icon = document.getElementById('tickerIcon');
-
-            content.style.fontFamily = currentConfig.fontFamily;
-            header.style.fontSize = `${currentConfig.headerFontSize}px`;
-            header.style.color = currentConfig.headerTextColor;
-            main.style.fontSize = `${currentConfig.mainFontSize}px`;
-            main.style.fontWeight = currentConfig.mainFontWeight;
-            main.style.color = currentConfig.mainTextColor;
-            container.style.backgroundColor = hexToRgba(currentConfig.bgColor, currentConfig.bgOpacity);
-            icon.style.backgroundColor = currentConfig.iconBgColor;
-            icon.style.width = `${currentConfig.iconWidth}px`;
-            container.style.width = `${currentConfig.width}px`;
-            container.style.height = `${currentConfig.height}px`;
-
-            // エッジデザインスタイルの適用
-            container.className = "ticker-box rounded-xl";
-            const edge = currentConfig.edgeStyle || 'default';
-            container.classList.add(`edge-${edge}`);
-        }
-
-        let lastConfigStr = localStorage.getItem('obs_ticker_config') || '';
-        setInterval(() => {
-            const currentStr = localStorage.getItem('obs_ticker_config') || '';
-            if (currentStr !== lastConfigStr) {
-                lastConfigStr = currentStr;
-                loadConfig();
-            }
-        }, 500);
-
-        function renderIconElement(targetEl, iconValue) {
-            targetEl.innerHTML = '';
-            if (!iconValue) return;
-            if (iconValue.startsWith('http://') || iconValue.startsWith('https://')) {
-                const img = document.createElement('img');
-                img.src = iconValue;
-                img.alt = 'Icon';
-                img.onerror = () => { targetEl.textContent = '📢'; };
-                targetEl.appendChild(img);
-            } else {
-                targetEl.textContent = iconValue;
-            }
-        }
+        const reloadGasBtn = document.getElementById('reloadGasBtn');
+        const csvTextArea = document.getElementById('csvTextArea');
+        const applyCsvTextBtn = document.getElementById('applyCsvTextBtn');
+        const csvFileInput = document.getElementById('csvFileInput');
+        const dropZone = document.getElementById('dropZone');
+        const modeFilter = document.getElementById('modeFilter');
+        const weekdayFilterCheck = document.getElementById('weekdayFilterCheck');
+        const currentWeekdayLabel = document.getElementById('currentWeekdayLabel');
+        const displayDuration = document.getElementById('displayDuration');
+        const previewTableHead = document.getElementById('previewTableHead');
+        const previewTableBody = document.getElementById('previewTableBody');
+        const statTotal = document.getElementById('statTotal');
+        const statActive = document.getElementById('statActive');
 
         function parseCSV(text) {
             if (!text || !text.trim()) return [];
@@ -282,11 +432,11 @@
             let currentRow = [];
             let currentField = '';
             let insideQuote = false;
-            
+
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
                 const nextChar = text[i + 1];
-                
+
                 if (char === '"') {
                     if (insideQuote && nextChar === '"') { currentField += '"'; i++; }
                     else { insideQuote = !insideQuote; }
@@ -303,199 +453,313 @@
                 currentRow.push(currentField.trim());
                 if (lines.length > 0) lines.push(currentRow);
             }
+
             if (lines.length < 2) return [];
-            
+
+            rawCSVHeaders = lines[0];
             const records = [];
+
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
                 if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
-                
-                const record = {
-                    rawRow: row,
-                    '配信内容': row[1] || '',
-                    '配信停止フラグ': row[3] || '',
-                    'トランジション': row[4] || '',
-                    '表示時間': row[5] || '',
-                    '件名': row[10] || ''
-                };
+
+                const record = { _rawRow: row };
+                rawCSVHeaders.forEach((h, idx) => {
+                    record[h] = row[idx] !== undefined ? row[idx] : '';
+                });
+
+                let dayVal = '';
+                if (record['配信曜日_AppSheet'] && record['配信曜日_AppSheet'].trim() !== '') {
+                    dayVal = record['配信曜日_AppSheet'].trim();
+                } else if (record['配信曜日'] && record['配信曜日'].trim() !== '') {
+                    dayVal = record['配信曜日'].trim();
+                }
+                record['配信曜日_AppSheet'] = dayVal;
+
+                const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
+                record.isStopped = stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes';
+
                 records.push(record);
             }
             return records;
         }
 
-        function animateTicker(record, onComplete) {
-            const tickerHeader = document.getElementById('tickerHeader');
-            const tickerMain = document.getElementById('tickerMain');
-            const tickerIcon = document.getElementById('tickerIcon');
-            const bodyContainer = document.getElementById('tickerBodyContainer');
+        function isScheduleMatched(record) {
+            const rawDaysStr = ((record['配信曜日_AppSheet'] || '') + ' ' + (record['配信曜日'] || '')).trim();
+            if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') return true;
+            if (!weekdayFilterCheck.checked) return true;
 
-            if (!record) {
-                tickerHeader.style.display = 'none';
-                tickerMain.textContent = '表示可能なニュース項目がありません';
-                renderIconElement(tickerIcon, 'ℹ️');
-                if (onComplete) onComplete(10);
-                return;
+            const now = new Date();
+            const todayIndex = now.getDay();
+            const todayJa = weekDaysJa[todayIndex];
+
+            const cleanedStr = rawDaysStr
+                .replace(/\b\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/g, '')
+                .replace(/\b\d{1,2}[\/\-]\d{1,2}\b/g, '')
+                .replace(/\b\d{1,2}月\d{1,2}日\b/g, '');
+
+            const extractedDays = cleanedStr.match(/[月火水木金土日]/g);
+            if (extractedDays && extractedDays.length > 0) {
+                return Array.from(new Set(extractedDays)).includes(todayJa);
             }
+            return false;
+        }
 
-            clearTimeout(scrollTimer);
-            tickerMain.classList.remove('is-scrolling');
-            tickerMain.style.transition = 'none';
-            tickerMain.style.transform = 'translateX(0px)';
-
-            let trans = currentConfig.transition;
-            if (trans === 'csv') {
-                trans = (record['トランジション'] || 'swipe-up').toLowerCase();
-            }
-
-            let displayIcon = currentConfig.iconInput || 'https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png';
-            let displayText = record['配信内容'] || '';
-            let headerText = record['件名'] || '';
-
-            if (currentConfig.autoEmoji && displayText) {
-                const emojiMatch = displayText.match(/^([\p{Extended_Pictographic}\u2600-\u27BF])/u);
-                if (emojiMatch) {
-                    displayIcon = emojiMatch[1];
-                    displayText = displayText.replace(/^[\p{Extended_Pictographic}\u2600-\u27BF]+\s*/u, '');
-                }
-            }
-
-            renderIconElement(tickerIcon, displayIcon);
-
-            if (headerText === '') {
-                tickerHeader.style.display = 'none';
-            } else {
-                tickerHeader.textContent = headerText;
-                tickerHeader.style.display = 'block';
-            }
-
-            let outClass = 'slide-up-out-after';
-            let inClass = 'slide-up-in';
-            let prepClass = 'slide-up-out-before';
-
-            if (trans.includes('down')) {
-                outClass = 'slide-down-out-after';
-                inClass = 'slide-down-in';
-                prepClass = 'slide-down-out-before';
-            } else if (trans.includes('left')) {
-                outClass = 'slide-left-out-after';
-                inClass = 'slide-left-in';
-                prepClass = 'slide-left-out-before';
-            } else if (trans.includes('right')) {
-                outClass = 'slide-right-out-after';
-                inClass = 'slide-right-in';
-                prepClass = 'slide-right-out-before';
-            } else if (trans.includes('fade')) {
-                outClass = 'fade-out';
-                inClass = 'fade-in';
-                prepClass = 'fade-out';
-            }
-
-            bodyContainer.className = `ticker-body-container ${outClass}`;
-
-            setTimeout(() => {
-                tickerMain.textContent = displayText;
-                bodyContainer.className = `ticker-body-container ${prepClass}`;
-
-                requestAnimationFrame(() => {
-                    bodyContainer.className = `ticker-body-container ${inClass}`;
-
-                    let defaultDurationSec = parseInt(currentConfig.duration) || 10;
-                    if (record['表示時間'] && !isNaN(parseInt(record['表示時間']))) {
-                        defaultDurationSec = parseInt(record['表示時間']);
+        // 配信モードによるフィルタリングの確実な判定例
+        const selectedMode = modeFilter ? modeFilter.value : 'ALL';
+        
+        activeRecords = allRecords.filter(record => {
+            if (record.isStopped) return false;
+        
+            // 「配信モード」カラムの値を安全に取得
+            let modeVal = (record['配信モード'] || '').trim();
+            if (!modeVal) {
+                for (let key in record) {
+                    if (key.includes('配信モード')) {
+                        const val = (record[key] || '').trim();
+                        if (val !== '') {
+                            modeVal = val;
+                            break;
+                        }
                     }
-
-                    let totalDurationMs = defaultDurationSec * 1000;
-
-                    setTimeout(() => {
-                        tickerMain.classList.add('is-scrolling');
-                        const textWidth = Math.max(tickerMain.scrollWidth, tickerMain.getBoundingClientRect().width);
-                        const containerWidth = bodyContainer.clientWidth;
-
-                        if (textWidth > containerWidth + 2) {
-                            const scrollDistance = textWidth - containerWidth + 20;
-                            const speed = 50;
-                            const scrollDurationSec = scrollDistance / speed;
-                            const scrollDurationMs = scrollDurationSec * 1000;
-                            const requiredTimeMs = 1500 + scrollDurationMs + 1500;
-
-                            if (requiredTimeMs > totalDurationMs) {
-                                totalDurationMs = requiredTimeMs;
-                            }
-
-                            scrollTimer = setTimeout(() => {
-                                tickerMain.style.transition = `transform ${scrollDurationSec.toFixed(2)}s linear`;
-                                tickerMain.style.transform = `translateX(-${scrollDistance}px)`;
-                            }, 1500);
-                        }
-
-                        if (onComplete) {
-                            onComplete(totalDurationMs / 1000);
-                        }
-                    }, 50);
-                });
-            }, 300);
-        }
-
-        function playNextTicker() {
-            if (activeRecords.length === 0) {
-                document.getElementById('tickerMain').textContent = '条件に合うデータがありません';
-                setTimeout(fetchDataAndPlay, 5000);
-                return;
-            }
-            if (currentIndex >= activeRecords.length) {
-                currentIndex = 0;
-            }
-
-            const currentRecord = activeRecords[currentIndex++];
-            animateTicker(currentRecord, (durationSec) => {
-                clearTimeout(animationTimer);
-                animationTimer = setTimeout(playNextTicker, durationSec * 1000);
-            });
-        }
-
-        function processRecords(rawRecords) {
-            activeRecords = rawRecords.filter((record) => {
-                const row = record.rawRow || [];
-                const stopVal = (row[3] || '').trim().toUpperCase();
-                if (stopVal === 'TRUE' || stopVal === '1' || stopVal === 'はい' || stopVal === 'YES') {
-                    return false;
                 }
-                return true;
-            });
-
-            if (currentIndex >= activeRecords.length) {
-                currentIndex = 0;
             }
-
-            if (!isPlaying && activeRecords.length > 0) {
-                isPlaying = true;
-                playNextTicker();
-            } else if (activeRecords.length > 0 && !animationTimer) {
-                playNextTicker();
+        
+            // 「ALL」以外で、かつモードが一致しない場合は非表示（除外）にする
+            if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
+                return false;
             }
+        
+            // 曜日や日時のフィルタ判定へ続く
+            return isScheduleMatched(record);
+        });
+        
+            statTotal.textContent = allRecords.length;
+            statActive.textContent = activeRecords.length;
+        
+            // ★【追加】ここで絞り込み済みのデータをobs.html受信用にlocalStorageへ保存する
+            localStorage.setItem('obs_active_records', JSON.stringify(activeRecords));
         }
 
-        async function fetchDataAndPlay() {
+        function updateModeDropdown() {
+            const currentSelected = modeFilter.value;
+            const modes = new Set();
+            allRecords.forEach(r => {
+                let modeVal = (r['配信モード'] || '').trim();
+                if (!modeVal) {
+                    for (let key in r) {
+                        if (key.includes('配信モード')) {
+                            const m = (r[key] || '').trim();
+                            if (m !== '') modes.add(m);
+                        }
+                    }
+                } else {
+                    modes.add(modeVal);
+                }
+            });
+
+            modeFilter.innerHTML = '<option value="ALL">すべての配信モード</option>';
+            modes.forEach(mode => {
+                const opt = document.createElement('option');
+                opt.value = mode;
+                opt.textContent = mode;
+                modeFilter.appendChild(opt);
+            });
+
+            if (modes.has(currentSelected)) modeFilter.value = currentSelected;
+            else modeFilter.value = 'ALL';
+        }
+
+        function updatePreviewTable() {
+            previewTableHead.innerHTML = '';
+            previewTableBody.innerHTML = '';
+            if (allRecords.length === 0) return;
+
+            const trHead = document.createElement('tr');
+            ['表示曜日 (抽出)', '特定日 (抽出)', '表示時間 (抽出)'].forEach(hText => {
+                const th = document.createElement('th');
+                th.className = 'p-2 bg-indigo-950/80 text-indigo-200 border-r border-slate-700';
+                th.textContent = hText;
+                trHead.appendChild(th);
+            });
+
+            rawCSVHeaders.forEach(h => {
+                const th = document.createElement('th');
+                th.className = 'p-2 border-r border-slate-700/50';
+                th.textContent = h;
+                trHead.appendChild(th);
+            });
+            previewTableHead.appendChild(trHead);
+
+            allRecords.forEach((record, index) => {
+                const tr = document.createElement('tr');
+                tr.className = index % 2 === 0 ? 'bg-slate-800/40 hover:bg-slate-700/50' : 'bg-slate-900/40 hover:bg-slate-700/50';
+
+                const rawDaysStr = ((record['配信曜日_AppSheet'] || '') + ' ' + (record['配信曜日'] || '')).trim();
+                let daysText = '-';
+                if (rawDaysStr.indexOf('不定期') !== -1 || rawDaysStr === '') {
+                    daysText = '月, 火, 水, 木, 金, 土, 日';
+                } else {
+                    const cleanedStr = rawDaysStr.replace(/\b\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/g, '').replace(/\b\d{1,2}[\/\-]\d{1,2}\b/g, '').replace(/\b\d{1,2}月\d{1,2}日\b/g, '');
+                    const daysMatch = cleanedStr.match(/[月火水木金土日]/g);
+                    if (daysMatch) {
+                        const uniqueDays = Array.from(new Set(daysMatch));
+                        const order = ['月', '火', '水', '木', '金', '土', '日'];
+                        uniqueDays.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+                        daysText = uniqueDays.join(', ');
+                    }
+                }
+
+                let dateText = '-';
+                if (rawDaysStr.indexOf('不定期') === -1) {
+                    const dateMatch = rawDaysStr.match(/\b(?:\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}|\d{1,2}[\/\-]\d{1,2}|\d{1,2}月\d{1,2}日)\b/);
+                    if (dateMatch) dateText = dateMatch[0];
+                }
+
+                const timeText = record['表示時間'] ? `${record['表示時間']}秒` : `${displayDuration.value}秒 (デフォルト)`;
+
+                [daysText, dateText, timeText].forEach(text => {
+                    const td = document.createElement('td');
+                    td.className = 'p-2 font-semibold text-amber-300 border-r border-slate-700/80 bg-indigo-950/30';
+                    td.textContent = text;
+                    tr.appendChild(td);
+                });
+
+                rawCSVHeaders.forEach(h => {
+                    const td = document.createElement('td');
+                    td.className = 'p-2 border-r border-slate-700/50 max-w-xs truncate';
+                    td.textContent = record[h] !== undefined ? record[h] : '';
+                    td.title = record[h] !== undefined ? record[h] : '';
+                    tr.appendChild(td);
+                });
+
+                previewTableBody.appendChild(tr);
+            });
+        }
+
+        function loadCSV(csvText) {
+            allRecords = parseCSV(csvText);
+            updateModeDropdown();
+            updatePreviewTable();
+            filterRecords();
+        }
+
+        function fetchFromGAS() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
-            try {
-                const res = await fetch(cacheBustedUrl);
-                if (!res.ok) throw new Error(`HTTPエラー! ステータス: ${res.status}`);
-                const csv = await res.text();
-                
-                allRecords = parseCSV(csv);
-                processRecords(allRecords);
-            } catch (err) {
-                console.error('データ取得エラー:', err);
-                document.getElementById('tickerMain').textContent = 'データ取得エラー（再試行中...）';
-                setTimeout(fetchDataAndPlay, 5000);
-            }
+            fetch(cacheBustedUrl)
+                .then(response => response.text())
+                .then(csvText => {
+                    if (csvText && csvText.trim().length > 0) {
+                        if (csvTextArea.value !== csvText) {
+                            csvTextArea.value = csvText;
+                            loadCSV(csvText);
+                            console.log('スプレッドシートの最新データを自動同期しました:', new Date().toLocaleTimeString());
+                        }
+                    }
+                })
+                .catch(err => { console.error('GAS自動取得失敗:', err); });
+        }
+
+        function initCurrentDateLabel() {
+            const todayJa = weekDaysJa[new Date().getDay()];
+            currentWeekdayLabel.textContent = `${todayJa}曜日`;
         }
 
         window.onload = function() {
-            loadConfig();
-            fetchDataAndPlay();
-            setInterval(fetchDataAndPlay, 3 * 60 * 1000);
+            initCurrentDateLabel();
+            lucide.createIcons();
+            
+            initFormValues();
+
+            setupButtonSelector('fontFamilyGroup', 'fontFamilySelect', false);
+            setupButtonSelector('transitionGroup', 'cfg_transition', false);
+            setupButtonSelector('fontWeightGroup', 'cfg_mainFontWeight', false);
+
+            setupButtonSelector('iconBgColorGroup', 'cfg_iconBgColor', true);
+            setupButtonSelector('headerTextColorGroup', 'cfg_headerTextColor', true);
+            setupButtonSelector('mainTextColorGroup', 'cfg_mainTextColor', true);
+            setupButtonSelector('bgColorGroup', 'cfg_bgColor', true);
+
+            fetchFromGAS();
+
+            setInterval(fetchFromGAS, 3 * 60 * 1000);
+
+            reloadGasBtn.addEventListener('click', fetchFromGAS);
+            applyCsvTextBtn.addEventListener('click', () => { loadCSV(csvTextArea.value); });
+
+            dropZone.addEventListener('click', () => csvFileInput.click());
+            csvFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    csvTextArea.value = event.target.result;
+                    loadCSV(event.target.result);
+                };
+                reader.readAsText(file);
+            });
+
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500'); });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-indigo-500');
+                const file = e.dataTransfer.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    csvTextArea.value = event.target.result;
+                    loadCSV(event.target.result);
+                };
+                reader.readAsText(file);
+            });
+
+            modeFilter.addEventListener('change', filterRecords);
+            weekdayFilterCheck.addEventListener('change', filterRecords);
+
+            const bgOpacityInput = document.getElementById('cfg_bgOpacity');
+            const bgOpacityVal = document.getElementById('cfg_bgOpacityVal');
+            if (bgOpacityInput && bgOpacityVal) {
+                bgOpacityInput.addEventListener('input', () => {
+                    bgOpacityVal.textContent = `${bgOpacityInput.value}%`;
+                });
+            }
         };
+
+        function saveConfig() {
+            const config = {
+                width: document.getElementById('tickerWidthInput').value,
+                height: document.getElementById('tickerHeightInput').value,
+                duration: document.getElementById('displayDuration').value,
+                fontFamily: document.getElementById('fontFamilySelect').value,
+                transition: document.getElementById('cfg_transition').value,
+                headerFontSize: document.getElementById('cfg_headerFontSize').value,
+                mainFontSize: document.getElementById('cfg_mainFontSize').value,
+                mainFontWeight: document.getElementById('cfg_mainFontWeight').value,
+                iconInput: document.getElementById('cfg_iconInput').value,
+                iconWidth: document.getElementById('cfg_iconWidth').value,
+                iconBgColor: document.getElementById('cfg_iconBgColor').value,
+                headerTextColor: document.getElementById('cfg_headerTextColor').value,
+                mainTextColor: document.getElementById('cfg_mainTextColor').value,
+                bgColor: document.getElementById('cfg_bgColor').value,
+                bgOpacity: document.getElementById('cfg_bgOpacity').value,
+                autoEmoji: document.getElementById('cfg_autoEmoji').checked
+            };
+            localStorage.setItem('obs_ticker_config', JSON.stringify(config));
+        }
+
+        const allInputs = [
+            tickerWidthInput, tickerHeightInput, displayDuration,
+            cfg_headerFontSize, cfg_mainFontSize, cfg_iconInput,
+            cfg_iconWidth, cfg_bgOpacity, cfg_autoEmoji
+        ];
+
+        allInputs.forEach(input => {
+            if (input) {
+                input.addEventListener('input', saveConfig);
+                input.addEventListener('change', saveConfig);
+            }
+        });
     </script>
 </body>
 </html>
