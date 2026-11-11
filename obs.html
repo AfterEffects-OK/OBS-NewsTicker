@@ -495,22 +495,20 @@
             }
         }
 
-        function fetchDataAndPlay() {
+        async function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
-            fetch(cacheBustedUrl)
-                .then(res => {
-                    if (!res.ok) throw new Error(`HTTPエラー! ステータス: ${res.status}`);
-                    return res.text();
-                })
-                .then(csv => {
-                    allRecords = parseCSV(csv);
-                    processRecords(allRecords);
-                })
-                .catch(err => {
-                    console.error('データ取得エラー:', err);
-                    document.getElementById('tickerMain').textContent = 'データ取得エラー';
-                    setTimeout(fetchDataAndPlay, 5000);
-                });
+            try {
+                const res = await fetch(cacheBustedUrl);
+                if (!res.ok) throw new Error(`HTTPエラー! ステータス: ${res.status}`);
+                const csv = await res.text();
+                
+                allRecords = parseCSV(csv);
+                processRecords(allRecords);
+            } catch (err) {
+                console.error('データ取得エラー:', err);
+                document.getElementById('tickerMain').textContent = 'データ取得エラー（再試行中...）';
+                setTimeout(fetchDataAndPlay, 5000);
+            }
         }
 
         window.onload = function() {
