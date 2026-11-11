@@ -11,7 +11,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Kaisei+Decol:wght@700&family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&family=Stick&family=Yusei+Magic&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'M PLUS Rounded 1c', sans-serif;
@@ -132,15 +132,15 @@
                             <span class="text-[10px] text-slate-500">※CSV個別の「表示時間」優先</span>
                         </div>
                         
-                        <!-- フォントファミリー (ボタン選択式) -->
+                        <!-- フォントファミリー (ボタン選択式：実際のフォントで表示) -->
                         <div class="sm:col-span-2 lg:col-span-3">
                             <label class="block text-xs text-slate-400 mb-1.5">フォントファミリー</label>
-                            <input type="hidden" id="fontFamilySelect" value="'cinecaption226', sans-serif">
+                            <input type="hidden" id="fontFamilySelect" value="'Kaisei Decol', serif">
                             <div id="fontFamilyGroup" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                <button type="button" data-value="'Noto Sans JP', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">Noto Sans JP</button>
-                                <button type="button" data-value="'M PLUS Rounded 1c', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">M PLUS Rounded</button>
-                                <button type="button" data-value="'cinecaption226', sans-serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">しねきゃぷしょん</button>
-                                <button type="button" data-value="serif" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left">明朝体</button>
+                                <button type="button" data-value="'Kaisei Decol', serif" style="font-family: 'Kaisei Decol', serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 transition text-left">Kaisei Decol</button>
+                                <button type="button" data-value="'Yusei Magic', sans-serif" style="font-family: 'Yusei Magic', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 transition text-left">Yusei Magic</button>
+                                <button type="button" data-value="'Stick', sans-serif" style="font-family: 'Stick', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 transition text-left">Stick</button>
+                                <button type="button" data-value="'DotGothic16', sans-serif" style="font-family: 'DotGothic16', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 transition text-left">DotGothic16</button>
                             </div>
                         </div>
                     </div>
@@ -310,7 +310,7 @@
             width: 1300,
             height: 80,
             duration: 10,
-            fontFamily: "'cinecaption226', sans-serif",
+            fontFamily: "'Kaisei Decol', serif",
             transition: 'swipe-up',
             edgeStyle: 'default',
             shadow: 'none',
@@ -346,9 +346,9 @@
                         }
                     } else {
                         buttons.forEach(b => {
-                            b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
+                            b.className = b.className.replace(/bg-indigo-600 border-indigo-500 font-bold text-white shadow/g, 'bg-slate-900 border-slate-700 text-slate-200');
                         });
-                        btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
+                        btn.className = btn.className.replace(/bg-slate-900 border-slate-700 text-slate-200/g, '') + " bg-indigo-600 border border-indigo-500 text-white font-bold shadow";
                     }
                     
                     input.value = val;
@@ -409,7 +409,9 @@
                             b.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
                         }
                     } else {
-                        b.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
+                        if (!b.className.includes('bg-indigo-600')) {
+                            b.className = b.className.replace(/bg-slate-900 border-slate-700 text-slate-200/g, '') + " bg-indigo-600 border border-indigo-500 text-white font-bold shadow";
+                        }
                     }
                 } else {
                     if (isColorGroup) {
@@ -418,7 +420,10 @@
                             b.className += ' border-slate-700';
                         }
                     } else {
-                        b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
+                        b.className = b.className.replace(/bg-indigo-600 border-indigo-500 font-bold text-white shadow/g, 'bg-slate-900 border-slate-700 text-slate-200');
+                        if (!b.className.includes('bg-slate-900')) {
+                            b.className += ' bg-slate-900 border border-slate-700 text-slate-200';
+                        }
                     }
                 }
             });
