@@ -434,13 +434,14 @@
 
         function processRecords(rawRecords) {
             const todayJa = weekDaysJa[new Date().getDay()];
+            
+            // ユーザーが設定パネルで選択している配信モードを取得（設定されていない場合は 'ALL'）
             const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
 
             activeRecords = rawRecords.filter(record => {
-                if (selectedMode === 'ALL' && record.isStopped) {
-                    return false;
-                }
+                if (record.isStopped) return false;
 
+                // 配信モードの判定（「配信モード」カラムを探索）
                 let modeVal = (record['配信モード'] || '').trim();
                 if (!modeVal) {
                     for (let key in record) {
@@ -454,10 +455,12 @@
                     }
                 }
 
+                // 配信モードが一致するか（ALLまたは一致する場合のみ通過）
                 if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
                     return false;
                 }
 
+                // 曜日フィルタの判定
                 const days = record['配信曜日_AppSheet'] || record['配信曜日'] || '';
                 if (days.indexOf('不定期') !== -1 || days === '') return true;
                 return days.includes(todayJa);
@@ -476,28 +479,13 @@
         function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
-                .then(res => {
-                    if (!res.ok) throw new Error('ネットワーク応答エラー: ' + res.status);
-                    return res.text();
-                })
-                .then(text => {
-                    let csvText = text;
-                    try {
-                        const data = JSON.parse(text);
-                        if (data.config && data.config.selectedMode) {
-                            currentConfig.selectedMode = data.config.selectedMode;
-                        }
-                        csvText = data.csv || '';
-                    } catch (e) {
-                        // JSONパース失敗時は純粋なCSVとして扱う
-                        csvText = text;
-                    }
-                    allRecords = parseCSV(csvText);
+                .then(res => res.text())
+                .then(csv => {
+                    allRecords = parseCSV(csv);
                     processRecords(allRecords);
                 })
                 .catch(err => {
                     console.error('データ取得エラー:', err);
-                    document.getElementById('tickerMain').textContent = 'データ取得エラー: ' + err.message;
                     setTimeout(fetchDataAndPlay, 5000);
                 });
         }
@@ -505,6 +493,8 @@
         window.onload = function() {
             loadConfig();
             fetchDataAndPlay();
+
+            // 3分ごとに自動更新
             setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
     </script>
