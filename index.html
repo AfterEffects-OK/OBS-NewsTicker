@@ -21,15 +21,21 @@
             margin: 0;
             padding: 0;
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-6">
-
     <div class="max-w-6xl mx-auto space-y-6">
-        
         <!-- Header (コンパクト化) -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700/80 pb-3 gap-3">
             <div>
@@ -39,8 +45,7 @@
             </div>
             <div class="flex items-center gap-2">
                 <a id="obsUrlLink" href="#" target="_blank" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 font-bold text-xs rounded-lg transition-colors shadow flex items-center gap-1.5 text-white">
-                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                    プレビュー確認
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i> プレビュー確認
                 </a>
             </div>
         </div>
@@ -60,7 +65,6 @@
 
         <!-- Main Layout Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
             <!-- Left Column: Status & Filters -->
             <div class="space-y-6 lg:col-span-1">
                 <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
@@ -71,7 +75,7 @@
                         <i data-lucide="rotate-cw" class="w-4 h-4"></i> スプレッドシートから再読み込み
                     </button>
                     <p class="text-[10px] text-slate-400 mt-2 text-center">※3分ごとに自動でバックグラウンド同期されます</p>
-                    
+
                     <div class="mt-4">
                         <label class="block text-xs font-semibold text-slate-400 mb-1">CSVデータ読み込み:</label>
                         <div id="dropZone" class="border-2 border-dashed border-slate-600 hover:border-indigo-500 rounded-lg p-4 text-center cursor-pointer transition bg-slate-900/50 mb-3">
@@ -128,7 +132,6 @@
                             <input type="number" id="displayDuration" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
                             <span class="text-[10px] text-slate-500">※CSV個別の「表示時間」優先</span>
                         </div>
-                        
                         <!-- フォントファミリー (ボタン選択式) -->
                         <div class="sm:col-span-2 lg:col-span-3">
                             <label class="block text-xs text-slate-400 mb-1.5">フォントファミリー</label>
@@ -148,7 +151,6 @@
                         <i data-lucide="palette" class="w-4 h-4"></i> デザイン & アイコン設定
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                        
                         <!-- アニメーション選択 (ボタン式) -->
                         <div class="sm:col-span-2">
                             <label class="block text-slate-400 mb-1.5">アニメーション</label>
@@ -162,7 +164,6 @@
                                 <button type="button" data-value="fade" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">フェード</button>
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-slate-400 mb-1">件名 (上部) 文字サイズ</label>
                             <input type="number" id="cfg_headerFontSize" value="24" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
@@ -171,7 +172,6 @@
                             <label class="block text-slate-400 mb-1">本文 (下部) 文字サイズ</label>
                             <input type="number" id="cfg_mainFontSize" value="45" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
                         </div>
-                        
                         <!-- 本文フォント太さ選択 (ボタン式) -->
                         <div class="sm:col-span-2">
                             <label class="block text-slate-400 mb-1.5">本文 (下部) フォントの太さ</label>
@@ -184,7 +184,6 @@
                                 <button type="button" data-value="900" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 transition text-center">超極太(900)</button>
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-slate-400 mb-1">デフォルト アイコン (画像URL or 絵文字)</label>
                             <input type="text" id="cfg_iconInput" value="https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
@@ -193,8 +192,7 @@
                             <label class="block text-slate-400 mb-1">アイコン領域幅 (px)</label>
                             <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
                         </div>
-
-                        <!-- カラーパレット（インライン背景色つきボタン選択式） -->
+                        <!-- カラーパレットボタン選択式 -->
                         <div>
                             <label class="block text-slate-400 mb-1">アイコン背景色</label>
                             <input type="hidden" id="cfg_iconBgColor" value="#0f172a">
@@ -207,7 +205,6 @@
                                 <button type="button" data-color="#8b5cf6" style="background-color: #8b5cf6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="パープル"></button>
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-slate-400 mb-1">件名 (上部) 文字色</label>
                             <input type="hidden" id="cfg_headerTextColor" value="#fde047">
@@ -219,7 +216,6 @@
                                 <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-slate-400 mb-1">本文 (下部) 文字色</label>
                             <input type="hidden" id="cfg_mainTextColor" value="#ffffff">
@@ -231,7 +227,6 @@
                                 <button type="button" data-color="#cbd5e1" style="background-color: #cbd5e1;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グレー"></button>
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-slate-400 mb-1">枠の背景色</label>
                             <input type="hidden" id="cfg_bgColor" value="#0f172a">
@@ -243,7 +238,6 @@
                                 <button type="button" data-color="#065f46" style="background-color: #065f46;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダークグリーン"></button>
                             </div>
                         </div>
-
                         <div class="sm:col-span-2">
                             <div class="flex justify-between text-xs text-slate-400 mb-1">
                                 <span>背景不透明度</span>
@@ -273,9 +267,7 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
     </div>
 
     <script>
@@ -295,7 +287,8 @@
             mainTextColor: '#ffffff',
             bgColor: '#0f172a',
             bgOpacity: 90,
-            autoEmoji: true
+            autoEmoji: true,
+            selectedMode: 'ALL'
         };
 
         function setupButtonSelector(groupId, inputId, isColorGroup = false) {
@@ -303,11 +296,9 @@
             const input = document.getElementById(inputId);
             if (!container || !input) return;
             const buttons = container.querySelectorAll('button');
-
             buttons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const val = isColorGroup ? btn.getAttribute('data-color') : btn.getAttribute('data-value');
-                    
                     if (isColorGroup) {
                         buttons.forEach(b => {
                             b.className = b.className.replace(/border-amber-400 scale-110 ring-2 ring-amber-400\/50/g, 'border-slate-700');
@@ -321,7 +312,6 @@
                         });
                         btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
                     }
-                    
                     input.value = val;
                     input.dispatchEvent(new Event('change'));
                     saveConfig();
@@ -332,33 +322,31 @@
         function initFormValues() {
             const saved = localStorage.getItem('obs_ticker_config');
             const config = saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
-
             document.getElementById('tickerWidthInput').value = config.width;
             document.getElementById('tickerHeightInput').value = config.height;
             document.getElementById('displayDuration').value = config.duration;
-            
             document.getElementById('fontFamilySelect').value = config.fontFamily;
             document.getElementById('cfg_transition').value = config.transition;
             document.getElementById('cfg_mainFontWeight').value = config.mainFontWeight;
-
             document.getElementById('cfg_headerFontSize').value = config.headerFontSize;
             document.getElementById('cfg_mainFontSize').value = config.mainFontSize;
             document.getElementById('cfg_iconInput').value = config.iconInput;
             document.getElementById('cfg_iconWidth').value = config.iconWidth;
-            
             document.getElementById('cfg_iconBgColor').value = config.iconBgColor;
             document.getElementById('cfg_headerTextColor').value = config.headerTextColor;
             document.getElementById('cfg_mainTextColor').value = config.mainTextColor;
             document.getElementById('cfg_bgColor').value = config.bgColor;
-
             document.getElementById('cfg_bgOpacity').value = config.bgOpacity;
             document.getElementById('cfg_bgOpacityVal').textContent = `${config.bgOpacity}%`;
             document.getElementById('cfg_autoEmoji').checked = config.autoEmoji;
+            if (config.selectedMode) {
+                const modeFilterEl = document.getElementById('modeFilter');
+                if (modeFilterEl) modeFilterEl.value = config.selectedMode;
+            }
 
             syncButtonActiveState('fontFamilyGroup', config.fontFamily, false);
             syncButtonActiveState('transitionGroup', config.transition, false);
             syncButtonActiveState('fontWeightGroup', config.mainFontWeight, false);
-
             syncButtonActiveState('iconBgColorGroup', config.iconBgColor, true);
             syncButtonActiveState('headerTextColorGroup', config.headerTextColor, true);
             syncButtonActiveState('mainTextColorGroup', config.mainTextColor, true);
@@ -392,7 +380,6 @@
         }
 
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
-        
         const obsUrl = 'https://aftereffects-ok.github.io/OBS-NewsTicker/obs.html';
         document.getElementById('obsUrlInput').value = obsUrl;
         document.getElementById('obsUrlLink').href = obsUrl;
@@ -452,18 +439,14 @@
             }
 
             if (lines.length < 2) return [];
-
             rawCSVHeaders = lines[0];
             const records = [];
 
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
                 if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
-
                 const record = { _rawRow: row };
-                rawCSVHeaders.forEach((h, idx) => {
-                    record[h] = row[idx] !== undefined ? row[idx] : '';
-                });
+                rawCSVHeaders.forEach((h, idx) => { record[h] = row[idx] !== undefined ? row[idx] : ''; });
 
                 let dayVal = '';
                 if (record['配信曜日_AppSheet'] && record['配信曜日_AppSheet'].trim() !== '') {
@@ -506,7 +489,7 @@
             const selectedMode = modeFilter.value;
             activeRecords = allRecords.filter(record => {
                 if (record.isStopped) return false;
-                
+
                 let modeVal = (record['配信モード'] || '').trim();
                 if (!modeVal) {
                     for (let key in record) {
@@ -519,11 +502,11 @@
                         }
                     }
                 }
-        
+
                 if (selectedMode !== 'ALL' && modeVal !== selectedMode) return false;
                 return isScheduleMatched(record);
             });
-        
+
             statTotal.textContent = allRecords.length;
             statActive.textContent = activeRecords.length;
         }
@@ -553,8 +536,19 @@
                 modeFilter.appendChild(opt);
             });
 
-            if (modes.has(currentSelected)) modeFilter.value = currentSelected;
-            else modeFilter.value = 'ALL';
+            if (modes.has(currentSelected)) {
+                modeFilter.value = currentSelected;
+            } else {
+                const saved = localStorage.getItem('obs_ticker_config');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        if (parsed.selectedMode && (modes.has(parsed.selectedMode) || parsed.selectedMode === 'ALL')) {
+                            modeFilter.value = parsed.selectedMode;
+                        }
+                    } catch(e) {}
+                }
+            }
         }
 
         function updatePreviewTable() {
@@ -569,7 +563,6 @@
                 th.textContent = hText;
                 trHead.appendChild(th);
             });
-
             rawCSVHeaders.forEach(h => {
                 const th = document.createElement('th');
                 th.className = 'p-2 border-r border-slate-700/50';
@@ -631,20 +624,36 @@
             filterRecords();
         }
 
+        // ★ JSON（設定付き）および従来のCSVテキストの両方に対応した取得関数
         function fetchFromGAS() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
                 .then(response => response.text())
-                .then(csvText => {
-                    if (csvText && csvText.trim().length > 0) {
-                        if (csvTextArea.value !== csvText) {
-                            csvTextArea.value = csvText;
-                            loadCSV(csvText);
-                            console.log('スプレッドシートの最新データを自動同期しました:', new Date().toLocaleTimeString());
+                .then(text => {
+                    if (!text || !text.trim()) return;
+                    let csvText = text;
+                    try {
+                        const data = JSON.parse(text);
+                        csvText = data.csv || '';
+                        if (data.config && data.config.selectedMode) {
+                            if (modeFilter && modeFilter.value !== data.config.selectedMode) {
+                                modeFilter.value = data.config.selectedMode;
+                            }
                         }
+                    } catch (e) {
+                        // JSONでなければそのままCSVテキストとして扱う
+                        csvText = text;
+                    }
+
+                    if (csvTextArea.value !== csvText) {
+                        csvTextArea.value = csvText;
+                        loadCSV(csvText);
+                        console.log('スプレッドシートの最新データを自動同期しました:', new Date().toLocaleTimeString());
                     }
                 })
-                .catch(err => { console.error('GAS自動取得失敗:', err); });
+                .catch(err => {
+                    console.error('GAS自動取得失敗:', err);
+                });
         }
 
         function initCurrentDateLabel() {
@@ -655,24 +664,23 @@
         window.onload = function() {
             initCurrentDateLabel();
             lucide.createIcons();
-            
             initFormValues();
-
             setupButtonSelector('fontFamilyGroup', 'fontFamilySelect', false);
             setupButtonSelector('transitionGroup', 'cfg_transition', false);
             setupButtonSelector('fontWeightGroup', 'cfg_mainFontWeight', false);
-
             setupButtonSelector('iconBgColorGroup', 'cfg_iconBgColor', true);
             setupButtonSelector('headerTextColorGroup', 'cfg_headerTextColor', true);
             setupButtonSelector('mainTextColorGroup', 'cfg_mainTextColor', true);
             setupButtonSelector('bgColorGroup', 'cfg_bgColor', true);
 
             fetchFromGAS();
-
             setInterval(fetchFromGAS, 3 * 60 * 1000);
 
             reloadGasBtn.addEventListener('click', fetchFromGAS);
-            applyCsvTextBtn.addEventListener('click', () => { loadCSV(csvTextArea.value); });
+
+            applyCsvTextBtn.addEventListener('click', () => {
+                loadCSV(csvTextArea.value);
+            });
 
             dropZone.addEventListener('click', () => csvFileInput.click());
             csvFileInput.addEventListener('change', (e) => {
@@ -686,8 +694,13 @@
                 reader.readAsText(file);
             });
 
-            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500'); });
-            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500'); });
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-indigo-500');
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('border-indigo-500');
+            });
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 dropZone.classList.remove('border-indigo-500');
@@ -701,20 +714,39 @@
                 reader.readAsText(file);
             });
 
-            // 配信モード変更時にGASへ設定を保存する例
+            // 配信モード変更時にローカル保存およびGASへの保存を同時に実行
             modeFilter.addEventListener('change', () => {
                 filterRecords();
-                
+                saveConfig();
                 const selectedMode = modeFilter.value;
-                
-                // GASへ現在の設定をPOST送信して保存する
                 fetch(GAS_WEB_APP_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({ action: 'saveConfig', selectedMode: selectedMode })
                 }).catch(err => console.error('設定保存エラー:', err));
             });
-            }
+
+            weekdayFilterCheck.addEventListener('change', () => {
+                filterRecords();
+            });
+
+            const allInputs = [
+                document.getElementById('tickerWidthInput'),
+                document.getElementById('tickerHeightInput'),
+                document.getElementById('displayDuration'),
+                document.getElementById('cfg_headerFontSize'),
+                document.getElementById('cfg_mainFontSize'),
+                document.getElementById('cfg_iconInput'),
+                document.getElementById('cfg_iconWidth'),
+                document.getElementById('cfg_bgOpacity'),
+                document.getElementById('cfg_autoEmoji')
+            ];
+            allInputs.forEach(input => {
+                if (input) {
+                    input.addEventListener('input', saveConfig);
+                    input.addEventListener('change', saveConfig);
+                }
+            });
         };
 
         function saveConfig() {
@@ -739,19 +771,6 @@
             };
             localStorage.setItem('obs_ticker_config', JSON.stringify(config));
         }
-
-        const allInputs = [
-            tickerWidthInput, tickerHeightInput, displayDuration,
-            cfg_headerFontSize, cfg_mainFontSize, cfg_iconInput,
-            cfg_iconWidth, cfg_bgOpacity, cfg_autoEmoji
-        ];
-
-        allInputs.forEach(input => {
-            if (input) {
-                input.addEventListener('input', saveConfig);
-                input.addEventListener('change', saveConfig);
-            }
-        });
     </script>
 </body>
 </html>
