@@ -166,6 +166,16 @@
                             </div>
                         </div>
 
+                        <!-- 枠のシャドウ効果 (追加) -->
+                        <div class="sm:col-span-2">
+                            <label class="block text-slate-400 mb-1.5 font-bold text-amber-300">枠のシャドウ効果（ドロップ影）</label>
+                            <input type="hidden" id="cfg_shadow" value="none">
+                            <div id="shadowGroup" class="grid grid-cols-2 gap-2">
+                                <button type="button" data-value="none" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">入れない (デフォルト)</button>
+                                <button type="button" data-value="shadow" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition">影を入れる ☁️</button>
+                            </div>
+                        </div>
+
                         <!-- アニメーション選択 (ボタン式) -->
                         <div class="sm:col-span-2">
                             <label class="block text-slate-400 mb-1.5">アニメーション</label>
@@ -211,7 +221,7 @@
                             <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
                         </div>
 
-                        <!-- カラーパレット（確実なインライン背景色つきボタン選択式） -->
+                        <!-- カラーパレット -->
                         <div>
                             <label class="block text-slate-400 mb-1">アイコン背景色</label>
                             <input type="hidden" id="cfg_iconBgColor" value="#0f172a">
@@ -303,6 +313,7 @@
             fontFamily: "'M PLUS Rounded 1c', sans-serif",
             transition: 'swipe-up',
             edgeStyle: 'default',
+            shadow: 'none',
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
@@ -358,6 +369,7 @@
             document.getElementById('fontFamilySelect').value = config.fontFamily;
             document.getElementById('cfg_transition').value = config.transition;
             document.getElementById('cfg_edgeStyle').value = config.edgeStyle || 'default';
+            document.getElementById('cfg_shadow').value = config.shadow || 'none';
             document.getElementById('cfg_mainFontWeight').value = config.mainFontWeight;
 
             document.getElementById('cfg_headerFontSize').value = config.headerFontSize;
@@ -377,6 +389,7 @@
             syncButtonActiveState('fontFamilyGroup', config.fontFamily, false);
             syncButtonActiveState('transitionGroup', config.transition, false);
             syncButtonActiveState('edgeStyleGroup', config.edgeStyle || 'default', false);
+            syncButtonActiveState('shadowGroup', config.shadow || 'none', false);
             syncButtonActiveState('fontWeightGroup', config.mainFontWeight, false);
 
             syncButtonActiveState('iconBgColorGroup', config.iconBgColor, true);
@@ -687,6 +700,7 @@
             setupButtonSelector('fontFamilyGroup', 'fontFamilySelect', false);
             setupButtonSelector('transitionGroup', 'cfg_transition', false);
             setupButtonSelector('edgeStyleGroup', 'cfg_edgeStyle', false);
+            setupButtonSelector('shadowGroup', 'cfg_shadow', false);
             setupButtonSelector('fontWeightGroup', 'cfg_mainFontWeight', false);
 
             setupButtonSelector('iconBgColorGroup', 'cfg_iconBgColor', true);
@@ -748,6 +762,7 @@
                 fontFamily: document.getElementById('fontFamilySelect').value,
                 transition: document.getElementById('cfg_transition').value,
                 edgeStyle: document.getElementById('cfg_edgeStyle').value,
+                shadow: document.getElementById('cfg_shadow').value,
                 headerFontSize: document.getElementById('cfg_headerFontSize').value,
                 mainFontSize: document.getElementById('cfg_mainFontSize').value,
                 mainFontWeight: document.getElementById('cfg_mainFontWeight').value,
