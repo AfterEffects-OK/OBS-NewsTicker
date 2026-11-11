@@ -479,14 +479,23 @@
         function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
-                .then(res => res.text())
-                .then(csv => {
-                    allRecords = parseCSV(csv);
+                .then(res => res.json()) // ※もしGAS側でCSVと設定をJSONで返すように改修した場合
+                .then(data => {
+                    // data.config から最新の selectedMode を取得して反映
+                    if (data.config && data.config.selectedMode) {
+                        currentConfig.selectedMode = data.config.selectedMode;
+                    }
+                    allRecords = parseCSV(data.csv);
                     processRecords(allRecords);
                 })
                 .catch(err => {
-                    console.error('データ取得エラー:', err);
-                    setTimeout(fetchDataAndPlay, 5000);
+                    // 従来のCSVテキスト直接返却の場合のフォールバック
+                    fetch(cacheBustedUrl)
+                        .then(res => res.text())
+                        .then(csv => {
+                            allRecords = parseCSV(csv);
+                            processRecords(allRecords);
+                        });
                 });
         }
 
