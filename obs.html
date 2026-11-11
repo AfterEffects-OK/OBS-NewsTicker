@@ -290,7 +290,7 @@
             
             if (lines.length < 2) return [];
             
-            const headers = lines[0];
+            const headers = lines[0].map(h => h.trim());
             const records = [];
             
             for (let i = 1; i < lines.length; i++) {
@@ -299,18 +299,10 @@
                 
                 const record = {};
                 headers.forEach((h, idx) => {
-                    record[h] = row[idx] !== undefined ? row[idx] : '';
+                    record[h] = row[idx] !== undefined ? row[idx].trim() : '';
                 });
                 
-                let headerVal = '';
-                if (record['件名'] !== undefined && record['件名'].trim() !== '') {
-                    headerVal = record['件名'].trim();
-                }
-                record['件名'] = headerVal;
-                
-                let dayVal = (record['配信曜日_AppSheet'] || '').trim();
-                record['配信曜日_AppSheet'] = dayVal;
-                
+                // 配信停止フラグの判定 (TRUE / FALSE)
                 const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
                 record.isStopped = (stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes');
                 
@@ -476,15 +468,23 @@
                     return false;
                 }
 
-                // 3. G列（配信曜日_AppSheet）のチェック（カンマ区切りおよび時間表記に対応）
-                const days = (record['配信曜日_AppSheet'] || '').trim();
+                // 3. G列（配信曜日_AppSheet）のチェック
+                // 部分一致やキー揺れを防ぐため、キー名に「配信曜日_AppSheet」が含まれるものを確実に取得
+                let daysVal = '';
+                for (let key in record) {
+                    if (key.includes('配信曜日_AppSheet')) {
+                        daysVal = (record[key] || '').trim();
+                        break;
+                    }
+                }
                 
-                if (days === '') {
-                    return true; // 空欄の場合は通す
+                // 空欄の場合は抽出対象にする
+                if (daysVal === '') {
+                    return true;
                 }
 
-                // 文字列から「月」「火」「水」「木」「金」「土」「日」の文字だけを安全にすべて抽出する
-                const dayList = days.match(/[月火水木金土日]/g) || [];
+                // 文字列から「月」「火」「水」「木」「金」「土」「日」の文字だけをすべて抽出する
+                const dayList = daysVal.match(/[月火水木金土日]/g) || [];
                 
                 // 抽出された曜日のリストに本日の曜日が含まれている場合
                 if (dayList.includes(todayJa)) {
