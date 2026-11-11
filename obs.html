@@ -290,7 +290,7 @@
             
             if (lines.length < 2) return [];
             
-            const headers = lines[0].map(h => h.trim());
+            const headers = lines[0].map(h => h.replace(/^\uFEFF/, '').trim());
             const records = [];
             
             for (let i = 1; i < lines.length; i++) {
@@ -301,11 +301,6 @@
                 headers.forEach((h, idx) => {
                     record[h] = row[idx] !== undefined ? row[idx].trim() : '';
                 });
-                
-                // 配信停止フラグの判定 (TRUE / FALSE)
-                const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
-                record.isStopped = (stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes');
-                
                 records.push(record);
             }
             
@@ -447,20 +442,18 @@
             const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
 
             activeRecords = rawRecords.filter(record => {
-                // 1. D列（配信停止フラグ）が TRUE なら除外する（FALSE のみ通す）
-                if (record.isStopped) return false;
+                // 1. D列（配信停止フラグ）のチェック
+                // 「TRUE」「はい」「1」などの場合は停止中とみなして除外する（FALSEや空欄は配信中とみなす）
+                const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
+                const isStopped = (stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes');
+                if (isStopped) return false;
 
                 // 2. I列（配信モード）のチェック
-                let modeVal = (record['配信モード'] || '').trim();
-                if (!modeVal) {
-                    for (let key in record) {
-                        if (key.includes('配信モード')) {
-                            const val = (record[key] || '').trim();
-                            if (val !== '') {
-                                modeVal = val;
-                                break;
-                            }
-                        }
+                let modeVal = '';
+                for (let key in record) {
+                    if (key.includes('配信モード')) {
+                        modeVal = (record[key] || '').trim();
+                        if (modeVal !== '') break;
                     }
                 }
 
@@ -469,7 +462,6 @@
                 }
 
                 // 3. G列（配信曜日_AppSheet）のチェック
-                // 部分一致やキー揺れを防ぐため、キー名に「配信曜日_AppSheet」が含まれるものを確実に取得
                 let daysVal = '';
                 for (let key in record) {
                     if (key.includes('配信曜日_AppSheet')) {
@@ -478,12 +470,12 @@
                     }
                 }
                 
-                // 空欄の場合は抽出対象にする
+                // G列が空欄の場合は抽出対象にする
                 if (daysVal === '') {
                     return true;
                 }
 
-                // 文字列から「月」「火」「水」「木」「金」「土」「日」の文字だけをすべて抽出する
+                // 文字列から曜日の文字（月火水木金土日）をすべて抽出
                 const dayList = daysVal.match(/[月火水木金土日]/g) || [];
                 
                 // 抽出された曜日のリストに本日の曜日が含まれている場合
