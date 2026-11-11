@@ -435,11 +435,15 @@
         function processRecords(rawRecords) {
             const todayJa = weekDaysJa[new Date().getDay()];
             
-            // ユーザーが設定パネルで選択している配信モードを取得（設定されていない場合は 'ALL'）
+            // ユーザーが設定パネルで選択している配信モードを取得
             const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
 
             activeRecords = rawRecords.filter(record => {
-                if (record.isStopped) return false;
+                // ★ モードで絞り込んでいる（ALLではない）場合は配信停止フラグを無視する
+                // モードが 'ALL' の場合のみ、従来の通り isStopped が true なら除外する
+                if (selectedMode === 'ALL' && record.isStopped) {
+                    return false;
+                }
 
                 // 配信モードの判定（「配信モード」カラムを探索）
                 let modeVal = (record['配信モード'] || '').trim();
@@ -460,7 +464,7 @@
                     return false;
                 }
 
-                // 曜日フィルタの判定
+                // 曜日フィルタの判定（ここは常に有効）
                 const days = record['配信曜日_AppSheet'] || record['配信曜日'] || '';
                 if (days.indexOf('不定期') !== -1 || days === '') return true;
                 return days.includes(todayJa);
