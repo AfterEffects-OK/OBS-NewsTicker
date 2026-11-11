@@ -164,8 +164,7 @@
             mainTextColor: '#ffffff',
             bgColor: '#0f172a',
             bgOpacity: 90,
-            autoEmoji: true,
-            selectedMode: 'ALL'
+            autoEmoji: true
         };
 
         let currentConfig = { ...DEFAULT_CONFIG };
@@ -290,14 +289,11 @@
             
             if (lines.length < 2) return [];
             
-            const headers = lines[0].map(h => h.replace(/^\uFEFF/, '').trim());
             const records = [];
-            
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
                 if (row.length === 0 || (row.length === 1 && row[0] === '')) continue;
                 
-                // 配列のインデックス（列位置）で確実にとりつつ、オブジェクトとしても保持する
                 const record = {
                     rawRow: row,
                     '配信内容': row[1] || '',
@@ -305,7 +301,6 @@
                     'トランジション': row[4] || '',
                     '表示時間': row[5] || '',
                     '配信曜日_AppSheet': row[6] || '',
-                    '配信モード': row[8] || '',
                     '件名': row[10] || ''
                 };
                 records.push(record);
@@ -446,41 +441,23 @@
 
         function processRecords(rawRecords) {
             const todayJa = weekDaysJa[new Date().getDay()]; // 本日の曜日（水など）
-            let selectedMode = 'ALL';
-            const savedConfig = localStorage.getItem('obs_ticker_config');
-            if (savedConfig) {
-                try {
-                    const parsed = JSON.parse(savedConfig);
-                    if (parsed.selectedMode) selectedMode = parsed.selectedMode;
-                } catch(e) {}
-            }
-            selectedMode = (selectedMode || 'ALL').trim();
 
-            activeRecords = rawRecords.filter(record => {
+            activeRecords = rawRecords.filter((record, index) => {
                 const row = record.rawRow || [];
-
-                // 1. D列（インデックス3: 配信停止フラグ）のチェック
-                // TRUE や「はい」などの場合は停止中とみなして除外する
                 const stopVal = (row[3] || '').trim().toUpperCase();
+                const daysVal = (row[6] || '').trim();
+
+                // 条件1: D列（配信停止フラグ）が TRUE、1、はい などの場合は除外する
                 if (stopVal === 'TRUE' || stopVal === '1' || stopVal === 'はい' || stopVal === 'YES') {
                     return false;
                 }
 
-                // 2. I列（インデックス8: 配信モード）のチェック
-                const modeVal = (row[8] || '').trim();
-                if (selectedMode !== 'ALL' && modeVal !== selectedMode) {
-                    return false;
-                }
-
-                // 3. G列（インデックス6: 配信曜日_AppSheet）のチェック
-                const daysVal = (row[6] || '').trim();
-                
-                // G列が空欄の場合は無条件に通す
+                // 条件2: G列（配信曜日_AppSheet）が空欄の場合は通す
                 if (daysVal === '') {
                     return true;
                 }
 
-                // 本日の曜日が含まれている場合のみ通す
+                // 条件3: G列に本日の曜日が含まれている場合のみ通す
                 const dayList = daysVal.match(/[月火水木金土日]/g) || [];
                 if (dayList.includes(todayJa)) {
                     return true;
@@ -489,7 +466,7 @@
                 return false;
             });
 
-            console.log("【フィルター結果】抽出されたアクティブデータ:", activeRecords);
+            console.log("【フィルター結果】アクティブデータ:", activeRecords);
 
             if (currentIndex >= activeRecords.length) {
                 currentIndex = 0;
