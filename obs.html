@@ -440,7 +440,6 @@
 
             activeRecords = rawRecords.filter(record => {
                 // ★ モードで絞り込んでいる（ALLではない）場合は配信停止フラグを無視する
-                // モードが 'ALL' の場合のみ、従来の通り isStopped が true なら除外する
                 if (selectedMode === 'ALL' && record.isStopped) {
                     return false;
                 }
@@ -480,24 +479,28 @@
             }
         }
 
+        // ★ JSON（設定付き）および従来のCSVテキストの双方を安全に読み込む関数
         function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.config && data.config.selectedMode) {
-                        currentConfig.selectedMode = data.config.selectedMode;
+                .then(res => res.text())
+                .then(text => {
+                    let csvText = text;
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.config && data.config.selectedMode) {
+                            currentConfig.selectedMode = data.config.selectedMode;
+                        }
+                        csvText = data.csv || '';
+                    } catch (e) {
+                        csvText = text;
                     }
-                    allRecords = parseCSV(data.csv);
+                    allRecords = parseCSV(csvText);
                     processRecords(allRecords);
                 })
                 .catch(err => {
-                    fetch(cacheBustedUrl)
-                        .then(res => res.text())
-                        .then(csv => {
-                            allRecords = parseCSV(csv);
-                            processRecords(allRecords);
-                        });
+                    console.error('データ取得エラー:', err);
+                    setTimeout(fetchDataAndPlay, 5000);
                 });
         }
 
