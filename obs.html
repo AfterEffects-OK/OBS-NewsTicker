@@ -248,6 +248,7 @@
         }
 
         function parseCSV(text) {
+            console.log("受け取った生テキスト:", text); // デバッグ用ログ
             if (!text || !text.trim()) return [];
             const lines = [];
             let currentRow = [];
@@ -288,6 +289,7 @@
                 }
             }
             
+            console.log("パース後の行配列:", lines); // デバッグ用ログ
             if (lines.length < 2) return [];
             
             const headers = lines[0];
@@ -317,6 +319,7 @@
                 records.push(record);
             }
             
+            console.log("変換されたレコード一覧:", records); // デバッグ用ログ
             return records;
         }
 
@@ -435,6 +438,8 @@
 
         function playNextTicker() {
             if (activeRecords.length === 0) {
+                console.warn("アクティブなレコードが0件です。条件（曜日や配信モード、配信停止フラグ）に合致するデータがあるか確認してください。");
+                document.getElementById('tickerMain').textContent = '条件に合うデータがありません';
                 setTimeout(fetchDataAndPlay, 5000);
                 return;
             }
@@ -478,6 +483,8 @@
                 return days.includes(todayJa);
             });
 
+            console.log("フィルタ後のアクティブレコード:", activeRecords);
+
             if (currentIndex >= activeRecords.length) {
                 currentIndex = 0;
             }
@@ -485,19 +492,25 @@
             if (!isPlaying && activeRecords.length > 0) {
                 isPlaying = true;
                 playNextTicker();
+            } else if (activeRecords.length > 0 && !animationTimer) {
+                playNextTicker();
             }
         }
 
         function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
-                .then(res => res.text())
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTPエラー! ステータス: ${res.status}`);
+                    return res.text();
+                })
                 .then(csv => {
                     allRecords = parseCSV(csv);
                     processRecords(allRecords);
                 })
                 .catch(err => {
                     console.error('データ取得エラー:', err);
+                    document.getElementById('tickerMain').textContent = 'データ取得エラー';
                     setTimeout(fetchDataAndPlay, 5000);
                 });
         }
