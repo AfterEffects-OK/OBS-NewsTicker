@@ -308,7 +308,7 @@
                 }
                 record['件名'] = headerVal;
                 
-                let dayVal = (record['配信曜日_AppSheet'] || record['配信曜日'] || '').trim();
+                let dayVal = (record['配信曜日_AppSheet'] || '').trim();
                 record['配信曜日_AppSheet'] = dayVal;
                 
                 const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
@@ -451,12 +451,14 @@
         }
 
         function processRecords(rawRecords) {
-            const todayJa = weekDaysJa[new Date().getDay()];
+            const todayJa = weekDaysJa[new Date().getDay()]; // 本日の曜日（水など）
             const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
 
             activeRecords = rawRecords.filter(record => {
+                // 1. D列（配信停止フラグ）が TRUE なら除外する（FALSE のみ通す）
                 if (record.isStopped) return false;
 
+                // 2. I列（配信モード）のチェック
                 let modeVal = (record['配信モード'] || '').trim();
                 if (!modeVal) {
                     for (let key in record) {
@@ -474,9 +476,22 @@
                     return false;
                 }
 
-                const days = record['配信曜日_AppSheet'] || record['配信曜日'] || '';
-                if (days.indexOf('不定期') !== -1 || days === '') return true;
-                return days.includes(todayJa);
+                // 3. G列（配信曜日_AppSheet）のみのチェック（カンマ区切り対応 & 本日の曜日または空欄）
+                const days = (record['配信曜日_AppSheet'] || '').trim();
+                
+                if (days === '') {
+                    return true; // 空欄の場合は通す
+                }
+
+                // カンマなどで分割して個別の曜日に分解（例: "金 , 月" -> ["金", "月"]）
+                const dayList = days.split(/[,、\s]+/).map(d => d.replace(/[^月火水木金土日]/g, '')).filter(Boolean);
+                
+                // 本日の曜日が含まれている場合
+                if (dayList.includes(todayJa)) {
+                    return true;
+                }
+
+                return false;
             });
 
             if (currentIndex >= activeRecords.length) {
