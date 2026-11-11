@@ -312,7 +312,6 @@
                 record['配信曜日_AppSheet'] = dayVal;
                 
                 const stopVal = (record['配信停止フラグ'] || '').toLowerCase();
-                // D列が FALSE のときだけ表示対象とするため、true/1/はい/yes などを停止(=true)とする
                 record.isStopped = (stopVal === 'true' || stopVal === '1' || stopVal === 'はい' || stopVal === 'yes');
                 
                 records.push(record);
@@ -456,10 +455,8 @@
             const selectedMode = (currentConfig.selectedMode || 'ALL').trim();
 
             activeRecords = rawRecords.filter(record => {
-                // 1. D列（配信停止フラグ）が TRUE（停止）のものは除外する
                 if (record.isStopped) return false;
 
-                // 2. 配信モードのチェック
                 let modeVal = (record['配信モード'] || '').trim();
                 if (!modeVal) {
                     for (let key in record) {
@@ -477,7 +474,6 @@
                     return false;
                 }
 
-                // 3. 曜日のチェック（C列またはG列に「不定期」が含まれるか、あるいはG列等に本日の曜日が含まれるか）
                 const days = record['配信曜日_AppSheet'] || record['配信曜日'] || '';
                 if (days.indexOf('不定期') !== -1 || days === '') return true;
                 return days.includes(todayJa);
