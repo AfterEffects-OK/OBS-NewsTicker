@@ -476,7 +476,10 @@
         function fetchDataAndPlay() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
             fetch(cacheBustedUrl)
-                .then(res => res.text())
+                .then(res => {
+                    if (!res.ok) throw new Error('ネットワーク応答エラー: ' + res.status);
+                    return res.text();
+                })
                 .then(text => {
                     let csvText = text;
                     try {
@@ -486,6 +489,7 @@
                         }
                         csvText = data.csv || '';
                     } catch (e) {
+                        // JSONパース失敗時は純粋なCSVとして扱う
                         csvText = text;
                     }
                     allRecords = parseCSV(csvText);
@@ -493,6 +497,7 @@
                 })
                 .catch(err => {
                     console.error('データ取得エラー:', err);
+                    document.getElementById('tickerMain').textContent = 'データ取得エラー: ' + err.message;
                     setTimeout(fetchDataAndPlay, 5000);
                 });
         }
