@@ -281,7 +281,6 @@
                 }
             }
             
-            // 最後の行（改行で終わっていない場合など）を確実にプッシュする修正
             if (currentField !== '' || currentRow.length > 0) {
                 currentRow.push(currentField.trim());
                 if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
@@ -506,7 +505,6 @@
         window.onload = function() {
             loadConfig();
             fetchDataAndPlay();
-            // 3分ごとに自動更新
             setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
     </script>
