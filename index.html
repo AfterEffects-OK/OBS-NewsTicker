@@ -166,8 +166,7 @@
                                 <button type="button" data-value="'DotGothic16', sans-serif" style="font-family: 'DotGothic16', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left">DotGothic16</button>
                                 <button type="button" data-value="serif" style="font-family: serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left">明朝体</button>
                             </div>
-        
-                            <!-- Google Font追加フォーム -->
+                        
                             <div class="flex items-center gap-2 pt-2 border-t border-slate-700/60">
                                 <input type="text" id="customFontInput" placeholder="Google Font名 (例: Zen Maru Gothic)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200">
                                 <button type="button" id="addCustomFontBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded-lg text-white transition shrink-0">
@@ -417,17 +416,16 @@
                             btn.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
                         }
                     } else {
-                        // 固定ボタン群のスタイル切り替え
-                        container.querySelectorAll('button[data-value]').forEach(b => {
-                            b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
+                        buttons.forEach(b => {
+                            b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
                             if (b.parentElement.id === 'fontWeightGroup') {
                                 b.className = "px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center";
                             }
                         });
-                        if (btn.parentElement.id === 'fontWeightGroup') {
-                            btn.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
+                        if (b.parentElement.id === 'fontWeightGroup') {
+                            b.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
                         } else {
-                            btn.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
+                            b.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
                         }
                     }
                     
@@ -492,7 +490,12 @@
                         if (groupId === 'fontWeightGroup') {
                             b.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
                         } else {
-                            b.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7";
+                            // カスタムフォントボタン（wrapper内）の場合は pr-7 truncate を維持
+                            if (b.closest('[data-font-wrapper]')) {
+                                b.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
+                            } else {
+                                b.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
+                            }
                         }
                     }
                 } else {
@@ -505,7 +508,11 @@
                         if (groupId === 'fontWeightGroup') {
                             b.className = "px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center";
                         } else {
-                            b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7";
+                            if (b.closest('[data-font-wrapper]')) {
+                                b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
+                            } else {
+                                b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
+                            }
                         }
                     }
                 }
@@ -513,7 +520,7 @@
         }
 
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdaMfu4w0GvrnNBEDc-eDu05kExD_ZafMHtkvj92WleRoipmDVU832topbMKAl5ErVkQ/exec';
-
+        
         const obsUrl = 'https://aftereffects-ok.github.io/OBS-NewsTicker/obs.html';
         document.getElementById('obsUrlInput').value = obsUrl;
         document.getElementById('obsUrlLink').href = obsUrl;
@@ -563,7 +570,7 @@
                 } else if ((char === '\r' || char === '\n') && !insideQuote) {
                     if (char === '\r' && nextChar === '\n') i++;
                     currentRow.push(currentField.trim());
-                    if (lines.length > 1 || (lines.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
                     currentRow = []; currentField = '';
                 } else { currentField += char; }
             }
@@ -760,29 +767,18 @@
 
         function fetchFromGAS() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
-            
-            // mode: 'no-cors' やキャッシュ対策を含めた確実なフェッチ処理
-            fetch(cacheBustedUrl, { method: 'GET', mode: 'cors' })
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTPエラー! ステータス: ${response.status}`);
-                    return response.text();
-                })
+            fetch(cacheBustedUrl)
+                .then(response => response.text())
                 .then(csvText => {
                     if (csvText && csvText.trim().length > 0) {
-                        csvTextArea.value = csvText;
-                        loadCSV(csvText);
-                        console.log('スプレッドシートの最新データを同期しました:', new Date().toLocaleTimeString());
-                    } else {
-                        console.warn('取得したCSVが空です');
+                        if (csvTextArea.value !== csvText) {
+                            csvTextArea.value = csvText;
+                            loadCSV(csvText);
+                            console.log('スプレッドシートの最新データを自動同期しました:', new Date().toLocaleTimeString());
+                        }
                     }
                 })
-                .catch(err => {
-                    console.error('GAS自動取得失敗（CORS等の可能性があります）:', err);
-                    // 万が一CORS等で直接取得できない場合のフォールバックとして、テキストエリアに何か入っていればそれを読み込む
-                    if (csvTextArea.value && csvTextArea.value.trim().length > 0) {
-                        loadCSV(csvTextArea.value);
-                    }
-                });
+                .catch(err => { console.error('GAS自動取得失敗:', err); });
         }
 
         function initCurrentDateLabel() {
@@ -846,11 +842,10 @@
             modeFilter.addEventListener('change', filterRecords);
             weekdayFilterCheck.addEventListener('change', filterRecords);
 
-            // フォント追加ボタンのクリックイベント
             document.getElementById('addCustomFontBtn').addEventListener('click', () => {
                 const input = document.getElementById('customFontInput');
                 const fontName = input.value;
-                if (fontName && fontName.trim()) {
+                if (fontName) {
                     loadGoogleFontDynamic(fontName);
                     // 自動で選択状態にする
                     const fontValue = `'${fontName.trim()}', sans-serif`;
@@ -858,6 +853,7 @@
                     syncButtonActiveState('fontFamilyGroup', fontValue, false);
                     saveConfig();
                     input.value = '';
+                    alert(`Google Font "${fontName}" を追加しました！`);
                 }
             });
 
@@ -907,12 +903,11 @@
             }
         });
 
-        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理
+        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理（位置ズレ完全防止版）
         function loadGoogleFontDynamic(fontName) {
             if (!fontName || !fontName.trim()) return;
             const cleanName = fontName.trim();
             
-            // すでに読み込まれていなければ <link> タグを動的に生成して追加
             const fontId = 'gfont-' + cleanName.toLowerCase().replace(/\s+/g, '-');
             if (!document.getElementById(fontId)) {
                 const link = document.createElement('link');
@@ -922,34 +917,33 @@
                 document.head.appendChild(link);
             }
 
-            // フォントボタン用の一意の値とCSSスタイル
             const fontValue = `'${cleanName}', sans-serif`;
-            
-            // すでにボタンが存在するか確認
             const container = document.getElementById('fontFamilyGroup');
             const exists = Array.from(container.querySelectorAll('button')).some(b => b.getAttribute('data-value') === fontValue);
             
             if (!exists) {
-                // ボタンのラッパー（削除ボタンを重ねるための基準用）
                 const wrapper = document.createElement('div');
                 wrapper.className = "relative inline-block w-full";
                 wrapper.setAttribute('data-font-wrapper', cleanName);
 
-                // メインのフォント選択ボタン
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.setAttribute('data-value', fontValue);
                 btn.style.fontFamily = fontValue;
+                // ★ 常に pr-7 と truncate を付与し、文字が「×」ボタンに被るのを完全に防ぎます
                 btn.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
                 btn.textContent = cleanName;
                 
-                // クリック時の選択イベント
                 btn.addEventListener('click', () => {
-                    // グループ内のすべてのフォントボタン（カスタム含む）のスタイルを非選択状態にリセット
-                    container.querySelectorAll('div[data-font-wrapper] button[data-value], #fontFamilyGroup > button[data-value]').forEach(b => {
-                        b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
+                    // 標準ボタンも含めてすべて非選択状態にリセット
+                    container.querySelectorAll('button[data-value]').forEach(b => {
+                        if (b.closest('[data-font-wrapper]')) {
+                            b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
+                        } else {
+                            b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
+                        }
                     });
-                    // 押されたボタンを選択状態（青色）にする
+                    // 選択されたカスタムボタンをアクティブ化
                     btn.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
                     
                     document.getElementById('fontFamilySelect').value = fontValue;
@@ -957,26 +951,27 @@
                     saveConfig();
                 });
 
-                // 削除用「×」ボタン（wrapper基準で右上に完全固定）
                 const delBtn = document.createElement('button');
                 delBtn.type = 'button';
+                // ★ 常に表示させておき、ホバー時に赤く光る仕様にして安定性を向上
                 delBtn.className = "absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-400 text-xs font-bold transition p-1 z-10";
                 delBtn.title = "このフォントを削除";
                 delBtn.innerHTML = "×";
 
-                // 削除クリック時の処理
                 delBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    wrapper.remove();
-                    let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
-                    customFonts = customFonts.filter(f => f !== cleanName);
-                    localStorage.setItem('obs_custom_fonts', JSON.stringify(customFonts));
-                    
-                    const selectEl = document.getElementById('fontFamilySelect');
-                    if (selectEl.value === fontValue) {
-                        selectEl.value = "'M PLUS Rounded 1c', sans-serif";
-                        selectEl.dispatchEvent(new Event('change'));
-                        saveConfig();
+                    if (confirm(`カスタムフォント "${cleanName}" を削除しますか？`)) {
+                        wrapper.remove();
+                        let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
+                        customFonts = customFonts.filter(f => f !== cleanName);
+                        localStorage.setItem('obs_custom_fonts', JSON.stringify(customFonts));
+                        
+                        const selectEl = document.getElementById('fontFamilySelect');
+                        if (selectEl.value === fontValue) {
+                            selectEl.value = "'M PLUS Rounded 1c', sans-serif";
+                            selectEl.dispatchEvent(new Event('change'));
+                            saveConfig();
+                        }
                     }
                 });
 
