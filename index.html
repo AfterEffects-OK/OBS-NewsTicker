@@ -398,6 +398,33 @@
             });
         }
 
+        // すべてのフォントボタンに共通のクリック設定を適用する関数
+        function initFontButtonSelectors() {
+            const container = document.getElementById('fontFamilyGroup');
+            const input = document.getElementById('fontFamilySelect');
+            if (!container || !input) return;
+
+            // コンテナ内のすべてのフォントボタン（標準・カスタム問わず）を監視
+            container.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-value]');
+                if (!btn) return;
+
+                const val = btn.getAttribute('data-value');
+
+                // グループ内のすべてのフォントボタンを非選択状態にする
+                container.querySelectorAll('button[data-value]').forEach(b => {
+                    b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
+                });
+
+                // クリックされたボタンを選択状態（青色）にする
+                btn.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
+
+                input.value = val;
+                input.dispatchEvent(new Event('change'));
+                saveConfig();
+            });
+        }
+
         function setupButtonSelector(groupId, inputId, isColorGroup = false) {
             const container = document.getElementById(groupId);
             const input = document.getElementById(inputId);
@@ -422,10 +449,10 @@
                                 b.className = "px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center";
                             }
                         });
-                        if (b.parentElement.id === 'fontWeightGroup') {
-                            b.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
+                        if (btn.parentElement.id === 'fontWeightGroup') {
+                            btn.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
                         } else {
-                            b.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
+                            btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
                         }
                     }
                     
@@ -490,12 +517,7 @@
                         if (groupId === 'fontWeightGroup') {
                             b.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
                         } else {
-                            // カスタムフォントボタン（wrapper内）の場合は pr-7 truncate を維持
-                            if (b.closest('[data-font-wrapper]')) {
-                                b.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
-                            } else {
-                                b.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
-                            }
+                            b.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
                         }
                     }
                 } else {
@@ -508,11 +530,7 @@
                         if (groupId === 'fontWeightGroup') {
                             b.className = "px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center";
                         } else {
-                            if (b.closest('[data-font-wrapper]')) {
-                                b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
-                            } else {
-                                b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
-                            }
+                            b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
                         }
                     }
                 }
@@ -794,7 +812,9 @@
             initSectionsState();
             initCustomFonts();
 
-            setupButtonSelector('fontFamilyGroup', 'fontFamilySelect', false);
+            // フォントボタン全体のクリック監視を有効化
+            initFontButtonSelectors();
+
             setupButtonSelector('transitionGroup', 'cfg_transition', false);
             setupButtonSelector('edgeStyleGroup', 'cfg_edgeStyle', false);
             setupButtonSelector('shadowGroup', 'cfg_shadow', false);
@@ -847,7 +867,6 @@
                 const fontName = input.value;
                 if (fontName) {
                     loadGoogleFontDynamic(fontName);
-                    // 自動で選択状態にする
                     const fontValue = `'${fontName.trim()}', sans-serif`;
                     document.getElementById('fontFamilySelect').value = fontValue;
                     syncButtonActiveState('fontFamilyGroup', fontValue, false);
@@ -903,7 +922,7 @@
             }
         });
 
-        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理（位置ズレ完全防止版）
+        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理
         function loadGoogleFontDynamic(fontName) {
             if (!fontName || !fontName.trim()) return;
             const cleanName = fontName.trim();
@@ -930,30 +949,12 @@
                 btn.type = 'button';
                 btn.setAttribute('data-value', fontValue);
                 btn.style.fontFamily = fontValue;
-                // ★ 常に pr-7 と truncate を付与し、文字が「×」ボタンに被るのを完全に防ぎます
+                // ★ デフォルトで pr-7 と truncate を付与し、すべてのフォントボタンで構造を統一
                 btn.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
                 btn.textContent = cleanName;
                 
-                btn.addEventListener('click', () => {
-                    // 標準ボタンも含めてすべて非選択状態にリセット
-                    container.querySelectorAll('button[data-value]').forEach(b => {
-                        if (b.closest('[data-font-wrapper]')) {
-                            b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
-                        } else {
-                            b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
-                        }
-                    });
-                    // 選択されたカスタムボタンをアクティブ化
-                    btn.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
-                    
-                    document.getElementById('fontFamilySelect').value = fontValue;
-                    document.getElementById('fontFamilySelect').dispatchEvent(new Event('change'));
-                    saveConfig();
-                });
-
                 const delBtn = document.createElement('button');
                 delBtn.type = 'button';
-                // ★ 常に表示させておき、ホバー時に赤く光る仕様にして安定性を向上
                 delBtn.className = "absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-400 text-xs font-bold transition p-1 z-10";
                 delBtn.title = "このフォントを削除";
                 delBtn.innerHTML = "×";
