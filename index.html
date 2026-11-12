@@ -17,12 +17,10 @@
             font-family: 'M PLUS Rounded 1c', sans-serif;
             background-color: #0f172a;
             color: #f8fafc;
-            /* スクロールが必要になった際に対応できるようにする */
             overflow-y: auto !important; 
             margin: 0;
             padding: 0;
         }
-        /* カード全体のパディングや余白をスリム化 */
         .space-y-8 > * + * { margin-top: 1.25rem !important; }
         .space-y-6 > * + * { margin-top: 1rem !important; }
         .space-y-4 > * + * { margin-top: 0.75rem !important; }
@@ -72,6 +70,7 @@
             
             <!-- Left Column: Status & Filters -->
             <div class="space-y-6 lg:col-span-1">
+                <!-- GASデータ連携ステータス -->
                 <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 onclick="toggleSection('gasSection', this)" class="text-lg font-bold flex items-center justify-between text-indigo-300 cursor-pointer select-none">
                         <span class="flex items-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> GASデータ連携ステータス</span>
@@ -82,6 +81,7 @@
                             <i data-lucide="rotate-cw" class="w-4 h-4"></i> スプレッドシートから再読み込み
                         </button>
                         <p class="text-[10px] text-slate-400 text-center">※3分ごとに自動でバックグラウンド同期されます</p>
+                        
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">CSVデータ読み込み:</label>
                             <div id="dropZone" class="border-2 border-dashed border-slate-600 hover:border-indigo-500 rounded-lg p-4 text-center cursor-pointer transition bg-slate-900/50 mb-3">
@@ -96,12 +96,13 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                <!-- 配信フィルタ設定 -->
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 onclick="toggleSection('filterSection', this)" class="text-lg font-bold flex items-center justify-between text-indigo-300 cursor-pointer select-none">
                         <span class="flex items-center gap-2"><i data-lucide="filter" class="w-5 h-5"></i> 配信フィルタ設定</span>
                         <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 transition-transform duration-200"></i>
                     </h2>
-                    <div id="filterSection" class="space-y-4">
+                    <div id="filterSection" class="space-y-4 pt-3">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">配信モードで絞り込み(使用停止中)</label>
                             <select id="modeFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200">
@@ -120,15 +121,17 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
             <!-- Right Column: Settings & Data Preview Table -->
             <div class="space-y-6 lg:col-span-2">
-                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                <!-- ティッカー枠 & 共通設定 -->
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 onclick="toggleSection('commonSection', this)" class="text-lg font-bold flex items-center justify-between text-indigo-300 cursor-pointer select-none">
                         <span class="flex items-center gap-2"><i data-lucide="sliders" class="w-5 h-5"></i> ティッカー枠 & 共通設定</span>
                         <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 transition-transform duration-200"></i>
                     </h2>
-                    <div id="commonSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                    <div id="commonSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-3">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">枠の横幅 (px)</label>
                             <input type="number" id="tickerWidthInput" value="1300" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
@@ -160,150 +163,153 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                <!-- デザイン & アイコン設定 -->
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h3 onclick="toggleSection('designSection', this)" class="text-md font-bold flex items-center justify-between text-amber-400 border-b border-slate-700 pb-2 cursor-pointer select-none">
                         <span class="flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4"></i> デザイン & アイコン設定</span>
                         <i data-lucide="chevron-down" class="chevron-icon w-4 h-4 transition-transform duration-200"></i>
                     </h3>
-                    <div id="designSection" class="space-y-4 pt-2">
-                        
-                        <!-- 枠エッジ（デザイン）スタイル選択 -->
-                        <div class="sm:col-span-2">
-                            <label class="block text-slate-400 mb-1.5 font-bold text-amber-300">ティッカー枠のエッジ デザイン</label>
-                            <input type="hidden" id="cfg_edgeStyle" value="default">
-                            <div id="edgeStyleGroup" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                <button type="button" data-value="default" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">シンプル標準</button>
-                                <button type="button" data-value="gold" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">ゴールドメタリック</button>
-                                <button type="button" data-value="silver" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">シルバーメタリック</button>
-                                <button type="button" data-value="stripe" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">斜めストライプ</button>
-                                <button type="button" data-value="stripe-noframe" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">斜めストライプ（枠なし）</button>
-                                <button type="button" data-value="neon" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">クリスマス</button>
-                                <button type="button" data-value="double" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">ダブルライン枠</button>
+                    <div id="designSection" class="space-y-4 pt-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                            
+                            <!-- 枠エッジ（デザイン）スタイル選択 -->
+                            <div class="sm:col-span-2">
+                                <label class="block text-slate-400 mb-1.5 font-bold text-amber-300">ティッカー枠のエッジ デザイン</label>
+                                <input type="hidden" id="cfg_edgeStyle" value="default">
+                                <div id="edgeStyleGroup" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <button type="button" data-value="default" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">シンプル標準</button>
+                                    <button type="button" data-value="gold" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">ゴールドメタリック</button>
+                                    <button type="button" data-value="silver" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">シルバーメタリック</button>
+                                    <button type="button" data-value="stripe" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">斜めストライプ</button>
+                                    <button type="button" data-value="stripe-noframe" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">斜めストライプ（枠なし）</button>
+                                    <button type="button" data-value="neon" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">クリスマス</button>
+                                    <button type="button" data-value="double" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">ダブルライン枠</button>
+                                </div>
+                            </div>
+
+                            <!-- 枠のシャドウ効果 -->
+                            <div class="sm:col-span-2">
+                                <label class="block text-slate-400 mb-1.5 font-bold text-amber-300">枠のドロップシャドウ</label>
+                                <input type="hidden" id="cfg_shadow" value="none">
+                                <div id="shadowGroup" class="grid grid-cols-2 gap-2">
+                                    <button type="button" data-value="none" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">入れない (デフォルト)</button>
+                                    <button type="button" data-value="shadow" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">影を入れる</button>
+                                </div>
+                            </div>
+
+                            <!-- アニメーション選択 -->
+                            <div class="sm:col-span-2">
+                                <label class="block text-slate-400 mb-1.5">アニメーション</label>
+                                <input type="hidden" id="cfg_transition" value="csv">
+                                <div id="transitionGroup" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <button type="button" data-value="csv" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">CSV指定に従う</button>
+                                    <button type="button" data-value="swipe-up" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">上スライド</button>
+                                    <button type="button" data-value="swipe-down" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">下スライド</button>
+                                    <button type="button" data-value="swipe-left" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">左スライド</button>
+                                    <button type="button" data-value="swipe-right" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">右スライド</button>
+                                    <button type="button" data-value="fade" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">フェード</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-400 mb-1">件名 (上部) 文字サイズ</label>
+                                <input type="number" id="cfg_headerFontSize" value="24" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">本文 (下部) 文字サイズ</label>
+                                <input type="number" id="cfg_mainFontSize" value="45" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
+                            </div>
+                            
+                            <!-- 本文フォント太さ選択 -->
+                            <div class="sm:col-span-2">
+                                <label class="block text-slate-400 mb-1.5">本文 (下部) フォントの太さ</label>
+                                <input type="hidden" id="cfg_mainFontWeight" value="500">
+                                <div id="fontWeightGroup" class="grid grid-cols-5 gap-1.5">
+                                    <button type="button" data-value="400" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">標準(400)</button>
+                                    <button type="button" data-value="500" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">中太(500)</button>
+                                    <button type="button" data-value="700" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">太字(700)</button>
+                                    <button type="button" data-value="800" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">極太(800)</button>
+                                    <button type="button" data-value="900" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">超極太(900)</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-400 mb-1">デフォルト アイコン (画像URL or 絵文字)</label>
+                                <input type="text" id="cfg_iconInput" value="https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">アイコン領域幅 (px)</label>
+                                <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
+                            </div>
+
+                            <!-- カラーパレット -->
+                            <div>
+                                <label class="block text-slate-400 mb-1">アイコン背景色</label>
+                                <input type="hidden" id="cfg_iconBgColor" value="#0f172a">
+                                <div id="iconBgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                    <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダーク"></button>
+                                    <button type="button" data-color="#3b82f6" style="background-color: #3b82f6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ブルー"></button>
+                                    <button type="button" data-color="#ef4444" style="background-color: #ef4444;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="レッド"></button>
+                                    <button type="button" data-color="#10b981" style="background-color: #10b981;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グリーン"></button>
+                                    <button type="button" data-color="#f59e0b" style="background-color: #f59e0b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="オレンジ"></button>
+                                    <button type="button" data-color="#8b5cf6" style="background-color: #8b5cf6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="パープル"></button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-400 mb-1">件名 (上部) 文字色</label>
+                                <input type="hidden" id="cfg_headerTextColor" value="#fde047">
+                                <div id="headerTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                    <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
+                                    <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
+                                    <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
+                                    <button type="button" data-color="#6ee7b7" style="background-color: #6ee7b7;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトグリーン"></button>
+                                    <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-400 mb-1">本文 (下部) 文字色</label>
+                                <input type="hidden" id="cfg_mainTextColor" value="#ffffff">
+                                <div id="mainTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                    <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
+                                    <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
+                                    <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
+                                    <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
+                                    <button type="button" data-color="#cbd5e1" style="background-color: #cbd5e1;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グレー"></button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-400 mb-1">枠の背景色</label>
+                                <input type="hidden" id="cfg_bgColor" value="#0f172a">
+                                <div id="bgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
+                                    <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="黒に近いダーク"></button>
+                                    <button type="button" data-color="#1e293b" style="background-color: #1e293b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="スレート"></button>
+                                    <button type="button" data-color="#1e3a8a" style="background-color: #1e3a8a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ネイビー"></button>
+                                    <button type="button" data-color="#701a75" style="background-color: #701a75;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ディープパープル"></button>
+                                    <button type="button" data-color="#065f46" style="background-color: #065f46;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダークグリーン"></button>
+                                </div>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                    <span>背景不透明度</span>
+                                    <span id="cfg_bgOpacityVal">90%</span>
+                                </div>
+                                <input type="range" id="cfg_bgOpacity" min="0" max="100" value="90" class="w-full accent-indigo-500">
                             </div>
                         </div>
-
-                        <!-- 枠のシャドウ効果 -->
-                        <div class="sm:col-span-2">
-                            <label class="block text-slate-400 mb-1.5 font-bold text-amber-300">枠のドロップシャドウ</label>
-                            <input type="hidden" id="cfg_shadow" value="none">
-                            <div id="shadowGroup" class="grid grid-cols-2 gap-2">
-                                <button type="button" data-value="none" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">入れない (デフォルト)</button>
-                                <button type="button" data-value="shadow" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">影を入れる</button>
-                            </div>
+                        <div class="pt-3 border-t border-slate-700/60">
+                            <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="cfg_autoEmoji" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700">
+                                <span>文章先頭の絵文字を自動抽出してアイコン化</span>
+                            </label>
                         </div>
-
-                        <!-- アニメーション選択 -->
-                        <div class="sm:col-span-2">
-                            <label class="block text-slate-400 mb-1.5">アニメーション</label>
-                            <input type="hidden" id="cfg_transition" value="csv">
-                            <div id="transitionGroup" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                <button type="button" data-value="csv" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">CSV指定に従う</button>
-                                <button type="button" data-value="swipe-up" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">上スライド</button>
-                                <button type="button" data-value="swipe-down" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">下スライド</button>
-                                <button type="button" data-value="swipe-left" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">左スライド</button>
-                                <button type="button" data-value="swipe-right" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">右スライド</button>
-                                <button type="button" data-value="fade" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition">フェード</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-slate-400 mb-1">件名 (上部) 文字サイズ</label>
-                            <input type="number" id="cfg_headerFontSize" value="24" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">本文 (下部) 文字サイズ</label>
-                            <input type="number" id="cfg_mainFontSize" value="45" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-bold text-amber-400">
-                        </div>
-                        
-                        <!-- 本文フォント太さ選択 -->
-                        <div class="sm:col-span-2">
-                            <label class="block text-slate-400 mb-1.5">本文 (下部) フォントの太さ</label>
-                            <input type="hidden" id="cfg_mainFontWeight" value="500">
-                            <div id="fontWeightGroup" class="grid grid-cols-5 gap-1.5">
-                                <button type="button" data-value="400" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">標準(400)</button>
-                                <button type="button" data-value="500" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">中太(500)</button>
-                                <button type="button" data-value="700" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">太字(700)</button>
-                                <button type="button" data-value="800" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">極太(800)</button>
-                                <button type="button" data-value="900" class="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center">超極太(900)</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-slate-400 mb-1">デフォルト アイコン (画像URL or 絵文字)</label>
-                            <input type="text" id="cfg_iconInput" value="https://raw.githubusercontent.com/AfterEffects-OK/PortalSite/refs/heads/main/KagisenKun-icon.png" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200 font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">アイコン領域幅 (px)</label>
-                            <input type="number" id="cfg_iconWidth" value="70" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-slate-200">
-                        </div>
-
-                        <!-- カラーパレット -->
-                        <div>
-                            <label class="block text-slate-400 mb-1">アイコン背景色</label>
-                            <input type="hidden" id="cfg_iconBgColor" value="#0f172a">
-                            <div id="iconBgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダーク"></button>
-                                <button type="button" data-color="#3b82f6" style="background-color: #3b82f6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ブルー"></button>
-                                <button type="button" data-color="#ef4444" style="background-color: #ef4444;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="レッド"></button>
-                                <button type="button" data-color="#10b981" style="background-color: #10b981;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グリーン"></button>
-                                <button type="button" data-color="#f59e0b" style="background-color: #f59e0b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="オレンジ"></button>
-                                <button type="button" data-color="#8b5cf6" style="background-color: #8b5cf6;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="パープル"></button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-slate-400 mb-1">件名 (上部) 文字色</label>
-                            <input type="hidden" id="cfg_headerTextColor" value="#fde047">
-                            <div id="headerTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
-                                <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
-                                <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
-                                <button type="button" data-color="#6ee7b7" style="background-color: #6ee7b7;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトグリーン"></button>
-                                <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-slate-400 mb-1">本文 (下部) 文字色</label>
-                            <input type="hidden" id="cfg_mainTextColor" value="#ffffff">
-                            <div id="mainTextColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#ffffff" style="background-color: #ffffff;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ホワイト"></button>
-                                <button type="button" data-color="#93c5fd" style="background-color: #93c5fd;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトブルー"></button>
-                                <button type="button" data-color="#fde047" style="background-color: #fde047;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="イエロー"></button>
-                                <button type="button" data-color="#fca5a5" style="background-color: #fca5a5;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ライトレッド"></button>
-                                <button type="button" data-color="#cbd5e1" style="background-color: #cbd5e1;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="グレー"></button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-slate-400 mb-1">枠の背景色</label>
-                            <input type="hidden" id="cfg_bgColor" value="#0f172a">
-                            <div id="bgColorGroup" class="flex items-center gap-2 flex-wrap pt-1">
-                                <button type="button" data-color="#0f172a" style="background-color: #0f172a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="黒に近いダーク"></button>
-                                <button type="button" data-color="#1e293b" style="background-color: #1e293b;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="スレート"></button>
-                                <button type="button" data-color="#1e3a8a" style="background-color: #1e3a8a;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ネイビー"></button>
-                                <button type="button" data-color="#701a75" style="background-color: #701a75;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ディープパープル"></button>
-                                <button type="button" data-color="#065f46" style="background-color: #065f46;" class="w-7 h-7 rounded-full border-2 border-slate-700 hover:scale-110 transition shadow" title="ダークグリーン"></button>
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <div class="flex justify-between text-xs text-slate-400 mb-1">
-                                <span>背景不透明度</span>
-                                <span id="cfg_bgOpacityVal">90%</span>
-                            </div>
-                            <input type="range" id="cfg_bgOpacity" min="0" max="100" value="90" class="w-full accent-indigo-500">
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-slate-700/60">
-                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                            <input type="checkbox" id="cfg_autoEmoji" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700">
-                            <span>文章先頭の絵文字を自動抽出してアイコン化</span>
-                        </label>
                     </div>
                 </div>
 
-                <!-- Data Preview Table -->
+                <!-- 読み込み中データ一覧 -->
                 <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 onclick="toggleSection('previewSection', this)" class="text-lg font-bold text-indigo-300 flex items-center justify-between cursor-pointer select-none">
                         <span class="flex items-center gap-2"><i data-lucide="list" class="w-5 h-5"></i> 読み込み中データ一覧 ※スプレッドシートの全カラム・全データをそのまま表示</span>
@@ -318,6 +324,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
         </div>
 
@@ -345,6 +352,36 @@
             autoEmoji: true
         };
 
+        // 各セクションの開閉切り替え関数
+        function toggleSection(contentId, headerEl) {
+            const content = document.getElementById(contentId);
+            const chevron = headerEl.querySelector('.chevron-icon');
+            if (!content) return;
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+                localStorage.setItem('obs_sec_' + contentId, 'open');
+            } else {
+                content.style.display = 'none';
+                if (chevron) chevron.style.transform = 'rotate(-90deg)';
+                localStorage.setItem('obs_sec_' + contentId, 'closed');
+            }
+        }
+
+        function initSectionsState() {
+            ['gasSection', 'filterSection', 'commonSection', 'designSection', 'previewSection'].forEach(id => {
+                const state = localStorage.getItem('obs_sec_' + id);
+                if (state === 'closed') {
+                    const content = document.getElementById(id);
+                    const header = content?.previousElementSibling;
+                    const chevron = header?.querySelector('.chevron-icon');
+                    if (content) content.style.display = 'none';
+                    if (chevron) chevron.style.transform = 'rotate(-90deg)';
+                }
+            });
+        }
+
         function setupButtonSelector(groupId, inputId, isColorGroup = false) {
             const container = document.getElementById(groupId);
             const input = document.getElementById(inputId);
@@ -364,14 +401,11 @@
                         }
                     } else {
                         buttons.forEach(b => {
-                            // 非選択状態に戻す (中の色を暗い背景に戻す)
                             b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
-                            // クラス属性の固有調整（太さ選択やエッジ選択など個別クラスの維持が必要な場合の処理）
                             if (b.parentElement.id === 'fontWeightGroup') {
                                 b.className = "px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center";
                             }
                         });
-                        // 選択されたボタンを明るいブルー（bg-indigo-600）にして中身の色をハッキリ光らせる
                         if (btn.parentElement.id === 'fontWeightGroup') {
                             btn.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
                         } else {
@@ -732,6 +766,7 @@
             lucide.createIcons();
             
             initFormValues();
+            initSectionsState();
 
             setupButtonSelector('fontFamilyGroup', 'fontFamilySelect', false);
             setupButtonSelector('transitionGroup', 'cfg_transition', false);
@@ -826,37 +861,6 @@
                 input.addEventListener('change', saveConfig);
             }
         });
-
-        // 各セクションの開閉切り替え関数
-        function toggleSection(contentId, headerEl) {
-            const content = document.getElementById(contentId);
-            const chevron = headerEl.querySelector('.chevron-icon');
-            if (!content) return;
-
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                if (chevron) chevron.style.transform = 'rotate(0deg)';
-                localStorage.setItem('obs_sec_' + contentId, 'open');
-            } else {
-                content.style.display = 'none';
-                if (chevron) chevron.style.transform = 'rotate(-90deg)';
-                localStorage.setItem('obs_sec_' + contentId, 'closed');
-            }
-        }
-
-        // 保存された開閉状態を復元する処理（window.onload 内に追加、またはinitFormValues内に追加）
-        function initSectionsState() {
-            ['gasSection', 'filterSection', 'commonSection', 'designSection', 'previewSection'].forEach(id => {
-                const state = localStorage.getItem('obs_sec_' + id);
-                if (state === 'closed') {
-                    const content = document.getElementById(id);
-                    const header = content?.previousElementSibling;
-                    const chevron = header?.querySelector('.chevron-icon');
-                    if (content) content.style.display = 'none';
-                    if (chevron) chevron.style.transform = 'rotate(-90deg)';
-                }
-            });
-        }
     </script>
 </body>
 </html>
