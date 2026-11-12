@@ -417,9 +417,9 @@
                             btn.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
                         }
                     } else {
-                        // 固定ボタン群のスタイル切り替え（動的生成ボタンは除外）
+                        // 固定ボタン群のスタイル切り替え
                         container.querySelectorAll('button[data-value]').forEach(b => {
-                            b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7";
+                            b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
                             if (b.parentElement.id === 'fontWeightGroup') {
                                 b.className = "px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center";
                             }
@@ -427,7 +427,7 @@
                         if (btn.parentElement.id === 'fontWeightGroup') {
                             btn.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
                         } else {
-                            btn.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7";
+                            btn.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
                         }
                     }
                     
@@ -896,7 +896,7 @@
             }
         });
 
-        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理（デザイン崩れ防止・安定版）
+        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理
         function loadGoogleFontDynamic(fontName) {
             if (!fontName || !fontName.trim()) return;
             const cleanName = fontName.trim();
@@ -924,7 +924,7 @@
                 wrapper.className = "relative inline-block w-full";
                 wrapper.setAttribute('data-font-wrapper', cleanName);
 
-                // メインのフォント選択ボタン（常に pr-7 と固定のクラスを維持して位置ズレを防止）
+                // メインのフォント選択ボタン
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.setAttribute('data-value', fontValue);
@@ -934,10 +934,13 @@
                 
                 // クリック時の選択イベント
                 btn.addEventListener('click', () => {
-                    container.querySelectorAll('button').forEach(b => {
+                    // グループ内のすべてのフォントボタン（カスタム含む）のスタイルを非選択状態にリセット
+                    container.querySelectorAll('div[data-font-wrapper] button[data-value], #fontFamilyGroup > button[data-value]').forEach(b => {
                         b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7 truncate";
                     });
+                    // 押されたボタンを選択状態（青色）にする
                     btn.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7 truncate";
+                    
                     document.getElementById('fontFamilySelect').value = fontValue;
                     document.getElementById('fontFamilySelect').dispatchEvent(new Event('change'));
                     saveConfig();
@@ -952,14 +955,12 @@
 
                 // 削除クリック時の処理
                 delBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // ボタン自体のクリックイベントが走らないようにする
+                    e.stopPropagation();
                     wrapper.remove();
-                    // LocalStorageのカスタムフォントリストからも除外
                     let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
                     customFonts = customFonts.filter(f => f !== cleanName);
                     localStorage.setItem('obs_custom_fonts', JSON.stringify(customFonts));
                     
-                    // もし削除したフォントが現在選択されていた場合はデフォルトに戻す
                     const selectEl = document.getElementById('fontFamilySelect');
                     if (selectEl.value === fontValue) {
                         selectEl.value = "'M PLUS Rounded 1c', sans-serif";
@@ -973,7 +974,6 @@
                 container.appendChild(wrapper);
             }
 
-            // 追加したカスタムフォントをLocalStorageに保存
             let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
             if (!customFonts.includes(cleanName)) {
                 customFonts.push(cleanName);
