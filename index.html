@@ -834,10 +834,11 @@
             modeFilter.addEventListener('change', filterRecords);
             weekdayFilterCheck.addEventListener('change', filterRecords);
 
+            // フォント追加ボタンのクリックイベント
             document.getElementById('addCustomFontBtn').addEventListener('click', () => {
                 const input = document.getElementById('customFontInput');
                 const fontName = input.value;
-                if (fontName) {
+                if (fontName && fontName.trim()) {
                     loadGoogleFontDynamic(fontName);
                     // 自動で選択状態にする
                     const fontValue = `'${fontName.trim()}', sans-serif`;
@@ -845,7 +846,6 @@
                     syncButtonActiveState('fontFamilyGroup', fontValue, false);
                     saveConfig();
                     input.value = '';
-                    alert(`Google Font "${fontName}" を追加しました！`);
                 }
             });
 
@@ -952,20 +952,18 @@
                 // 削除クリック時の処理
                 delBtn.addEventListener('click', (e) => {
                     e.stopPropagation(); // ボタン自体のクリックイベントが走らないようにする
-                    if (confirm(`カスタムフォント "${cleanName}" を削除しますか？`)) {
-                        wrapper.remove();
-                        // LocalStorageのカスタムフォントリストからも除外
-                        let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
-                        customFonts = customFonts.filter(f => f !== cleanName);
-                        localStorage.setItem('obs_custom_fonts', JSON.stringify(customFonts));
-                        
-                        // もし削除したフォントが現在選択されていた場合はデフォルトに戻す
-                        const selectEl = document.getElementById('fontFamilySelect');
-                        if (selectEl.value === fontValue) {
-                            selectEl.value = "'M PLUS Rounded 1c', sans-serif";
-                            selectEl.dispatchEvent(new Event('change'));
-                            saveConfig();
-                        }
+                    wrapper.remove();
+                    // LocalStorageのカスタムフォントリストからも除外
+                    let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
+                    customFonts = customFonts.filter(f => f !== cleanName);
+                    localStorage.setItem('obs_custom_fonts', JSON.stringify(customFonts));
+                    
+                    // もし削除したフォントが現在選択されていた場合はデフォルトに戻す
+                    const selectEl = document.getElementById('fontFamilySelect');
+                    if (selectEl.value === fontValue) {
+                        selectEl.value = "'M PLUS Rounded 1c', sans-serif";
+                        selectEl.dispatchEvent(new Event('change'));
+                        saveConfig();
                     }
                 });
 
