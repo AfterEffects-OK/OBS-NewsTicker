@@ -894,7 +894,7 @@
             }
         });
 
-        // Google Fontsを動的に読み込んでボタンを追加する処理
+        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理
         function loadGoogleFontDynamic(fontName) {
             if (!fontName || !fontName.trim()) return;
             const cleanName = fontName.trim();
@@ -917,28 +917,63 @@
             const exists = Array.from(container.querySelectorAll('button')).some(b => b.getAttribute('data-value') === fontValue);
             
             if (!exists) {
+                // ボタンのラッパー（削除ボタンを重ねるため）
+                const wrapper = document.createElement('div');
+                wrapper.className = "relative group inline-block w-full";
+                wrapper.setAttribute('data-font-wrapper', cleanName);
+
+                // メインのフォント選択ボタン
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.setAttribute('data-value', fontValue);
                 btn.style.fontFamily = fontValue;
-                btn.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
+                btn.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7";
                 btn.textContent = cleanName;
                 
-                // クリックイベントの紐付け
+                // クリック時の選択イベント
                 btn.addEventListener('click', () => {
                     container.querySelectorAll('button').forEach(b => {
-                        b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
+                        b.className = "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left pr-7";
                     });
-                    btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
+                    btn.className = "w-full px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40 pr-7";
                     document.getElementById('fontFamilySelect').value = fontValue;
                     document.getElementById('fontFamilySelect').dispatchEvent(new Event('change'));
                     saveConfig();
                 });
-                
-                container.appendChild(btn);
+
+                // 削除用「×」ボタン
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = "absolute right-1.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white rounded-full flex items-center justify-center text-[10px] transition opacity-60 group-hover:opacity-150";
+                delBtn.title = "このフォントを削除";
+                delBtn.innerHTML = "×";
+
+                // 削除クリック時の処理
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // ボタン自体のクリックイベントが走らないようにする
+                    if (confirm(`カスタムフォント "${cleanName}" を削除しますか？`)) {
+                        wrapper.remove();
+                        // LocalStorageのカスタムフォントリストからも除外
+                        let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
+                        customFonts = customFonts.filter(f => f !== cleanName);
+                        localStorage.setItem('obs_custom_fonts', JSON.stringify(customFonts));
+                        
+                        // もし削除したフォントが現在選択されていた場合はデフォルトに戻す
+                        const selectEl = document.getElementById('fontFamilySelect');
+                        if (selectEl.value === fontValue) {
+                            selectEl.value = "'M PLUS Rounded 1c', sans-serif";
+                            selectEl.dispatchEvent(new Event('change'));
+                            saveConfig();
+                        }
+                    }
+                });
+
+                wrapper.appendChild(btn);
+                wrapper.appendChild(delBtn);
+                container.appendChild(wrapper);
             }
 
-            // 追加したカスタムフォントをLocalStorageに保存しておく
+            // 追加したカスタムフォントをLocalStorageに保存
             let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
             if (!customFonts.includes(cleanName)) {
                 customFonts.push(cleanName);
