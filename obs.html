@@ -250,8 +250,12 @@
             } else {
                 currentConfig = { ...DEFAULT_CONFIG };
             }
+            
+            // ★ カスタムフォントと選択フォントを動的に読み込んで適用
+            initObsCustomFonts(currentConfig);
+            applyDynamicFont(currentConfig.fontFamily);
+            
             applyConfigToDOM();
-            applyDynamicFont(config.fontFamily);
         }
 
         function applyConfigToDOM() {
@@ -274,17 +278,14 @@
 
             icon.style.backgroundColor = currentConfig.iconBgColor;
             
-            // ▼【変更】アイコンの幅を「ティッカー枠の高さ」と連動させて常に正方形にする
             icon.style.width = `${currentConfig.height}px`;
             
             container.style.width = `${currentConfig.width}px`;
             container.style.height = `${currentConfig.height}px`;
 
-            // エッジデザインスタイルの適用
             const edge = currentConfig.edgeStyle || 'default';
             container.className = `ticker-box rounded-xl edge-${edge}`;
 
-            // シャドウ（影）の適用制御
             const shadowVal = currentConfig.shadow || 'none';
             if (shadowVal === 'shadow') {
                 container.classList.add('box-shadow-on');
@@ -351,7 +352,7 @@
                 } else if ((char === '\r' || char === '\n') && !insideQuote) {
                     if (char === '\r' && nextChar === '\n') i++;
                     currentRow.push(currentField.trim());
-                    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
+                    if (lines.length > 1 || (lines.length === 1 && currentRow[0] !== '')) lines.push(currentRow);
                     currentRow = []; currentField = '';
                 } else { currentField += char; }
             }
@@ -548,12 +549,10 @@
         function applyDynamicFont(fontFamilyStr) {
             if (!fontFamilyStr) return;
 
-            // 例: "'Hachi Maru Pop', cursive" からフォント名（Hachi Maru Pop）を取り出す
             const match = fontFamilyStr.match(/'([^']+)'/);
             if (match && match[1]) {
                 const fontName = match[1];
                 
-                // まだ読み込まれていなければ、Google Fontsの <link> タグを動的に生成して追加
                 const fontId = 'obs-dynamic-font-' + fontName.toLowerCase().replace(/\s+/g, '-');
                 if (!document.getElementById(fontId)) {
                     const link = document.createElement('link');
@@ -564,16 +563,14 @@
                 }
             }
 
-            // ティッカー全体の文字にフォントを適用
-            const tickerBox = document.getElementById('tickerBox'); // あるいはティッカーのコンテナ要素
-            if (tickerBox) {
-                tickerBox.style.fontFamily = fontFamilyStr;
+            const content = document.getElementById('tickerContent');
+            if (content) {
+                content.style.fontFamily = fontFamilyStr;
             }
         }
 
         // 保存されているカスタムフォントを動的に読み込んで適用する処理
         function initObsCustomFonts(config) {
-            // 1. LocalStorageからカスタムフォント一覧を読み込んでロード
             const customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
             customFonts.forEach(fontName => {
                 const fontId = 'gfont-' + fontName.toLowerCase().replace(/\s+/g, '-');
@@ -586,7 +583,6 @@
                 }
             });
 
-            // 2. 現在選択されている設定のフォント（例: 'Hachi Maru Pop', cursive 等）を解析して個別ロード
             if (config && config.fontFamily) {
                 const match = config.fontFamily.match(/'([^']+)'/);
                 if (match && match[1]) {
