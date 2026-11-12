@@ -570,6 +570,38 @@
                 tickerBox.style.fontFamily = fontFamilyStr;
             }
         }
+
+        // 保存されているカスタムフォントを動的に読み込んで適用する処理
+        function initObsCustomFonts(config) {
+            // 1. LocalStorageからカスタムフォント一覧を読み込んでロード
+            const customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
+            customFonts.forEach(fontName => {
+                const fontId = 'gfont-' + fontName.toLowerCase().replace(/\s+/g, '-');
+                if (!document.getElementById(fontId)) {
+                    const link = document.createElement('link');
+                    link.id = fontId;
+                    link.rel = 'stylesheet';
+                    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}&display=swap`;
+                    document.head.appendChild(link);
+                }
+            });
+
+            // 2. 現在選択されている設定のフォント（例: 'Hachi Maru Pop', cursive 等）を解析して個別ロード
+            if (config && config.fontFamily) {
+                const match = config.fontFamily.match(/'([^']+)'/);
+                if (match && match[1]) {
+                    const selectedFont = match[1];
+                    const fontId = 'gfont-' + selectedFont.toLowerCase().replace(/\s+/g, '-');
+                    if (!document.getElementById(fontId)) {
+                        const link = document.createElement('link');
+                        link.id = fontId;
+                        link.rel = 'stylesheet';
+                        link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(selectedFont)}&display=swap`;
+                        document.head.appendChild(link);
+                    }
+                }
+            }
+        }
     </script>
 </body>
 </html>
