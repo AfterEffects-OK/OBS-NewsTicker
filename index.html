@@ -92,12 +92,12 @@
                 </div>
 
                 <!-- 配信フィルタ設定 -->
-                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 onclick="toggleSection('filterSection', this)" class="text-lg font-bold flex items-center justify-between text-indigo-300 cursor-pointer select-none">
                         <span class="flex items-center gap-2"><i data-lucide="filter" class="w-5 h-5"></i> 配信フィルタ設定</span>
                         <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 transition-transform duration-200"></i>
                     </h2>
-                    <div id="filterSection" class="space-y-4 pt-2">
+                    <div id="filterSection" class="space-y-4 pt-3">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">配信モードで絞り込み(使用停止中)</label>
                             <select id="modeFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200">
@@ -121,12 +121,12 @@
             <!-- Right Column: Settings & Data Preview Table -->
             <div class="space-y-6 lg:col-span-2">
                 <!-- ティッカー枠 & 共通設定 -->
-                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h2 onclick="toggleSection('commonSection', this)" class="text-lg font-bold flex items-center justify-between text-indigo-300 cursor-pointer select-none">
                         <span class="flex items-center gap-2"><i data-lucide="sliders" class="w-5 h-5"></i> ティッカー枠 & 共通設定</span>
                         <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 transition-transform duration-200"></i>
                     </h2>
-                    <div id="commonSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                    <div id="commonSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-3">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">枠の横幅 (px)</label>
                             <input type="number" id="tickerWidthInput" value="1300" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 font-bold text-amber-400">
@@ -159,12 +159,12 @@
                 </div>
 
                 <!-- デザイン & アイコン設定 -->
-                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md space-y-4">
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 shadow-md">
                     <h3 onclick="toggleSection('designSection', this)" class="text-md font-bold flex items-center justify-between text-amber-400 border-b border-slate-700 pb-2 cursor-pointer select-none">
                         <span class="flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4"></i> デザイン & アイコン設定</span>
                         <i data-lucide="chevron-down" class="chevron-icon w-4 h-4 transition-transform duration-200"></i>
                     </h3>
-                    <div id="designSection" class="space-y-4 pt-2">
+                    <div id="designSection" class="space-y-4 pt-3">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                             
                             <!-- 枠エッジ（デザイン）スタイル選択 -->
@@ -295,7 +295,7 @@
                                 <input type="range" id="cfg_bgOpacity" min="0" max="100" value="90" class="w-full accent-indigo-500">
                             </div>
                         </div>
-                        <div class="pt-2 border-t border-slate-700/60">
+                        <div class="pt-3 border-t border-slate-700/60">
                             <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
                                 <input type="checkbox" id="cfg_autoEmoji" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700">
                                 <span>文章先頭の絵文字を自動抽出してアイコン化</span>
