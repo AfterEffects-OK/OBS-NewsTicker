@@ -542,6 +542,33 @@
             fetchDataAndPlay();
             setInterval(fetchDataAndPlay, 3 * 60 * 1000);
         };
+
+        // ローカルストレージ等から設定を読み込んでフォントを適用する処理
+        function applyFontConfig(config) {
+            if (!config || !config.fontFamily) return;
+
+            // 例: "'Hachi Maru Pop', cursive" や "'Zen Maru Gothic', sans-serif" からフォント名を取り出す
+            const match = config.fontFamily.match(/'([^']+)'/);
+            if (match && match[1]) {
+                const fontName = match[1];
+                
+                // 1. Google Fontsから動的にスタイルシートを読み込む（まだ読み込まれていない場合）
+                const fontId = 'obs-dynamic-font-' + fontName.toLowerCase().replace(/\s+/g, '-');
+                if (!document.getElementById(fontId)) {
+                    const link = document.createElement('link');
+                    link.id = fontId;
+                    link.rel = 'stylesheet';
+                    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}&display=swap`;
+                    document.head.appendChild(link);
+                }
+            }
+
+            // 2. ティッカー全体のフォントファミリーに適用
+            const tickerElement = document.getElementById('tickerContainer'); // あるいは文字を表示している親要素
+            if (tickerElement) {
+                tickerElement.style.fontFamily = config.fontFamily;
+            }
+        }
     </script>
 </body>
 </html>
