@@ -152,10 +152,12 @@
                             <span class="text-[10px] text-slate-500">※CSV個別の「表示時間」優先</span>
                         </div>
                         
-                        <!-- フォントファミリー選択 (全7種) -->
-                        <div class="sm:col-span-2 lg:col-span-3">
+                        <!-- フォントファミリー選択 -->
+                        <div class="sm:col-span-2 lg:col-span-3 space-y-2">
                             <label class="block text-xs text-slate-400 mb-1.5">フォントファミリー</label>
                             <input type="hidden" id="fontFamilySelect" value="'M PLUS Rounded 1c', sans-serif">
+                            
+                            <!-- フォントボタン一覧 -->
                             <div id="fontFamilyGroup" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                 <button type="button" data-value="'M PLUS Rounded 1c', sans-serif" style="font-family: 'M PLUS Rounded 1c', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left">M PLUS Rounded</button>
                                 <button type="button" data-value="'Noto Sans JP', sans-serif" style="font-family: 'Noto Sans JP', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left">Noto Sans JP</button>
@@ -165,6 +167,13 @@
                                 <button type="button" data-value="'Stick', sans-serif" style="font-family: 'Stick', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left">Stick</button>
                                 <button type="button" data-value="'DotGothic16', sans-serif" style="font-family: 'DotGothic16', sans-serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left">DotGothic16</button>
                                 <button type="button" data-value="serif" style="font-family: serif;" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left">明朝体</button>
+                            </div>
+                        
+                            <div class="flex items-center gap-2 pt-2 border-t border-slate-700/60">
+                                <input type="text" id="customFontInput" placeholder="Google Font名 (例: Zen Maru Gothic)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200">
+                                <button type="button" id="addCustomFontBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded-lg text-white transition shrink-0">
+                                    フォントを追加
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -776,6 +785,7 @@
             
             initFormValues();
             initSectionsState();
+            initCustomFonts();
 
             setupButtonSelector('fontFamilyGroup', 'fontFamilySelect', false);
             setupButtonSelector('transitionGroup', 'cfg_transition', false);
@@ -825,6 +835,21 @@
             modeFilter.addEventListener('change', filterRecords);
             weekdayFilterCheck.addEventListener('change', filterRecords);
 
+            document.getElementById('addCustomFontBtn').addEventListener('click', () => {
+                const input = document.getElementById('customFontInput');
+                const fontName = input.value;
+                if (fontName) {
+                    loadGoogleFontDynamic(fontName);
+                    // 自動で選択状態にする
+                    const fontValue = `'${fontName.trim()}', sans-serif`;
+                    document.getElementById('fontFamilySelect').value = fontValue;
+                    syncButtonActiveState('fontFamilyGroup', fontValue, false);
+                    saveConfig();
+                    input.value = '';
+                    alert(`Google Font "${fontName}" を追加しました！`);
+                }
+            });
+
             const bgOpacityInput = document.getElementById('cfg_bgOpacity');
             const bgOpacityVal = document.getElementById('cfg_bgOpacityVal');
             if (bgOpacityInput && bgOpacityVal) {
@@ -870,6 +895,64 @@
                 input.addEventListener('change', saveConfig);
             }
         });
+
+        // Google Fontsを動的に読み込んでボタンを追加する処理
+        function loadGoogleFontDynamic(fontName) {
+            if (!fontName || !fontName.trim()) return;
+            const cleanName = fontName.trim();
+            
+            // すでに読み込まれていなければ <link> タグを動的に生成して追加
+            const fontId = 'gfont-' + cleanName.toLowerCase().replace(/\s+/g, '-');
+            if (!document.getElementById(fontId)) {
+                const link = document.createElement('link');
+                link.id = fontId;
+                link.rel = 'stylesheet';
+                link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(cleanName)}&display=swap`;
+                document.head.appendChild(link);
+            }
+
+            // フォントボタン用の一意の値とCSSスタイル
+            const fontValue = `'${cleanName}', sans-serif`;
+            
+            // すでにボタンが存在するか確認
+            const container = document.getElementById('fontFamilyGroup');
+            const exists = Array.from(container.querySelectorAll('button')).some(b => b.getAttribute('data-value') === fontValue);
+            
+            if (!exists) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.setAttribute('data-value', fontValue);
+                btn.style.fontFamily = fontValue;
+                btn.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
+                btn.textContent = cleanName;
+                
+                // クリックイベントの紐付け
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('button').forEach(b => {
+                        b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
+                    });
+                    btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
+                    document.getElementById('fontFamilySelect').value = fontValue;
+                    document.getElementById('fontFamilySelect').dispatchEvent(new Event('change'));
+                    saveConfig();
+                });
+                
+                container.appendChild(btn);
+            }
+
+            // 追加したカスタムフォントをLocalStorageに保存しておく
+            let customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
+            if (!customFonts.includes(cleanName)) {
+                customFonts.push(cleanName);
+                localStorage.setItem('obs_custom_fonts', JSON.stringify(customFonts));
+            }
+        }
+
+        // ページ読み込み時に保存されていたカスタムフォントを復元
+        function initCustomFonts() {
+            const customFonts = JSON.parse(localStorage.getItem('obs_custom_fonts') || '[]');
+            customFonts.forEach(fontName => loadGoogleFontDynamic(fontName));
+        }
 
         // 使い方モーダルの開閉
         function toggleHelpModal(show) {
