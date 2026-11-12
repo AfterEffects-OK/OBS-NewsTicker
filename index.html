@@ -760,18 +760,29 @@
 
         function fetchFromGAS() {
             const cacheBustedUrl = `${GAS_WEB_APP_URL}?t=${new Date().getTime()}`;
-            fetch(cacheBustedUrl)
-                .then(response => response.text())
+            
+            // mode: 'no-cors' やキャッシュ対策を含めた確実なフェッチ処理
+            fetch(cacheBustedUrl, { method: 'GET', mode: 'cors' })
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTPエラー! ステータス: ${response.status}`);
+                    return response.text();
+                })
                 .then(csvText => {
                     if (csvText && csvText.trim().length > 0) {
-                        if (csvTextArea.value !== csvText) {
-                            csvTextArea.value = csvText;
-                            loadCSV(csvText);
-                            console.log('スプレッドシートの最新データを自動同期しました:', new Date().toLocaleTimeString());
-                        }
+                        csvTextArea.value = csvText;
+                        loadCSV(csvText);
+                        console.log('スプレッドシートの最新データを同期しました:', new Date().toLocaleTimeString());
+                    } else {
+                        console.warn('取得したCSVが空です');
                     }
                 })
-                .catch(err => { console.error('GAS自動取得失敗:', err); });
+                .catch(err => {
+                    console.error('GAS自動取得失敗（CORS等の可能性があります）:', err);
+                    // 万が一CORS等で直接取得できない場合のフォールバックとして、テキストエリアに何か入っていればそれを読み込む
+                    if (csvTextArea.value && csvTextArea.value.trim().length > 0) {
+                        loadCSV(csvTextArea.value);
+                    }
+                });
         }
 
         function initCurrentDateLabel() {
