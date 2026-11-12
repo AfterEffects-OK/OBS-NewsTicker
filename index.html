@@ -11,16 +11,20 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Kaisei+Decol:wght@700&family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&family=Stick&family=Yusei+Magic&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'M PLUS Rounded 1c', sans-serif;
             background-color: #0f172a;
             color: #f8fafc;
-            overflow-x: hidden;
+            overflow-y: auto !important; 
             margin: 0;
             padding: 0;
         }
+        .space-y-8 > * + * { margin-top: 1.25rem !important; }
+        .space-y-6 > * + * { margin-top: 1rem !important; }
+        .space-y-4 > * + * { margin-top: 0.75rem !important; }
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
@@ -77,6 +81,7 @@
                             <i data-lucide="rotate-cw" class="w-4 h-4"></i> スプレッドシートから再読み込み
                         </button>
                         <p class="text-[10px] text-slate-400 text-center">※3分ごとに自動でバックグラウンド同期されます</p>
+                        
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">CSVデータ読み込み:</label>
                             <div id="dropZone" class="border-2 border-dashed border-slate-600 hover:border-indigo-500 rounded-lg p-4 text-center cursor-pointer transition bg-slate-900/50 mb-3">
@@ -323,6 +328,8 @@
 
         </div>
 
+    </div>
+
     <script>
         const DEFAULT_CONFIG = {
             width: 1300,
@@ -330,6 +337,8 @@
             duration: 10,
             fontFamily: "'M PLUS Rounded 1c', sans-serif",
             transition: 'swipe-up',
+            edgeStyle: 'default',
+            shadow: 'none',
             headerFontSize: 24,
             mainFontSize: 45,
             mainFontWeight: '500',
@@ -342,6 +351,36 @@
             bgOpacity: 90,
             autoEmoji: true
         };
+
+        // 各セクションの開閉切り替え関数
+        function toggleSection(contentId, headerEl) {
+            const content = document.getElementById(contentId);
+            const chevron = headerEl.querySelector('.chevron-icon');
+            if (!content) return;
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+                localStorage.setItem('obs_sec_' + contentId, 'open');
+            } else {
+                content.style.display = 'none';
+                if (chevron) chevron.style.transform = 'rotate(-90deg)';
+                localStorage.setItem('obs_sec_' + contentId, 'closed');
+            }
+        }
+
+        function initSectionsState() {
+            ['gasSection', 'filterSection', 'commonSection', 'designSection', 'previewSection'].forEach(id => {
+                const state = localStorage.getItem('obs_sec_' + id);
+                if (state === 'closed') {
+                    const content = document.getElementById(id);
+                    const header = content?.previousElementSibling;
+                    const chevron = header?.querySelector('.chevron-icon');
+                    if (content) content.style.display = 'none';
+                    if (chevron) chevron.style.transform = 'rotate(-90deg)';
+                }
+            });
+        }
 
         function setupButtonSelector(groupId, inputId, isColorGroup = false) {
             const container = document.getElementById(groupId);
@@ -362,9 +401,16 @@
                         }
                     } else {
                         buttons.forEach(b => {
-                            b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
+                            b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
+                            if (b.parentElement.id === 'fontWeightGroup') {
+                                b.className = "px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center";
+                            }
                         });
-                        btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
+                        if (b.parentElement.id === 'fontWeightGroup') {
+                            btn.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
+                        } else {
+                            btn.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
+                        }
                     }
                     
                     input.value = val;
@@ -384,6 +430,8 @@
             
             document.getElementById('fontFamilySelect').value = config.fontFamily;
             document.getElementById('cfg_transition').value = config.transition;
+            document.getElementById('cfg_edgeStyle').value = config.edgeStyle || 'default';
+            document.getElementById('cfg_shadow').value = config.shadow || 'none';
             document.getElementById('cfg_mainFontWeight').value = config.mainFontWeight;
 
             document.getElementById('cfg_headerFontSize').value = config.headerFontSize;
@@ -402,6 +450,8 @@
 
             syncButtonActiveState('fontFamilyGroup', config.fontFamily, false);
             syncButtonActiveState('transitionGroup', config.transition, false);
+            syncButtonActiveState('edgeStyleGroup', config.edgeStyle || 'default', false);
+            syncButtonActiveState('shadowGroup', config.shadow || 'none', false);
             syncButtonActiveState('fontWeightGroup', config.mainFontWeight, false);
 
             syncButtonActiveState('iconBgColorGroup', config.iconBgColor, true);
@@ -421,7 +471,11 @@
                             b.className += ' border-amber-400 scale-110 ring-2 ring-amber-400/50';
                         }
                     } else {
-                        b.className = "px-3 py-2 bg-indigo-600 border border-indigo-500 rounded-lg text-xs text-white font-bold transition text-left shadow";
+                        if (groupId === 'fontWeightGroup') {
+                            b.className = "px-2 py-1.5 bg-indigo-600 border border-indigo-400 rounded text-xs text-white font-bold shadow text-center ring-2 ring-indigo-400/40";
+                        } else {
+                            b.className = "px-3 py-2 bg-indigo-600 border border-indigo-400 rounded-lg text-xs text-white font-bold shadow transition text-left ring-2 ring-indigo-400/40";
+                        }
                     }
                 } else {
                     if (isColorGroup) {
@@ -430,7 +484,11 @@
                             b.className += ' border-slate-700';
                         }
                     } else {
-                        b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 transition text-left hover:border-indigo-500";
+                        if (groupId === 'fontWeightGroup') {
+                            b.className = "px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300 transition text-center";
+                        } else {
+                            b.className = "px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 transition text-left";
+                        }
                     }
                 }
             });
@@ -708,9 +766,12 @@
             lucide.createIcons();
             
             initFormValues();
+            initSectionsState();
 
             setupButtonSelector('fontFamilyGroup', 'fontFamilySelect', false);
             setupButtonSelector('transitionGroup', 'cfg_transition', false);
+            setupButtonSelector('edgeStyleGroup', 'cfg_edgeStyle', false);
+            setupButtonSelector('shadowGroup', 'cfg_shadow', false);
             setupButtonSelector('fontWeightGroup', 'cfg_mainFontWeight', false);
 
             setupButtonSelector('iconBgColorGroup', 'cfg_iconBgColor', true);
@@ -771,6 +832,8 @@
                 duration: document.getElementById('displayDuration').value,
                 fontFamily: document.getElementById('fontFamilySelect').value,
                 transition: document.getElementById('cfg_transition').value,
+                edgeStyle: document.getElementById('cfg_edgeStyle').value,
+                shadow: document.getElementById('cfg_shadow').value,
                 headerFontSize: document.getElementById('cfg_headerFontSize').value,
                 mainFontSize: document.getElementById('cfg_mainFontSize').value,
                 mainFontWeight: document.getElementById('cfg_mainFontWeight').value,
