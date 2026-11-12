@@ -895,7 +895,7 @@
             }
         });
 
-        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理
+        // Google Fontsを動的に読み込んで削除ボタン付きのボタンを追加する処理（「×」ボタンをオーバーレイ配置）
         function loadGoogleFontDynamic(fontName) {
             if (!fontName || !fontName.trim()) return;
             const cleanName = fontName.trim();
@@ -918,12 +918,12 @@
             const exists = Array.from(container.querySelectorAll('button')).some(b => b.getAttribute('data-value') === fontValue);
             
             if (!exists) {
-                // ボタンのラッパー（削除ボタンを重ねるため）
+                // ボタンのラッパー（削除ボタンを重ねるための基準にするため relative を指定）
                 const wrapper = document.createElement('div');
                 wrapper.className = "relative group inline-block w-full";
                 wrapper.setAttribute('data-font-wrapper', cleanName);
 
-                // メインのフォント選択ボタン
+                // メインのフォント選択ボタン（右側に×ボタンが被らないよう pr-7 を設定）
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.setAttribute('data-value', fontValue);
@@ -942,7 +942,7 @@
                     saveConfig();
                 });
 
-                // 削除用「×」ボタン
+                // 削除用「×」ボタン（ボタンの右上にオーバーレイ配置）
                 const delBtn = document.createElement('button');
                 delBtn.type = 'button';
                 delBtn.className = "absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-400 text-xs font-bold transition opacity-50 group-hover:opacity-100 p-1";
