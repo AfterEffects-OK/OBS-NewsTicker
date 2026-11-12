@@ -267,7 +267,10 @@
             container.style.backgroundColor = hexToRgba(bgColorHex, currentConfig.bgOpacity);
 
             icon.style.backgroundColor = currentConfig.iconBgColor;
-            icon.style.width = `${currentConfig.iconWidth}px`;
+            
+            // ▼【変更】アイコンの幅を「ティッカー枠の高さ」と連動させて常に正方形にする
+            icon.style.width = `${currentConfig.height}px`;
+            
             container.style.width = `${currentConfig.width}px`;
             container.style.height = `${currentConfig.height}px`;
 
